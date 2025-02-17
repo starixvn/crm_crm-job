@@ -1,0 +1,158 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+    <PropertyGroup>
+        <PublishProtocol>FileSystem</PublishProtocol>
+        <Configuration>Release</Configuration>
+        <Platform>Any CPU</Platform>
+        <TargetFramework>net6.0</TargetFramework>
+        <PublishDir>D:\Deploy\CRM.Service</PublishDir>
+        <UserSecretsId>c6191107-6326-45fb-b4bb-3f2d9239f558</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="Filters\**" />
+      <Compile Remove="Views\**" />
+      <Content Remove="Filters\**" />
+      <Content Remove="Views\**" />
+      <EmbeddedResource Remove="Filters\**" />
+      <EmbeddedResource Remove="Views\**" />
+      <None Remove="Filters\**" />
+      <None Remove="Views\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Services\BackgroundService.cs" />
+      <Compile Remove="Services\CustomWebHostService.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Remove="appsettings.LOCAL.json" />
+      <Content Remove="appsettings.LOCAL_1.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="App_Data\SpNames.KLDR.xml" />
+        <None Remove="App_Data\SpNames.LOCAL_1.xml" />
+        <None Remove="App_Data\SpNames.LOCAL_2.xml" />
+        <None Remove="App_Data\SpNames.SIT_1.xml" />
+        <None Remove="App_Data\SpNames.xml" />
+        <None Remove="Deployment.ignore" />
+        <None Remove="Format_Templates\AutoCreateFeedback\AmendmentDescriptionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\AmendmentSolutionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\ArchivingDATemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\FeedbackDuplicateTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\FeedbackTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\MixParlayTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\TODesctiptionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\TOSolutionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\ProblemsSolutionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\VoidingSettledTicketDescriptionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\VoidingSettledTicketSolutionTemplate.xml" />
+        <None Remove="logs\log.txt" />
+        <None Remove="wwwroot\announcement\favicon.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="App_Data\SpNames.KLDR.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.SIT_1.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.LOCAL_2.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.LOCAL_1.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.LOCAL.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.PROD.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.SIT.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="App_Data\SpNames.UAT.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Deployment.ignore">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\AmendmentDescriptionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\AmendmentSolutionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\FeedbackDuplicateTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\FeedbackTemplate.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\MixParlayTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\ArchivingDATemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\ProblemsSolutionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\TODesctiptionTemplate.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\TOSolutionTemplate.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\VoidingSettledTicketDescriptionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\VoidingSettledTicketSolutionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="logs\log.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="wwwroot\announcement\favicon.ico">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Fanex.BotService.Client.AspNetCore" Version="1.0.2" />
+        <PackageReference Include="Fanex.Logging.Extensions.AspNetCore" Version="1.0.1" />
+        <PackageReference Include="Fanex.RemotingRef" Version="1.5.5.1" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+        <PackageReference Include="ONEbook.UM.AspNetCore" Version="3.1.0-beta05" />
+        <PackageReference Include="ONEbook.UM.Transport" Version="3.1.1" />
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.56.0.67649">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="appsettings.LOCAL.json" />
+      <None Include="appsettings.LOCAL_1.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CRM.BackgroundJob.Core\CRM.BackgroundJob.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.KLDR.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+</Project>

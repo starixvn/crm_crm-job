@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+    <SportsbookEN>
+        Dear Sir, Customer Support would like to inform the below announcement: {8}
+        Attn:[{0}] Due to wrong result displayed, the match between "{1} -vs- {2}" [{3} - {4}] has been re-settled. {7}
+        The actual result is "{5}" instead of "{6}". Kindly double check your statement again. Sorry for the inconvenience caused! {8}
+    </SportsbookEN>
+    <SportsbookSC>
+        您好，客服部在此通知以下的通告：{9}
+        请注意:[{0}] 由于赛果显示错误, "{1} -vs- {2}" [{3} - {4}] 已重新结算. {8}
+        正确之赛果为 "{5}" 而不是 "{6}". 请重新检查您的帐目. 不便之处 敬请见谅! {9}
+        Affected user/受影响会员: {7} {9}
+    </SportsbookSC>
+    <SportsbookYN>
+        Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo đến quý khách thông báo dưới đây: {9}
+        Attn:[{0}] Due to wrong result displayed, the match between "{1} -vs- {2}" [{3} - {4}] has been re-settled. {8}
+        The actual result is "{5}" instead of "{6}". Kindly double check your statement again. Sorry for the inconvenience caused! {9}
+        Affected user/Tài khoản bị ảnh hưởng: {7} {9}
+    </SportsbookYN>
+    <VirtualSports2EN>
+        Dear Sir, Customer Support would like to inform the below announcement: {8}
+        Attn:[Virtual Sports] Due to wrong result displayed, the match between "{0} -vs- {1}" [{2} ({3}) - {4}] has been re-settled. {7}
+        The actual result is "{5}" instead of "{6}". Kindly double check your statement again. Sorry for the inconvenience caused! {8}
+    </VirtualSports2EN>
+    <VirtualSports2SC>
+        您好，客服部在此通知以下的通告：{9}
+        请注意:[Virtual Sports] 由于赛果显示错误, "{0} -vs- {1}" [{2} ({3}) - {4}] 已重新结算. {8}
+        正确之赛果为 "{5}" 而不是 "{6}". 请重新检查您的帐目. 不便之处 敬请见谅! {9}
+        Affected user/受影响会员: {7} {9}
+    </VirtualSports2SC>
+    <VirtualSports2YN>
+        Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo đến quý khách thông báo dưới đây: {9}
+        Attn:[Virtual Sports] Due to wrong result displayed, the match between "{0} -vs- {1}" [{2} ({3}) - {4}] has been re-settled. {8}
+        The actual result is "{5}" instead of "{6}". Kindly double check your statement again. Sorry for the inconvenience caused! {9}
+        Affected user/Tài khoản bị ảnh hưởng: {7} {9}
+    </VirtualSports2YN>
+    <VirtualSportsEN>
+        Dear Sir, Customer Support would like to inform the below announcement: {1}
+        Attn:[{0}] Due to the wrong calculation, bet ID: "" has been re-settled. Kindly double check your statement again. Sorry for the inconvenience caused! {1}
+    </VirtualSportsEN>
+    <VirtualSportsSC>
+        您好，客服部在此通知以下的通告：{2}
+        请注意:[{0}] 由于成绩结算有误, 注单: "" 已重新结算. 请重新检查您的帐目. 不便之处 敬请见谅! {2}
+        Affected user/受影响会员: {1} {2}
+    </VirtualSportsSC>
+    <VirtualSportsYN>
+        Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo đến quý khách thông báo dưới đây: {2}
+        Attn:[{0}] Due to the wrong calculation, bet ID: "" has been re-settled. Kindly double check your statement again. Sorry for the inconvenience caused! {2}
+        Affected user/Tài khoản bị ảnh hưởng: {1} {2}
+    </VirtualSportsYN>
+    <NumberGameEN>
+        Dear Sir, Customer Support would like to inform the below announcement: {3}
+        Attn:[{0}] Due to technical error, all bets placed on [{0} Event #{1} - {2}] has been re-settled as REFUNDED. {4}
+        Kindly double check your statement again. Sorry for the inconvenience caused! {3}
+    </NumberGameEN>
+    <NumberGameSC>
+        您好，客服部在此通知以下的通告：{4}
+        请注意:[{0}] 由于技术有误, 所有注单投注于 [{0} #{1} - {2}] 已重新结算为退款. {5}
+        请重新检查您的帐目. 不便之处 敬请见谅! {4}
+        Affected user/受影响会员: {3} {4}
+    </NumberGameSC>
+    <NumberGameYN>
+        Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thông báo dưới đây: {4}
+        Attn:[{0}] Due to technical error, all bets placed on [{0} Event #{1} - {2}] has been re-settled as REFUNDED. {5}
+        Kindly double check your statement again. Sorry for the inconvenience caused! {4}
+        Affected user/Tài khoản bị ảnh hưởng: {3} {4}
+    </NumberGameYN>
+    <OutrightEN>
+        Dear Sir, Customer Support would like to inform the below announcement: {1}
+        {0} {1}
+    </OutrightEN>
+    <OutrightSC>
+        您好，客服部在此通知以下的通告：{2}
+        {0} {2}
+        Affected user/受影响会员: {1} {2}
+    </OutrightSC>
+    <OutrightYN>
+        Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thông báo dưới đây: {2}
+        {0} {2}
+        Affected user/Tài khoản bị ảnh hưởng: {1} {2}
+    </OutrightYN>
+    <NoResultENSC>
+        Dear Sir, Customer Support would like to inform the below announcement:{3}
+        您好，客服部在此通知以下的通告：{4}
+        {0}{4}
+        {1}{4}
+        Affected user/受影响会员: {2}
+    </NoResultENSC>
+    <NoResultENYN>
+        Dear Sir, Customer Support would like to inform the below announcement:{2}
+        Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thông báo dưới đây:{3}
+        {0}{3}
+        Affected user / Tài khoản bị ảnh hưởng: {1}
+    </NoResultENYN>
+</ROOT>

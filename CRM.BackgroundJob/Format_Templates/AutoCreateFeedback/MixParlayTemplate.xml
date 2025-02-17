@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+    <SolutionCreditENSC>
+        Dear Sir, Customer service would like to inform that your member have abnormal bet, affected ticket has been VOIDED. Thank you. {3}
+        {0} {3}
+        Kindly refer to Agency site "Cancelled Bets" for Voided user. {3}
+        您好, 客服部在此通知您, 公司发现您旗下会员有非正常投注. 注單已被作廢. 謝謝! {3}
+        {1} {3}
+        请浏览代理网 “已删除/作废注单” 查询有关作废账号。{3}
+        Affected user/受影响会员:{4}
+        {2} {3}
+    </SolutionCreditENSC>
+    <SolutionCreditENYN>
+        Dear Sir, Customer service would like to inform that your member have abnormal bet, affected ticket has been VOIDED. Thank you.{3}
+        Xin chào, bộ phận Dịch vụ Khách hàng của chúng tôi xin thông báo rằng thành viên của bạn có cá cược bất thường, do đó vé cược đã bị vô hiệu hoá. Xin cảm ơn.{2}
+        {0}{2}
+        Kindly refer to Agency site "Cancelled Bets" for Voided user.{3}
+        Vui lòng tham khảo thông tin bổ sung tại mục "Cược bị huỷ" trên trang web đại lý cho phần "Vô hiệu hoá".{2}
+        Affected user/Danh sách khách hàng: {3}
+        {1} {2}
+    </SolutionCreditENYN>
+    <DescriptionCredit>
+        Due to Abnormal Bets, some Mix Parlay tickets were VOIDED.{3}
+        Decided By: {0}{3}
+        Requested By: {1}{3}
+        Voided By: {2}
+    </DescriptionCredit>
+</ROOT>
