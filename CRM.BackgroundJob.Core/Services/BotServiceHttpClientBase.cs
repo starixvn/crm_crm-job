@@ -14,12 +14,12 @@
 
     public class BotServiceHttpClientBase
     {
-        protected readonly BotServiceSettings botSettings;
+        protected readonly BotEndpointSettings botSettings;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly ICacheService cacheService;
         private const string JwtTokenCacheKey = "CRM_BotService_Authenticate_Token_Cache_Key";
 
-        public BotServiceHttpClientBase(BotServiceSettings botSettings, IHttpClientFactory httpClientFactory, ICacheService cacheService)
+        public BotServiceHttpClientBase(BotEndpointSettings botSettings, IHttpClientFactory httpClientFactory, ICacheService cacheService)
         {
             this.botSettings = botSettings;
             this.httpClientFactory = httpClientFactory;

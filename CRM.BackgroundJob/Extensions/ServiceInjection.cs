@@ -1,122 +1,31 @@
-﻿namespace CRM.BackgroundJob
+﻿using CRM.BackgroundJob.Core.Models.BotServices;
+using CRM.BackgroundJob.Core.Repositories;
+using CRM.BackgroundJob.Core.Services;
+using CRM.BackgroundJob.Models;
+using CRM.BackgroundJob.Models.HealthCheck;
+using CRM.BackgroundJob.Services;
+using CRM.BackgroundJob.Workers;
+using Fanex.BotService.Client.Core.Services;
+using Fanex.BotService.Client.Core.Services.Interfaces;
+using Fanex.Caching;
+using Fanex.CRM.BackgroundJob.Models;
+using Fanex.CRM.BackgroundJob.Services;
+using Fanex.Data.Repository;
+using Fanex.Logging;
+using Fanex.RemotingRef;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+
+namespace CRM.BackgroundJob.Extensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using CRM.BackgroundJob.Core.Models.BotServices;
-    using CRM.BackgroundJob.Core.Repositories;
-    using CRM.BackgroundJob.Core.Services;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.HealthCheck;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Workers;
-    using Fanex.BotService.Client.AspNetCore;
-    using Fanex.BotService.Client.Core.Services;
-    using Fanex.BotService.Client.Core.Services.Interfaces;
-    using Fanex.Caching;
-    using Fanex.Caching.Redis;
-    using Fanex.CRM.BackgroundJob.Models;
-    using Fanex.CRM.BackgroundJob.Services;
-    using Fanex.Data.Repository;
-    using Fanex.Data.SqlServer;
-    using Fanex.Logging;
-    using Fanex.Logging.Sentry;
-    using Fanex.RemotingRef;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.DataProtection;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using ONEbook.UM.AspNetCore;
-    using ONEbook.UM.Configurations;
-    using ONEbook.UM.Helpers;
-    using ONEbook.UM.Services;
-    using ONEbook.UM.Transport;
-    using Sentry;
-    using StackExchange.Redis;
-
-    [ExcludeFromCodeCoverage(Justification = "Configures application startup")]
-    public class Startup
+    public static class ServiceInjection
     {
-        private readonly ConnectionMultiplexer Redis;
-
-        public Startup(IConfiguration configuration)
+        public static void AddDependencyInjection(this IServiceCollection services)
         {
-            Configuration = configuration;
-            Redis = ConnectionMultiplexer.Connect(Configuration.GetSection("Fanex.Caching.Redis:ConnectionString").Value);
-        }
+            services.AddHttpClient();
 
-        public IConfiguration Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddFanexSql(Configuration);
-
-            LogManager
-               .SetDefaultLogCategory(Configuration.GetSection("Fanex.Logging:LogCategory").Value)
-               .Use(new List<ILogEngine>
-               {
-                    new SentryLogging(new SentryEngineOptions
-                    {
-                        Dsn = new Dsn(Configuration.GetSection("Fanex.Logging:SentryEngineOptions:Dsn").Value)
-                    })
-               });
-
-            RefDataTypeContainer
-            .ConnectTo(new Uri(Configuration.GetSection("RemotingRefService:Fanex.RemotingRef.Service.Url").Value))
-            .FromApplication("CRM.BackgroundJob");
-
-            services.AddSingleton(Configuration);
-            services.AddControllers();
-
-            var botConfigs = Configuration.GetSection("BotServiceSettings").Get<BotServiceSettings>();
-            services.AddSingleton(botConfigs);
-
-            services.RegisterBotClient(Configuration);
-
-            ConfigDataProtection(services);
-            ConfigRedisCache(services);
-            AddConfiguration(services, Configuration);
-            AddDependencyInjection(services, Configuration);
-            AddWorker(services);
-            ConfigBotService(services, Configuration);
-        }
-
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
-
-            app.UseMiddleware<ErrorHandler>();
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Auth}/{action=Index}/{id?}");
-            });
-        }
-
-        private static void AddConfiguration(IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<AppJobSettings>(options => configuration.GetSection("AppSettings").Bind(options));
-            services.Configure<List<JobSetting>>(configuration.GetSection("JobSettings"));
-
-            var healthCheckSettings = configuration.GetSection("LetstalkHealthCheckSettings").Get<LetstalkHealthCheckSettings>();
-            services.AddSingleton(healthCheckSettings);
-        }
-
-        private static void AddDependencyInjection(IServiceCollection services, IConfiguration configuration)
-        {
             #region Core services
 
             services.AddSingleton<IDynamicRepository, DynamicRepository>();
@@ -126,19 +35,7 @@
             services.AddSingleton<ILogger, Logger>();
             services.AddSingleton<ICrmLogService, CrmLogService>();
 
-            services.AddHttpClient();
-
             #endregion Core services
-
-            #region ONEbookUM
-
-            services.AddSingleton(new UMClientConfiguration().Initialize(configuration));
-            services.AddSingleton<IHttpContextHelper, HttpContextHelper>();
-            services.AddSingleton<IUMCacheService, UMCacheService>();
-            services.AddSingleton<IUMRestClient, UMRestClient>();
-            services.AddSingleton<IMaintenanceService, MaintenanceService>();
-
-            #endregion ONEbookUM
 
             #region BotService
 
@@ -194,7 +91,7 @@
             services.AddSingleton<IChatBotRebateRetentionService, ChatBotRebateRetentionService>();
         }
 
-        private static void AddWorker(IServiceCollection services)
+        public static void AddWorkers(this IServiceCollection services)
         {
             services.AddHostedService<AutoFbAmendmentNotiFbWoker>();
             services.AddHostedService<AutoFbProblemAccountWoker>();
@@ -228,23 +125,14 @@
             services.AddHostedService<MncSendNotificationCenterWorker>();
         }
 
-        private void ConfigDataProtection(IServiceCollection services)
+        public static void AddConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            string aplicationName = Configuration.GetSection("Fanex.Caching.Redis:ApplicationName").Value;
-            services.AddDataProtection()
-                .SetApplicationName(aplicationName)
-                .PersistKeysToStackExchangeRedis(Redis, $"CRM.BackgroundJob:DataProtection:Keys");
-        }
+            services.Configure<AppJobSettings>(options => configuration.GetSection("AppSettings").Bind(options));
+            services.Configure<List<JobSetting>>(configuration.GetSection("JobSettings"));
 
-        private void ConfigRedisCache(IServiceCollection services)
-        {
-            services.AddRedisCache(Configuration.GetSection("Fanex.Caching.Redis"));
-        }
-
-        private static void ConfigBotService(IServiceCollection services, IConfiguration configuration)
-        {
-            var botConfigs = configuration.GetSection("Fanex.BotService").Get<BotServiceSetting>();
-            services.AddSingleton(botConfigs);
+            services.AddSingleton(configuration.GetSection("LetstalkHealthCheckSettings").Get<LetstalkHealthCheckSettings>());
+            services.AddSingleton(configuration.GetSection("Fanex.BotService").Get<BotServiceSetting>());
+            services.AddSingleton(configuration.GetSection("BotServiceSettings").Get<BotEndpointSettings>());
         }
     }
 }

@@ -3,7 +3,7 @@
         <PublishProtocol>FileSystem</PublishProtocol>
         <Configuration>Release</Configuration>
         <Platform>Any CPU</Platform>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <PublishDir>D:\Deploy\CRM.Service</PublishDir>
         <UserSecretsId>c6191107-6326-45fb-b4bb-3f2d9239f558</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -123,20 +123,14 @@
 
     <ItemGroup>
         <PackageReference Include="Fanex.BotService.Client.AspNetCore" Version="1.0.2" />
-        <PackageReference Include="Fanex.Logging.Extensions.AspNetCore" Version="1.0.1" />
         <PackageReference Include="Fanex.RemotingRef" Version="1.5.5.1" />
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.8" />
-        <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
-        <PackageReference Include="ONEbook.UM.AspNetCore" Version="3.1.0-beta05" />
-        <PackageReference Include="ONEbook.UM.Transport" Version="3.1.1" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.56.0.67649">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.1" />
+        <PackageReference Include="ONEbook.UM" Version="3.2.4" />
     </ItemGroup>
 
     <ItemGroup>

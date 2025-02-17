@@ -1,19 +1,19 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
+    using CRM.BackgroundJob.Core.Models;
+    using CRM.BackgroundJob.Core.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.UnitTests.Testable;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
     using Fanex.BotService.Client.Core.Services.Interfaces;
     using Fanex.CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class MessageNotificationCenterServiceTests
@@ -105,8 +105,7 @@
             commonFeedback.GetLeagueName(id, languageCode).Returns("LeagueName");
             commonFeedback.GetSportName(id, languageCode).Returns("SportName");
             commonFeedback.GetTeamName(id, languageCode).Returns("TeamName");
-            commonFeedback.GetResourceCricketName(id, languageCode).Returns("ResourceCricketName");
-            commonFeedback.GetResultSettlementName(id, languageCode).Returns("ResultSettlementName");
+            commonFeedback.GetResourceByRefIdAndResourceId(type, id, languageCode).Returns(expected);
 
             // Act
             var actual = service.Public_GetResourceRemotingRef(type, id, languageCode);
@@ -317,7 +316,6 @@
             // Assert
             logService.Received(1).LogInformation(Arg.Any<string>());
         }
-
 
         [Fact]
         public async Task SendNotificationCenterAsync_ThrowException()

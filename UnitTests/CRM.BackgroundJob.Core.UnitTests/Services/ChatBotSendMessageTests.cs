@@ -1,11 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Core.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using CRM.BackgroundJob.Core.Enumerables;
     using CRM.BackgroundJob.Core.Models.BotServices;
     using CRM.BackgroundJob.Core.Services;
@@ -14,11 +8,17 @@
     using Newtonsoft.Json;
     using NSubstitute;
     using NSubstitute.ReturnsExtensions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class ChatBotSendMessageTests
     {
-        private BotServiceSettings botServiceSettings;
+        private BotEndpointSettings botServiceSettings;
         private IHttpClientFactory httpClientFactory;
         private ICacheService cacheService;
 
@@ -180,7 +180,7 @@
 
         private ChatBotSendMessageService GetService()
         {
-            botServiceSettings = new BotServiceSettings
+            botServiceSettings = new BotEndpointSettings
             {
                 ServiceUrl = "http://bot.com/",
                 AppId = "Id",

@@ -1,13 +1,13 @@
 ﻿namespace CRM.BackgroundJob.Core.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using CRM.BackgroundJob.Core.Enumerables;
     using CRM.BackgroundJob.Core.Models.BotServices;
     using CRM.BackgroundJob.Core.Models.BotServices.Announcement;
     using Fanex.Caching;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     public interface IChatBotSendMessageService
     {
@@ -22,7 +22,7 @@
 
     public class ChatBotSendMessageService : BotServiceHttpClientBase, IChatBotSendMessageService
     {
-        public ChatBotSendMessageService(BotServiceSettings botSettings, IHttpClientFactory httpClientFactory, ICacheService cacheService)
+        public ChatBotSendMessageService(BotEndpointSettings botSettings, IHttpClientFactory httpClientFactory, ICacheService cacheService)
             : base(botSettings, httpClientFactory, cacheService)
         {
         }

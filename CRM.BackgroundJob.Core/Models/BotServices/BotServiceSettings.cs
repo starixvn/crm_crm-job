@@ -1,9 +1,9 @@
 ﻿namespace CRM.BackgroundJob.Core.Models.BotServices
 {
-    using System.Collections.Generic;
     using CRM.BackgroundJob.Core.Enumerables;
+    using System.Collections.Generic;
 
-    public class BotServiceSettings
+    public class BotEndpointSettings
     {
         public string ServiceUrl { get; set; }
         public string AuthenticatePath { get; set; }
