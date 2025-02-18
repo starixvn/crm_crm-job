@@ -28,10 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="App_Data\SpNames.KLDR.xml" />
-        <None Remove="App_Data\SpNames.LOCAL_1.xml" />
-        <None Remove="App_Data\SpNames.LOCAL_2.xml" />
-        <None Remove="App_Data\SpNames.SIT_1.xml" />
         <None Remove="App_Data\SpNames.xml" />
         <None Remove="Deployment.ignore" />
         <None Remove="Format_Templates\AutoCreateFeedback\AmendmentDescriptionTemplate.xml" />
@@ -50,32 +46,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="App_Data\SpNames.KLDR.xml">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.SIT_1.xml">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.LOCAL_2.xml">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.LOCAL_1.xml">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.LOCAL.xml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.PROD.xml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.SIT.xml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="App_Data\SpNames.xml">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="App_Data\SpNames.UAT.xml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="Deployment.ignore">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
