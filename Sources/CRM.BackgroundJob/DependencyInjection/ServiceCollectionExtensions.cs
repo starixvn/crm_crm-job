@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using CRM.BackgroundJob.Models.HealthCheck;
-using CRM.BackgroundJob.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CRM.BackgroundJob.DependencyInjection;
 
+using CRM.Models;
 using CRM.Models.BotServices;
+using CRM.Models.HealthCheck;
 using CRM.Services;
+using CRM.Workers;
 using Fanex.BotService.Client.Core.Services;
 using Fanex.BotService.Client.Core.Services.Interfaces;
 using Fanex.Caching;
@@ -17,8 +18,6 @@ using Fanex.Logging;
 using Fanex.RemotingRef;
 using Microsoft.AspNetCore.Http;
 using Repositories;
-using Services;
-using Workers;
 
 public static class ServiceCollectionExtensions
 {
@@ -35,9 +34,13 @@ public static class ServiceCollectionExtensions
     public static void AddDependencyInjection(this IServiceCollection services)
     {
         services.AddHttpClient();
+        services.AddCoreServices();
+        services.AddChatBotServices();
+        services.AddFeedbackServices();
+    }
 
-        #region Core services
-
+    private static void AddCoreServices(this IServiceCollection services)
+    {
         services.AddSingleton<IDynamicRepository, DynamicRepository>();
         services.AddSingleton<IBaseRepository, BaseRepository>();
         services.AddSingleton<IBaseService, BaseService>();
@@ -45,40 +48,44 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ILogger, Logger>();
         services.AddSingleton<ICrmLogService, CrmLogService>();
 
-        #endregion Core services
-
-        #region BotService
-
         services.AddSingleton<IBotService, BotService>();
-
-        #endregion BotService
+        services.AddSingleton<BotServiceHttpClientBase>();
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<IRemotingRefService, RemotingRefService>();
-        services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IJobRunningChecker, JobRunningChecker>();
-        services.AddSingleton<ICommonFeedback, CommonFeedback>();
-        services.AddSingleton<ISettingService, SettingService>();
-        services.AddSingleton<ISystemSettingService, SystemSettingService>();
-        services.AddSingleton<IMessageService, MessageService>();
-        services.AddSingleton<ICustomerService, CustomerService>();
-        services.AddSingleton<IFeedbackService, FeedbackService>();
-        services.AddSingleton<IWinLossFeedbackService, WinLossFeedbackService>();
-        services.AddSingleton<IFeedbackTicketVoidingService, FeedbackTicketVoidingService>();
-        services.AddSingleton<IAutoFeedbackService, AutoFeedbackService>();
+        services.AddSingleton<IBotHealthCheckService, BotHealthCheckService>();
+    }
+
+    private static void AddChatBotServices(this IServiceCollection services)
+    {
         services.AddSingleton<IChatBotTicketVoidingService, ChatBotTicketVoidingService>();
         services.AddSingleton<IChatBotCWLService, ChatBotCWLService>();
         services.AddSingleton<IChatBotJobService, ChatBotJobService>();
-        services.AddSingleton<IBotHealthCheckService, BotHealthCheckService>();
-        services.AddSingleton<IFeedbackTransactionService, FeedbackTransactionService>();
-        services.AddSingleton<ICommonFeedback, CommonFeedback>();
-        services.AddSingleton<ITOControlFeedbackService, TOControlFeedbackService>();
         services.AddSingleton<IChatBotCTOService, ChatBotCTOService>();
         services.AddSingleton<IChatBotArchivingDAService, ChatBotArchivingDAService>();
-        services.AddSingleton<IProblemsAccountFeedbackService, ProblemsAccountFeedbackService>();
-        services.AddSingleton<IAmendmentNotiFbService, AmendmentNotiFbService>();
+        services.AddSingleton<IChatBotSendMessageService, ChatBotSendMessageService>();
         services.AddSingleton<IChatBotProblemAccountService, ChatBotProblemAccountService>();
         services.AddSingleton<IChatBotResultAmendmentService, ChatBotResultAmendmentService>();
+        services.AddSingleton<IChatBotRebateRetentionService, ChatBotRebateRetentionService>();
+    }
+
+    private static void AddFeedbackServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ICommonFeedback, CommonFeedback>();
+        services.AddSingleton<ISettingService, SettingService>();
+        services.AddSingleton<ISystemSettingService, SystemSettingService>();
+        services.AddSingleton<ISendNotificationService, SendNotificationService>();
+        services.AddSingleton<IMessageService, MessageService>();
+        services.AddSingleton<ICustomerService, CustomerService>();
+        services.AddSingleton<IFeedbackService, FeedbackService>();
+        services.AddSingleton<IAutoFeedbackService, AutoFeedbackService>();
+        services.AddSingleton<IWinLossFeedbackService, WinLossFeedbackService>();
+        services.AddSingleton<IFeedbackTicketVoidingService, FeedbackTicketVoidingService>();
+        services.AddSingleton<IFeedbackTransactionService, FeedbackTransactionService>();
+        services.AddSingleton<ITOControlFeedbackService, TOControlFeedbackService>();
+        services.AddSingleton<IProblemsAccountFeedbackService, ProblemsAccountFeedbackService>();
+        services.AddSingleton<IAmendmentNotiFbService, AmendmentNotiFbService>();
         services.AddSingleton<ISynchronizeLicenseeService, SynchronizeLicenseeService>();
         services.AddSingleton<IVoidingSettledTicketsFeedbackService, VoidingSettledTicketsFeedbackService>();
         services.AddSingleton<IVoidingSettledTicketsService, VoidingSettledTicketsService>();
@@ -87,19 +94,16 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IRefundSettledTicketService, RefundSettledTicketService>();
         services.AddSingleton<IVoidingBetIDService, VoidingBetIDService>();
         services.AddSingleton<IAbnormalBetService, AbnormalBetService>();
+        services.AddSingleton<IAutoFbRebateRetentionService, AutoFbRebateRetentionService>();
+        services.AddSingleton<IAutoFbMessageNotificationCenterService, AutoFbMessageNotificationCenterService>();
         services.AddSingleton<IMessageNotificationCenterService, MessageNotificationCenterService>();
         services.AddSingleton<ICaptureSettlementDataService, CaptureSettlementDataService>();
         services.AddSingleton<IGenerateResultAmendmentService, GenerateResultAmendmentService>();
-        services.AddSingleton<IPushNotificationResultAmendmentService, PushNotificationResultAmendmentService>();
         services.AddSingleton<IGenerateLapNotificationService, GenerateLapNotificationService>();
+        services.AddSingleton<IPushNotificationResultAmendmentService, PushNotificationResultAmendmentService>();
         services.AddSingleton<ISendNotificationCenterService, SendNotificationCenterService>();
-        services.AddSingleton<IAutoFbMessageNotificationCenterService, AutoFbMessageNotificationCenterService>();
-        services.AddSingleton<IAutoFbRebateRetentionService, AutoFbRebateRetentionService>();
-        services.AddSingleton<BotServiceHttpClientBase>();
-        services.AddSingleton<ISendNotificationService, SendNotificationService>();
-        services.AddSingleton<IChatBotSendMessageService, ChatBotSendMessageService>();
-        services.AddSingleton<IChatBotRebateRetentionService, ChatBotRebateRetentionService>();
     }
+
 
     public static void AddWorkers(this IServiceCollection services)
     {
@@ -136,7 +140,7 @@ public static class ServiceCollectionExtensions
     }
 
 
-    public static void AddRemotingRef(IConfiguration configuration)
+    public static void AddRemotingRef(this IConfiguration configuration)
     {
         RefDataTypeContainer
             .ConnectTo(new Uri(configuration["RemotingRefService:Fanex.RemotingRef.Service.Url"]))

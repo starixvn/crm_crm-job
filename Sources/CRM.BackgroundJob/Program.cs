@@ -16,6 +16,7 @@ builder.Host.UseNLog();
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+configuration.AddRemotingRef();
 
 services.AddHealthChecks();
 services.AddFanexSql(configuration, false, "FanexConnectionStrings");
