@@ -8,6 +8,8 @@
     using CRM.BackgroundJob.Criteria.AutoFbMessageNotificationCenter;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
     using Xunit;
 

@@ -1,7 +1,7 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Criteria.AutoFeedback
 {
     using AutoFixture;
-    using Fanex.CRM.BackgroundJob.Criteria;
+    using BackgroundJob.Criteria.AutoFeedback;
     using Xunit;
 
     public class CreateFeedbackCommandTests
