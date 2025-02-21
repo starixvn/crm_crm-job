@@ -5,11 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CRM.BackgroundJob.DependencyInjection;
 
-using CRM.Models;
+using CRM.BackgroundJob.Models;
+using CRM.BackgroundJob.Models.HealthCheck;
+using CRM.BackgroundJob.Services;
+using CRM.BackgroundJob.Workers;
 using CRM.Models.BotServices;
-using CRM.Models.HealthCheck;
 using CRM.Services;
-using CRM.Workers;
 using Fanex.BotService.Client.Core.Services;
 using Fanex.BotService.Client.Core.Services.Interfaces;
 using Fanex.Caching;
