@@ -26,6 +26,6 @@ public class ScanAndSendAnnouncementWorker : BaseWorker
 
     public override async Task ExecuteJobAsync()
     {
-        await sendService.ScanSendAndUpateAnnouncementNotification();
+        await sendService.ScanSendAndUpdateAnnouncementNotification();
     }
 }

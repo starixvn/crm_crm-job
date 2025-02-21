@@ -17,7 +17,7 @@ public interface IChatBotSendMessageService
 
     Task<IEnumerable<SendNotificationResult>> SendImageOnlyAsync(BotChannel botChannel, IEnumerable<AnnouncementNotification> notifications);
 
-    Task<SendResult> SendSinglePlaintexMessageAsync(BotChannel botChannel, NotificationMessage notification);
+    Task<SendResult> SendSinglePlainTexMessageAsync(BotChannel botChannel, NotificationMessage notification);
 }
 
 public class ChatBotSendMessageService(
@@ -47,7 +47,7 @@ public class ChatBotSendMessageService(
         return results;
     }
 
-    public async Task<SendResult> SendSinglePlaintexMessageAsync(BotChannel botChannel, NotificationMessage notification)
+    public async Task<SendResult> SendSinglePlainTexMessageAsync(BotChannel botChannel, NotificationMessage notification)
     {
         var apiConfig = GetApiConfig(botChannel);
 

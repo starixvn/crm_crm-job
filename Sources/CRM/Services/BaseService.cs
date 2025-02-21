@@ -2,12 +2,9 @@
 
 using Criteria;
 using Fanex.Caching;
-using Fanex.Data;
 using Fanex.Data.Repository;
-using Fanex.Data.SqlServer;
 using Fanex.Logging.Extensions;
 using Fanex.Logging.Extensions.Database;
-using Microsoft.Data.SqlClient;
 using Models;
 using Repositories;
 

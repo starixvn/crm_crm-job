@@ -25,7 +25,7 @@
         private IChatBotSendMessageService chatbotService;
 
         [Fact]
-        public async Task ScanSendAndUpateAnnouncementNotification_WhenCalled_ReturnExpected()
+        public async Task ScanSendAndUpdateAnnouncementNotification_WhenCalled_ReturnExpected()
         {
             // Arrange
             var fixture = new Fixture();
@@ -38,7 +38,7 @@
             baseService.GetDataAsync<AnnouncementNotification>(Arg.Any<GetAnnouncementNotificationToSendCriteria>()).Returns(noti);
 
             // Act
-            await service.ScanSendAndUpateAnnouncementNotification();
+            await service.ScanSendAndUpdateAnnouncementNotification();
 
             // Assert
             await service.Received().Public_ProcessEmptyNotifications(empty);

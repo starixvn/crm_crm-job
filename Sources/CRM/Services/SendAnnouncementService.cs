@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 public interface ISendAnnouncementService
 {
-    Task ScanSendAndUpateAnnouncementNotification();
+    Task ScanSendAndUpdateAnnouncementNotification();
 }
 
 public class SendAnnouncementService(
@@ -32,7 +32,7 @@ public class SendAnnouncementService(
         "was changed after confirming to send announcement.<br>" +
         "Please send a new announcement for this headline.";
 
-    public async Task ScanSendAndUpateAnnouncementNotification()
+    public async Task ScanSendAndUpdateAnnouncementNotification()
     {
         var notifications = await GetAnnouncementNotificationAsync();
         var (emptyNotifications, actionableNotifications) = PartitionNotifications(notifications);

@@ -54,7 +54,7 @@ public class BotServiceHttpClientBase(
             var responseString = await response.Content.ReadAsStringAsync();
             var data = JObject.Parse(responseString);
             token = data["accessToken"].Value<string>();
-            var expired = (data["expriedDate"].Value<DateTime>());
+            var expired = data["expriedDate"].Value<DateTime>();
             await cacheService.SetAsync(JwtTokenCacheKey, token, new CacheItemOptions
             {
                 AbsoluteExpiration = expired

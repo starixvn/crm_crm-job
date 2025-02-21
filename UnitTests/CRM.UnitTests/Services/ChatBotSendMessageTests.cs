@@ -84,7 +84,7 @@
             cacheService.GetAsync<string>(Arg.Any<string>()).ReturnsNull();
             FakeHttpClientResponse();
 
-            var actual = await service.SendSinglePlaintexMessageAsync(BotChannel.Letstalk, param);
+            var actual = await service.SendSinglePlainTexMessageAsync(BotChannel.Letstalk, param);
 
             httpClientFactory.Received(2).CreateClient();
             await cacheService.Received(1).SetAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CacheItemOptions>());
@@ -104,7 +104,7 @@
             cacheService.GetAsync<string>(Arg.Any<string>()).Returns("token");
             FakeHttpClientResponse();
 
-            var actual = await service.SendSinglePlaintexMessageAsync(param.ChannelId, param);
+            var actual = await service.SendSinglePlainTexMessageAsync(param.ChannelId, param);
 
             httpClientFactory.Received(1).CreateClient();
             await cacheService.DidNotReceive().SetAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CacheItemOptions>());
@@ -125,7 +125,7 @@
             cacheService.GetAsync<string>(Arg.Any<string>()).Returns("token");
             FakeHttpClientResponse(HttpStatusCode.Forbidden);
 
-            await Assert.ThrowsAsync<HttpRequestException>(() => service.SendSinglePlaintexMessageAsync(BotChannel.Letstalk, param));
+            await Assert.ThrowsAsync<HttpRequestException>(() => service.SendSinglePlainTexMessageAsync(BotChannel.Letstalk, param));
         }
 
         private static NotificationMessage FakeNotificationMessage() => new()

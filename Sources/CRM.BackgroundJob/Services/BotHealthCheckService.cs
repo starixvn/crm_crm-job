@@ -29,7 +29,7 @@ public class BotHealthCheckService(
             Content = healthCheckSettings.Message
         };
 
-        var sentResult = await chatBotSendMessageService.SendSinglePlaintexMessageAsync(BotChannel.Letstalk, notificationMsg);
+        var sentResult = await chatBotSendMessageService.SendSinglePlainTexMessageAsync(BotChannel.Letstalk, notificationMsg);
         if (sentResult is not null && !sentResult.IsSuccessful)
         {
             await logService.InfoMessageAsync(JsonConvert.SerializeObject(sentResult));
