@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using CRM.Criteria;
-    using CRM.Enumerables;
+    using CRM.Enum;
     using CRM.Models.BotServices;
     using CRM.Services;
     using Microsoft.Extensions.Configuration;

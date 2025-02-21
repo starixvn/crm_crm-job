@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using CRM.BackgroundJob.Models.HealthCheck;
 using CRM.Models.BotServices;
 using CRM.Services;
-using Enumerables;
+using Enum;
 using Newtonsoft.Json;
 
 public interface IBotHealthCheckService

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Constants;
 using Criteria;
-using Enumerables;
+using Enum;
 using Extensions.Xml;
 using Microsoft.Extensions.Configuration;
 using Models.BotServices;

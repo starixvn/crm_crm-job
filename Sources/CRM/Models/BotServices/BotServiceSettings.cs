@@ -1,7 +1,7 @@
 ﻿namespace CRM.Models.BotServices;
 
 using System.Collections.Generic;
-using Enumerables;
+using Enum;
 
 public class BotEndpointSettings
 {

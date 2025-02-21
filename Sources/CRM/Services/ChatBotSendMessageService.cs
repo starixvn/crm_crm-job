@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Enumerables;
+using Enum;
 using Fanex.Caching;
 using Models.BotServices;
 using Models.BotServices.Announcement;

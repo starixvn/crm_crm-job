@@ -1,6 +1,6 @@
 ﻿namespace CRM.Models.BotServices;
 
-using Enumerables;
+using Enum;
 
 public class NotificationMessage
 {

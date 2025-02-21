@@ -20,34 +20,31 @@ public static class XmlIO
             return new XElement(rootName);
         }
 
-        return new XElement(rootName, source.Select(lambda).ToArray());
+        return new XElement(rootName, source.Select(lambda).ToArray<object>());
     }
 
-    public static IList<T> Deserialize<T>(string xml)
-    {
-        if (string.IsNullOrEmpty(xml))
-        {
-            return new List<T>();
-        }
+    //public static IList<T> Deserialize<T>(string xml)
+    //{
+    //    if (string.IsNullOrEmpty(xml))
+    //    {
+    //        return new List<T>();
+    //    }
 
-        using var stringReader = new StringReader(xml);
-        var serializer = XmlCacheCreate(typeof(List<T>), new XmlRootAttribute("ROOT"));
-        return (List<T>)serializer.Deserialize(stringReader);
-    }
+    //    using var stringReader = new StringReader(xml);
+    //    var serializer = XmlCacheCreate(typeof(List<T>), new XmlRootAttribute("ROOT"));
+    //    return (List<T>)serializer.Deserialize(stringReader);
+    //}
 
     public static T DeserializeXMLFileToObject<T>(string XmlFilename)
     {
-        var returnObject = default(T);
         if (string.IsNullOrEmpty(XmlFilename))
         {
             return default;
         }
-        var xdoc = XDocument.Load(XmlFilename);
+        var xDoc = XDocument.Load(XmlFilename);
         var serializer = new XmlSerializer(typeof(T));
-        using TextReader reader = new StringReader(xdoc.ToString());
-        returnObject = (T)serializer.Deserialize(reader);
-
-        return returnObject;
+        using TextReader reader = new StringReader(xDoc.ToString());
+        return (T)serializer.Deserialize(reader);
     }
 
     private static XName GetElementName(Type t)
@@ -71,7 +68,7 @@ public static class XmlIO
 
         var args = GetExpressions(t, p, attrSetter);
 
-        var constructor = typeof(XElement).GetConstructor(new[] { typeof(XName), typeof(object[]) });
+        var constructor = typeof(XElement).GetConstructor([typeof(XName), typeof(object[])]);
         var body = Expression.New(constructor, Expression.Constant(elementName), Expression.NewArrayInit(typeof(object), args));
 
         return Expression.Lambda<Func<T, XElement>>(body, p).Compile();
@@ -98,7 +95,7 @@ public static class XmlIO
         if (p.PropertyType.IsPrimitive || isNotPrimitive || isGenericType)
         {
             var name = GetPropertyName(p);
-            return new[] { Expression.Invoke(lambda, Expression.Constant(name), Expression.Convert(prop, typeof(object))) };
+            return [Expression.Invoke(lambda, Expression.Constant(name), Expression.Convert(prop, typeof(object)))];
         }
 
         return GetExpressions(p.PropertyType, prop, lambda);

@@ -1,7 +1,7 @@
 ﻿namespace CRM.Models.BotServices.Announcement;
 
 using System.Collections.Generic;
-using Enumerables;
+using Enum;
 
 public class AnnouncementNotification
 {

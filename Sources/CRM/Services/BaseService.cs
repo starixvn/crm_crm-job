@@ -38,8 +38,6 @@ public class BaseService(
     : IBaseService
 {
     private const string Config_SiteDb_Key = "ConfigSiteDbKey";
-    private const int Command_Timeout = 120;
-    private const bool Ignore_Redundant_Parameters = false;
 
     public async Task<IEnumerable<T>> GetDataAsync<T>(ICriteria criteria)
     {
@@ -57,7 +55,7 @@ public class BaseService(
         if (siteConfigs == null || !siteConfigs.Any())
         {
             siteConfigs = await GetDataAsync<SiteDbConfig>(new GetAllSiteDbConfigCriteria());
-            cacheService.Set(Config_SiteDb_Key, siteConfigs);
+            await cacheService.SetAsync(Config_SiteDb_Key, siteConfigs);
         }
         return siteConfigs;
     }
@@ -81,8 +79,6 @@ public class BaseService(
         try
         {
             return await dynamicRepository.FetchAsync<T>(criteria, ipConfig);
-            //(var sqlRunner, var dbCommand) = CreateNewDbcommand(ipConfig, connectionAlias, criteria);
-            //return await sqlRunner.QueryAsync<T>(dbCommand);
         }
         catch (Exception ex)
         {
@@ -96,18 +92,6 @@ public class BaseService(
             await logService.ErrorMessageAsync(errorMessage);
             return taskEmpty;
         }
-    }
-
-    private static ValueTuple<SqlStoredProcedureRunner, DbCommandDefinition> CreateNewDbcommand(string ipConfig, string connectionAlias, IBaseCriteriaExtend criteria)
-    {
-        var dbsettingProvider = DbSettingProviderManager.GetCurrentDbSettingProvider();
-        dbsettingProvider.SettingDataSource.TryGetValue(criteria.GetSettingKey(), out var oldDbSetting);
-        var newSqlConnectionStringBuilder = new SqlConnectionStringBuilder(oldDbSetting.ConnectionString);
-        newSqlConnectionStringBuilder.DataSource = ipConfig;
-        var newSqlRunner = new SqlStoredProcedureRunner(connectionAlias, newSqlConnectionStringBuilder.ToString());
-        var newDbCommand = newSqlRunner.CreateDbCommandDefinition(oldDbSetting.SpName, Command_Timeout, Ignore_Redundant_Parameters, oldDbSetting.ColumnMaps);
-        newDbCommand.AssignParameters(criteria);
-        return new ValueTuple<SqlStoredProcedureRunner, DbCommandDefinition>(newSqlRunner, newDbCommand);
     }
 
     public async Task<T> GetDataEntityAsync<T>(ICriteria criteria)

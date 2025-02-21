@@ -7,7 +7,7 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using CRM.UnitTests.Helpers;
-    using CRM.Enumerables;
+    using CRM.Enum;
     using CRM.Models.BotServices;
     using CRM.Services;
     using Fanex.Caching;

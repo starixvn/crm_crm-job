@@ -10,6 +10,6 @@ public class SendNotificationResult
     public bool IsBotBlocked { get; set; }
     public bool IsOnlyRetryImage { get; set; }
     public bool IgnoredRetry { get; set; }
-    public List<string> ErrImages { get; set; } = new();
+    public List<string> ErrImages { get; set; } = [];
     public string ErrMsg { get; set; }
 }

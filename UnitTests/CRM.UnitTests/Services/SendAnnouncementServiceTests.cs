@@ -8,7 +8,7 @@
     using CRM.UnitTests.Testable;
     using CRM.Constants;
     using CRM.Criteria.Announcement;
-    using CRM.Enumerables;
+    using CRM.Enum;
     using CRM.Models.BotServices.Announcement;
     using CRM.Services;
     using Microsoft.Extensions.Configuration;

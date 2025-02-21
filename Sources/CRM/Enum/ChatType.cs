@@ -1,4 +1,4 @@
-﻿namespace CRM.Enumerables;
+﻿namespace CRM.Enum;
 
 using System.ComponentModel;
 
