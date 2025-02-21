@@ -1,16 +1,16 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests.Services
+﻿namespace CRM.UnitTests.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using CRM.UnitTests.Testable;
     using CRM.Constants;
     using CRM.Criteria.Announcement;
     using CRM.Enumerables;
     using CRM.Models.BotServices.Announcement;
     using CRM.Services;
-    using CRM.UnitTests.Testable;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using NSubstitute;

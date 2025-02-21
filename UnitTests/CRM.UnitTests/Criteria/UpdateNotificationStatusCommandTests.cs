@@ -1,4 +1,4 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests.Criteria
+﻿namespace CRM.UnitTests.Criteria
 {
     using CRM.Criteria;
     using Xunit;

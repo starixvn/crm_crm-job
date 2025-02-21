@@ -1,4 +1,4 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests.Testable
+﻿namespace CRM.UnitTests.Testable
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;

@@ -1,19 +1,19 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests.Services
+﻿namespace CRM.UnitTests.Services
 {
-    using CRM.Enumerables;
-    using CRM.Models.BotServices;
-    using CRM.Services;
-    using CRM.UnitTests.Helpers;
-    using Fanex.Caching;
-    using Newtonsoft.Json;
-    using NSubstitute;
-    using NSubstitute.ReturnsExtensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using CRM.UnitTests.Helpers;
+    using CRM.Enumerables;
+    using CRM.Models.BotServices;
+    using CRM.Services;
+    using Fanex.Caching;
+    using Newtonsoft.Json;
+    using NSubstitute;
+    using NSubstitute.ReturnsExtensions;
     using Xunit;
 
     public class ChatBotSendMessageTests

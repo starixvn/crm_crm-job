@@ -1,4 +1,4 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests.Repositories
+﻿namespace CRM.UnitTests.Repositories
 {
     using System.Collections;
     using System.Threading.Tasks;

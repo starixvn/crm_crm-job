@@ -1,4 +1,4 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests.Services
+﻿namespace CRM.UnitTests.Services
 {
     using System;
     using System.Collections.Generic;

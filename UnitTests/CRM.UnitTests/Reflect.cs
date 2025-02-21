@@ -1,4 +1,4 @@
-﻿namespace CRM.BackgroundJob.Core.UnitTests
+﻿namespace CRM.UnitTests
 {
     using System.Linq;
     using System.Reflection;
