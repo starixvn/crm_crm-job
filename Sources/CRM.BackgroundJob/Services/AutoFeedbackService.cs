@@ -8,8 +8,6 @@ using CRM.BackgroundJob.Models.AbnormalBet;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
 using CRM.BackgroundJob.Models.ArchivingDA;
 using CRM.BackgroundJob.Models.ProblemsAccount;
-using CRM.BackgroundJob.Models.WinLossLimit;
-using CRM.Models;
 using CRM.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;

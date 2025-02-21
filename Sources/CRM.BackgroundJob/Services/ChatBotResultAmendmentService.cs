@@ -145,15 +145,15 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
         foreach (var transaction in transactions)
         {
             var getTeamNameFunc = transaction.EventType == EventType5
-                ? new Func<string, string, string>(commonFeedback.GetTeamName3rd)
+                ? commonFeedback.GetTeamName3rd
                 : new Func<string, string, string>(commonFeedback.GetTeamName);
 
             var getLeagueNameFunc = transaction.EventType == EventType5
-                ? new Func<string, string, string>(commonFeedback.GetLeagueName3rd)
+                ? commonFeedback.GetLeagueName3rd
                 : new Func<string, string, string>(commonFeedback.GetLeagueName);
 
             var getMatchCodeFunc = transaction.EventType == EventType5
-                ? new Func<string, string, string>(commonFeedback.GetMatchCodeVirtualSportFormat)
+                ? commonFeedback.GetMatchCodeVirtualSportFormat
                 : new Func<string, string, string>(commonFeedback.GetMatchCodeFormat);
 
             var sportNameEN = commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.en_US);

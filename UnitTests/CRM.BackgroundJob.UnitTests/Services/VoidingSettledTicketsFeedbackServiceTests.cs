@@ -227,7 +227,7 @@
             {
                 new SettingItem{ SettingId = 1 }
             };
-            var bettypesMapping = new List<SystemSettingMapping>
+            var betTypesMapping = new List<SystemSettingMapping>
             {
                 new SystemSettingMapping
                 {
@@ -239,7 +239,7 @@
             var sportTypeIds = new List<short> { 1 };
             service.Protected("GetVoidingSettledTicketsProduct", settings, settingMappings, productIds).Returns(products);
             service.Protected("GetVoidingSettledTicketsSubProduct", isMixParlay, products.Select(x => x.SettingId), sportTypeIds, settings, settingMappings).Returns(subProducts);
-            service.Protected("GetVoidingSettledTicketsBettype", isMixParlay, Arg.Any<string[]>(), settingMappings).Returns(bettypesMapping);
+            service.Protected("GetVoidingSettledTicketsBetType", isMixParlay, Arg.Any<string[]>(), settingMappings).Returns(betTypesMapping);
             service.Protected("GetProductSubXml", Arg.Any<SettingItem>(), Arg.Any<IList<SettingItem>>(), Arg.Any<IList<SystemSettingMapping>>()).Returns(productSubproductXml);
 
             // Act
@@ -262,7 +262,7 @@
             {
                 new SettingItem{ SettingId = 1 }
             };
-            var bettypesMapping = new List<SystemSettingMapping>
+            var betTypesMapping = new List<SystemSettingMapping>
             {
                 new SystemSettingMapping
                 {
@@ -273,7 +273,7 @@
             var sportTypeIds = new List<short> { 1 };
             service.Protected("GetVoidingSettledTicketsProduct", settings, settingMappings, productIds).Returns(products);
             service.Protected("GetVoidingSettledTicketsSubProduct", isMixParlay, products.Select(x => x.SettingId), sportTypeIds, settings, settingMappings).Returns(subProducts);
-            service.Protected("GetVoidingSettledTicketsBettype", isMixParlay, Arg.Any<string[]>(), settingMappings).Returns(bettypesMapping);
+            service.Protected("GetVoidingSettledTicketsBetType", isMixParlay, Arg.Any<string[]>(), settingMappings).Returns(betTypesMapping);
 
             // Act
             var actual = service.Public_GetVoidingSettledTicketsProductXml(true, productIds, sportTypeIds, "1,2", settings, settingMappings);
@@ -536,19 +536,19 @@
         #region GetVoidingSettledTicketsBettype
 
         [Fact]
-        public void GetVoidingSettledTicketsBettype_betTypeMappingsNotEqualSettingSource_ReturnDefaultBetType()
+        public void GetVoidingSettledTicketsBetType_betTypeMappingsNotEqualSettingSource_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1" , SettingSource = "1"}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1" , SettingSource = "1"}
                 };
 
             var betTypeMappings = new string[] { "2", "3" };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetVoidingSettledTicketsBettype(true, betTypeMappings, settingMappings);
+            var actual = service.Public_GetVoidingSettledTicketsBetType(true, betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -556,19 +556,19 @@
         }
 
         [Fact]
-        public void GetVoidingSettledTicketsBettype_SettingSourceIsNull_ReturnDefaultBetType()
+        public void GetVoidingSettledTicketsBetType_SettingSourceIsNull_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1"}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1"}
                 };
 
             var betTypeMappings = new string[] { "2", "3" };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetVoidingSettledTicketsBettype(true, betTypeMappings, settingMappings);
+            var actual = service.Public_GetVoidingSettledTicketsBetType(true, betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -576,7 +576,7 @@
         }
 
         [Fact]
-        public void GetVoidingSettledTicketsBettype_SettingNameNotEqualBettype_ReturnDefaultBetType()
+        public void GetVoidingSettledTicketsBetType_SettingNameNotEqualBetType_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
@@ -588,7 +588,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetVoidingSettledTicketsBettype(true, betTypeMappings, settingMappings);
+            var actual = service.Public_GetVoidingSettledTicketsBetType(true, betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -596,20 +596,20 @@
         }
 
         [Fact]
-        public void GetVoidingSettledTicketsBettype_ExistBettypes_ReturnBetType()
+        public void GetVoidingSettledTicketsBetType_ExistBetTypes_ReturnBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1", SettingSource = "BettypeName", SettingId = 1}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1", SettingSource = "BetTypeName", SettingId = 1}
                 };
 
             var listBetTypes = new string[] { "2", "3" };
             var service = MockService();
-            commonFeedback.GetBettypeName(Arg.Any<string>(), Language.en_US).Returns("BettypeName");
+            commonFeedback.GetBetTypeName(Arg.Any<string>(), Language.en_US).Returns("BetTypeName");
 
             // Act
-            var actual = service.Public_GetVoidingSettledTicketsBettype(false, listBetTypes, settingMappings);
+            var actual = service.Public_GetVoidingSettledTicketsBetType(false, listBetTypes, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -617,20 +617,20 @@
         }
 
         [Fact]
-        public void GetVoidingSettledTicketsBettype_NotExistBettypes_ReturnBetTypeNA()
+        public void GetVoidingSettledTicketsBetType_NotExistBetTypes_ReturnBetTypeNA()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1", SettingSource = "BettypeName", SettingId = 1}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1", SettingSource = "BetTypeName", SettingId = 1}
                 };
 
             var listBetTypes = new string[] { "2", "3" };
             var service = MockService();
-            commonFeedback.GetBettypeName(Arg.Any<string>(), Language.en_US).Returns("BettypeName");
+            commonFeedback.GetBetTypeName(Arg.Any<string>(), Language.en_US).Returns("BetTypeName");
 
             // Act
-            var actual = service.Public_GetVoidingSettledTicketsBettype(true, listBetTypes, settingMappings);
+            var actual = service.Public_GetVoidingSettledTicketsBetType(true, listBetTypes, settingMappings);
 
             // Assert
             Assert.Single(actual);

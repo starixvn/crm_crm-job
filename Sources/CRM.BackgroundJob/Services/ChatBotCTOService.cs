@@ -128,7 +128,7 @@ public class ChatBotCTOService(
         const byte SuperID = 4;
         const byte MasterID = 3;
 
-        var smaLevel = "";
+        string smaLevel;
         switch (language)
         {
             case Language.en_US:

@@ -253,7 +253,7 @@
             var service = MockService();
             service.Protected("GetCategorySubCategoryResultAmendment", Arg.Any<IEnumerable<SettingItem>>(), DefaultValue.ResultAmended).Returns(category);
             transactionService.GetMessageContentInfoAsync(amendment.MessageId).Returns(message);
-            commonFeedback.GetBettypeName(Arg.Any<string>(), Language.en_US).Returns("BettypeName");
+            commonFeedback.GetBetTypeName(Arg.Any<string>(), Language.en_US).Returns("BetTypeName");
             service.Protected("GetAmendmentProductXml", amendment.Sporttype, amendment.ProductId, Arg.Any<List<string>>(), settings, settingMappings).Returns("product");
             service.Protected("GetAmenmendSolution", amendment, message, false).Returns("product xml");
             service.Protected("GetAmendmentRelatedCustomerXml", amendment).Returns("relatedCustomerXml");
@@ -428,11 +428,11 @@
             {
                 new SettingItem{ SettingId = 1 }
             };
-            var tempBettypes = new List<SystemSettingMapping>();
+            var tempBetTypes = new List<SystemSettingMapping>();
             var service = MockService();
             service.Protected("GetAmenmentProduct", settings, settingMappings, 1).Returns(product);
             service.Protected("GetAmendmentSubProduct", product.SettingId, 1, settings, settingMappings).Returns(subProduct);
-            service.Protected("GetAmendmentBettype", betTypeMappings, settingMappings).Returns(tempBettypes);
+            service.Protected("GetAmendmentBetType", betTypeMappings, settingMappings).Returns(tempBetTypes);
 
             // Act
             var actual = service.Public_GetAmendmentProductXml(1, product.SettingId, betTypeMappings, settings, settingMappings);
@@ -452,7 +452,7 @@
             {
                 new SettingItem{ SettingId = 1 }
             };
-            var tempBettypes = new List<SystemSettingMapping>
+            var tempBetTypes = new List<SystemSettingMapping>
             {
                 new SystemSettingMapping
                 {
@@ -462,7 +462,7 @@
             var service = MockService();
             service.Protected("GetAmenmentProduct", settings, settingMappings, 1).Returns(product);
             service.Protected("GetAmendmentSubProduct", product.SettingId, 1, settings, settingMappings).Returns(subProduct);
-            service.Protected("GetAmendmentBettype", betTypeMappings, settingMappings).Returns(tempBettypes);
+            service.Protected("GetAmendmentBetType", betTypeMappings, settingMappings).Returns(tempBetTypes);
 
             // Act
             var actual = service.Public_GetAmendmentProductXml(1, product.SettingId, betTypeMappings, settings, settingMappings);
@@ -643,22 +643,22 @@
 
         #endregion GetAmendmentSubProduct
 
-        #region GetAmendmentBettype
+        #region GetAmendmentBetType
 
         [Fact]
-        public void GetAmendmentBettype_betTypeMappingsNotEqualSettingSource_ReturnDefaultBetType()
+        public void GetAmendmentBetType_betTypeMappingsNotEqualSettingSource_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1" , SettingSource = "1"}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1" , SettingSource = "1"}
                 };
 
             var betTypeMappings = new List<string> { "2", "3" };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetAmendmentBettype(betTypeMappings, settingMappings);
+            var actual = service.Public_GetAmendmentBetType(betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -666,19 +666,19 @@
         }
 
         [Fact]
-        public void GetAmendmentBettype_SettingSourceIsNull_ReturnDefaultBetType()
+        public void GetAmendmentBetType_SettingSourceIsNull_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1"}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1"}
                 };
 
             var betTypeMappings = new List<string> { "2", "3" };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetAmendmentBettype(betTypeMappings, settingMappings);
+            var actual = service.Public_GetAmendmentBetType(betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -686,19 +686,19 @@
         }
 
         [Fact]
-        public void GetAmendmentBettype_SettingNameNotEqualBettype_ReturnDefaultBetType()
+        public void GetAmendmentBetType_SettingNameNotEqualBetType_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype1", SettingValue = "1", SettingSource = "2"}
+                    new SystemSettingMapping { SettingName = "BetType1", SettingValue = "1", SettingSource = "2"}
                 };
 
             var betTypeMappings = new List<string> { "2", "3" };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetAmendmentBettype(betTypeMappings, settingMappings);
+            var actual = service.Public_GetAmendmentBetType(betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -706,26 +706,26 @@
         }
 
         [Fact]
-        public void GetAmendmentBettype_ExistBettypes_ReturnBetType()
+        public void GetAmendmentBetType_ExistBetTypes_ReturnBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype", SettingValue = "1", SettingSource = "2", SettingId = 1}
+                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1", SettingSource = "2", SettingId = 1}
                 };
 
             var betTypeMappings = new List<string> { "2", "3" };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetAmendmentBettype(betTypeMappings, settingMappings);
+            var actual = service.Public_GetAmendmentBetType(betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
             Assert.Equal(1, actual.First().SettingId);
         }
 
-        #endregion GetAmendmentBettype
+        #endregion GetAmendmentBetType
 
         #region GetCategorySubCategoryResultAmendment
 

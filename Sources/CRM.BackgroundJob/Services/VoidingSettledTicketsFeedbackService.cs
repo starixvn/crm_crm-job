@@ -239,21 +239,21 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         bool isMixParlay,
         IEnumerable<int> productIds,
         IEnumerable<short> sportTypeIds,
-        string bettypes,
+        string betTypes,
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings)
     {
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
-        var listBetTypes = bettypes.Split(",");
+        var listBetTypes = betTypes.Split(",");
         var products = GetVoidingSettledTicketsProduct(settings, settingMappings, productIds);
         var productSettingIds = products.Select(x => x.SettingId);
         var subProducts = GetVoidingSettledTicketsSubProduct(isMixParlay, productSettingIds, sportTypeIds, settings, settingMappings);
-        IList<SystemSettingMapping> bettypesMapping = GetVoidingSettledTicketsBettype(isMixParlay, listBetTypes, settingMappings);
+        IList<SystemSettingMapping> betTypesMapping = GetVoidingSettledTicketsBetType(isMixParlay, listBetTypes, settingMappings);
         if (products.Any())
         {
             foreach (var product in products)
             {
-                var productSubXml = GetProductSubXml(product, subProducts, bettypesMapping);
+                var productSubXml = GetProductSubXml(product, subProducts, betTypesMapping);
                 stringBuilder.Append(productSubXml);
             }
         }
@@ -268,7 +268,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
     protected internal virtual string GetProductSubXml(
         SettingItem product,
         IList<SettingItem> subProducts,
-        IList<SystemSettingMapping> bettypesMapping)
+        IList<SystemSettingMapping> betTypesMapping)
     {
         var stringBuilder = new StringBuilder();
         if (!subProducts.Any())
@@ -279,10 +279,10 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         {
             foreach (var subProduct in subProducts)
             {
-                if (bettypesMapping.Any())
+                if (betTypesMapping.Any())
                 {
-                    var bettypeXml = GetBettpeXml(product, subProduct, bettypesMapping);
-                    stringBuilder.Append(bettypeXml);
+                    var betTypeXml = GetBetTypeXml(product, subProduct, betTypesMapping);
+                    stringBuilder.Append(betTypeXml);
                 }
                 else
                 {
@@ -293,15 +293,15 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         return stringBuilder.ToString();
     }
 
-    protected internal virtual string GetBettpeXml(
+    protected internal virtual string GetBetTypeXml(
         SettingItem product,
         SettingItem subProduct,
-        IList<SystemSettingMapping> bettypesMapping)
+        IList<SystemSettingMapping> betTypesMapping)
     {
         var stringBuilder = new StringBuilder();
-        foreach (var bettype in bettypesMapping)
+        foreach (var betType in betTypesMapping)
         {
-            stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, subProduct.SettingId, bettype.SettingId);
+            stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, subProduct.SettingId, betType.SettingId);
         }
         return stringBuilder.ToString();
     }
@@ -367,7 +367,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
             };
     }
 
-    protected internal virtual List<SystemSettingMapping> GetVoidingSettledTicketsBettype(
+    protected internal virtual List<SystemSettingMapping> GetVoidingSettledTicketsBetType(
         bool isMixParlay,
         string[] listBetTypes,
         IEnumerable<SystemSettingMapping> settingMappings)
@@ -376,11 +376,11 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var betTypeMappings = new List<string>();
         foreach (var betType in listBetTypes)
         {
-            var betTypeName = commonFeedback.GetBettypeName(betType, Language.en_US);
+            var betTypeName = commonFeedback.GetBetTypeName(betType, Language.en_US);
             betTypeMappings.Add(betTypeName);
         }
 
-        var bettypes = isMixParlay ? settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
+        var betTypes = isMixParlay ? settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
                                                                       && !string.IsNullOrWhiteSpace(mapping.SettingSource)
                                                                       && mapping.SettingSource.Equals("Mix Parlay", StringComparison.OrdinalIgnoreCase)).ToList() :
             settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
@@ -388,8 +388,8 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
                                              && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
         logService.LogInformation("End mapping betType.");
-        return bettypes != null && bettypes.Any()
-            ? bettypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
+        return betTypes != null && betTypes.Any()
+            ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
             : new List<SystemSettingMapping>
             {
                 new() { SettingId = BackgroundJobConstants.BettypeNA }

@@ -18,7 +18,7 @@ public abstract class BaseWorker(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         const byte MillisecondsDelay = 10;
-        await Task.Delay(MillisecondsDelay).ConfigureAwait(false);
+        await Task.Delay(MillisecondsDelay, stoppingToken).ConfigureAwait(false);
 
         try
         {
@@ -29,7 +29,7 @@ public abstract class BaseWorker(
                 await Task.Delay(TimeSpan.FromSeconds(jobSetting.TimeInterval), stoppingToken);
             }
 
-            logService.LogInformation($"Execution ended. Cancelation token cancelled = {stoppingToken.IsCancellationRequested}");
+            logService.LogInformation($"Execution ended. Cancellation token cancelled = {stoppingToken.IsCancellationRequested}");
         }
         catch (Exception ex)
         {

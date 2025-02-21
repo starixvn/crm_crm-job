@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.ArchivingDA;
-using CRM.Models;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;

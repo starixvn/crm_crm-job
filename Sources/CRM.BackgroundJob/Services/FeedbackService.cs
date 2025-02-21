@@ -9,7 +9,6 @@ using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.AbnormalBet;
 using CRM.BackgroundJob.Models.MixParlay;
-using CRM.Models;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;
@@ -481,7 +480,7 @@ public class FeedbackService : IFeedbackService
 
             criteria.Description = duplicateTickets.Any() ?
                 GetDescriptionDuplicateForDepositeSite(duplicateTickets.Where(i => i.IsDeposit), messages, joinMessageString, string.Join(",", requestIds)) :
-                GetDescriptionForDepositeSite(joinMessageString, criteria.RequestIds);
+                GetDescriptionForDepositSite(joinMessageString, criteria.RequestIds);
             try
             {
                 logService.LogInformation(
@@ -561,7 +560,7 @@ public class FeedbackService : IFeedbackService
 
         stringBuilder.AppendFormat(templateDuplicate.Description, messageIds, requestIds, noOfRemainedTickets,
             message.Content_en, message.Content_cs,
-            stringBuilderTicket.ToString(), BackgroundJobConstants.Break, BackgroundJobConstants.LineBreak);
+            stringBuilderTicket, BackgroundJobConstants.Break, BackgroundJobConstants.LineBreak);
 
         return stringBuilder.ToString();
     }
@@ -588,13 +587,13 @@ public class FeedbackService : IFeedbackService
 
         var subProducts = GetSubProducts(isMixParlay, productSettingIds, sportTypeIds, settings, settingMappings);
 
-        IList<SystemSettingMapping> bettypesMapping = GetBettypes(isMixParlay, listBetTypes.ToArray(), settingMappings);
+        IList<SystemSettingMapping> betTypesMapping = GetBetTypes(isMixParlay, listBetTypes.ToArray(), settingMappings);
 
         if (products.Any())
         {
             foreach (var product in products)
             {
-                var productSubXml = GetProductSubXml(product, subProducts, bettypesMapping);
+                var productSubXml = GetProductSubXml(product, subProducts, betTypesMapping);
                 stringBuilder.Append(productSubXml);
             }
         }
@@ -641,7 +640,7 @@ public class FeedbackService : IFeedbackService
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings)
     {
-        logService.LogInformation("Begin mapping subproduct.");
+        logService.LogInformation("Begin mapping sub-product.");
         var sportNames = new List<string>();
         foreach (var sportTypeId in sportTypeIds)
         {
@@ -658,7 +657,7 @@ public class FeedbackService : IFeedbackService
                                   && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent))
                                   && mappings != null && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
-        logService.LogInformation("End mapping subproduct.");
+        logService.LogInformation("End mapping sub-product.");
 
         return subProducts.Any()
             ? subProducts.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
@@ -668,7 +667,7 @@ public class FeedbackService : IFeedbackService
             };
     }
 
-    private List<SystemSettingMapping> GetBettypes(
+    private List<SystemSettingMapping> GetBetTypes(
         bool isMixParlay,
         string[] listBetTypes,
         IEnumerable<SystemSettingMapping> settingMappings)
@@ -678,10 +677,10 @@ public class FeedbackService : IFeedbackService
 
         foreach (var betType in listBetTypes)
         {
-            var betTypeName = commonFeedback.GetBettypeName(betType, Language.en_US);
+            var betTypeName = commonFeedback.GetBetTypeName(betType, Language.en_US);
             betTypeMappings.Add(betTypeName);
         }
-        var bettypes = isMixParlay ? settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
+        var betTypes = isMixParlay ? settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
                                                                       && !string.IsNullOrWhiteSpace(mapping.SettingSource)
                                                                       && mapping.SettingSource.Equals("Mix Parlay", StringComparison.OrdinalIgnoreCase)).ToList() :
             settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
@@ -689,8 +688,8 @@ public class FeedbackService : IFeedbackService
                                              && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
         logService.LogInformation("End mapping betType.");
-        return bettypes != null && bettypes.Any()
-            ? bettypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
+        return betTypes != null && betTypes.Any()
+            ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
             : new List<SystemSettingMapping>
             {
                 new() { SettingId = BackgroundJobConstants.BettypeNA }
@@ -700,7 +699,7 @@ public class FeedbackService : IFeedbackService
     private static string GetProductSubXml(
         SettingItem product,
         IList<SettingItem> subProducts,
-        IList<SystemSettingMapping> bettypesMapping)
+        IList<SystemSettingMapping> betTypesMapping)
     {
         var stringBuilder = new StringBuilder();
         if (!subProducts.Any())
@@ -711,10 +710,10 @@ public class FeedbackService : IFeedbackService
         {
             foreach (var subProduct in subProducts)
             {
-                if (bettypesMapping.Any())
+                if (betTypesMapping.Any())
                 {
-                    var bettypeXml = GetBettypeXml(product, subProduct, bettypesMapping);
-                    stringBuilder.Append(bettypeXml);
+                    var betTypeXml = GetBetTypeXml(product, subProduct, betTypesMapping);
+                    stringBuilder.Append(betTypeXml);
                 }
                 else
                 {
@@ -725,15 +724,15 @@ public class FeedbackService : IFeedbackService
         return stringBuilder.ToString();
     }
 
-    private static string GetBettypeXml(
+    private static string GetBetTypeXml(
         SettingItem product,
         SettingItem subProduct,
-        IList<SystemSettingMapping> bettypesMapping)
+        IList<SystemSettingMapping> betTypesMapping)
     {
         var stringBuilder = new StringBuilder();
-        foreach (var bettype in bettypesMapping)
+        foreach (var betType in betTypesMapping)
         {
-            stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, subProduct.SettingId, bettype.SettingId);
+            stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, subProduct.SettingId, betType.SettingId);
         }
         return stringBuilder.ToString();
     }
@@ -749,17 +748,17 @@ public class FeedbackService : IFeedbackService
         const string XmlTemplate = "<Product ProductID='{0}' SubProductID='{1}' BetTypeID='{2}' />";
         var sportsbook = GetSportsbookProduct(settings);
         var subProducts = GetSubProduct(isMixParlay, sportsbook.SettingId, matchInfo, settings, settingMappings);
-        var bettypes = GetBettype(isMixParlay, subProducts.Select(x => x.SettingId), transactionInfos, settings, settingMappings);
+        var betTypes = GetBetType(isMixParlay, subProducts.Select(x => x.SettingId), transactionInfos, settings, settingMappings);
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
 
         foreach (var settingId in subProducts.Select(x => x.SettingId))
         {
-            IList<SettingItem> tempBettypes = bettypes.Where(x => x.ParentIds.Any(y => y == settingId)).ToList();
-            if (tempBettypes.Any())
+            IList<SettingItem> tempBetTypes = betTypes.Where(x => x.ParentIds.Any(y => y == settingId)).ToList();
+            if (tempBetTypes.Any())
             {
-                foreach (var bettype in tempBettypes)
+                foreach (var betType in tempBetTypes)
                 {
-                    stringBuilder.AppendFormat(XmlTemplate, sportsbook.SettingId, settingId, bettype.SettingId);
+                    stringBuilder.AppendFormat(XmlTemplate, sportsbook.SettingId, settingId, betType.SettingId);
                 }
             }
             else
@@ -809,7 +808,7 @@ public class FeedbackService : IFeedbackService
             };
     }
 
-    protected internal virtual IList<SettingItem> GetBettype(
+    protected internal virtual IList<SettingItem> GetBetType(
         bool isMixParlay,
         IEnumerable<int> subProducts,
         IEnumerable<TransactionInfo> transactionInfos,
@@ -817,10 +816,10 @@ public class FeedbackService : IFeedbackService
         IEnumerable<SystemSettingMapping> settingMappings)
     {
         var transactionAbnormalAccount = transactionInfos.Where(x => x.Bettype != null);
-        List<SettingItem> bettypes;
+        List<SettingItem> betTypes;
         if (isMixParlay)
         {
-            bettypes = GetBettypeParlay(subProducts, settings, settingMappings);
+            betTypes = GetBetTypeParlay(subProducts, settings, settingMappings);
         }
         else
         {
@@ -828,21 +827,21 @@ public class FeedbackService : IFeedbackService
                 && !string.IsNullOrWhiteSpace(mapping.SettingSource)
                 && transactionAbnormalAccount.Any(tran => tran.Bettype.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
-            bettypes = settings.Where(bettype => bettype.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
-                                                 && subProducts.Any(sub => bettype.ParentIds.Any(parent => parent == sub))
+            betTypes = settings.Where(betType => betType.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
+                                                 && subProducts.Any(sub => betType.ParentIds.Any(parent => parent == sub))
                                                  && mappings != null
-                                                 && mappings.Any(mapping => mapping.SettingId == bettype.SettingId)).ToList();
+                                                 && mappings.Any(mapping => mapping.SettingId == betType.SettingId)).ToList();
         }
 
-        return bettypes != null && bettypes.Any()
-            ? bettypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
+        return betTypes != null && betTypes.Any()
+            ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
             : new List<SettingItem>
             {
                 new() { SettingId = BackgroundJobConstants.BettypeNA, ParentIds = new List<int> { BackgroundJobConstants.SubProductNA } }
             };
     }
 
-    protected internal virtual List<SettingItem> GetBettypeParlay(
+    protected internal virtual List<SettingItem> GetBetTypeParlay(
         IEnumerable<int> subProducts,
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings)
@@ -851,12 +850,12 @@ public class FeedbackService : IFeedbackService
             && !string.IsNullOrWhiteSpace(mapping.SettingSource)
             && mapping.SettingSource.Equals("Mix Parlay", StringComparison.OrdinalIgnoreCase)).ToList();
 
-        var bettypes = settings.Where(bettype => bettype.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
-                                                 && subProducts.Any(sub => bettype.ParentIds.Any(parent => parent == sub))
+        var betTypes = settings.Where(betType => betType.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
+                                                 && subProducts.Any(sub => betType.ParentIds.Any(parent => parent == sub))
                                                  && mappingsParlay != null
-                                                 && mappingsParlay.Any(mapping => mapping.SettingId == bettype.SettingId)).ToList();
+                                                 && mappingsParlay.Any(mapping => mapping.SettingId == betType.SettingId)).ToList();
 
-        return bettypes;
+        return betTypes;
     }
 
     private static string GetSubCategorySettingValue(int issueTypeId)
@@ -902,9 +901,9 @@ public class FeedbackService : IFeedbackService
         var transactions = IssueTypeId == abnormalAccount ? transactionInfos.GroupBy(x => x.RelatedCustID).Select(x => x.First()) : transactionInfos.GroupBy(x => x.CustId).Select(x => x.First());
         foreach (var transaction in transactions)
         {
-            var custId = IssueTypeId == abnormalAccount ? transaction.RelatedCustID : transaction.CustId;
+            var customerId= IssueTypeId == abnormalAccount ? transaction.RelatedCustID : transaction.CustId;
             var userName = IssueTypeId == abnormalAccount ? transaction.RelatedUserName : transaction.Username;
-            stringBuilder.AppendFormat(XmlTemplate, headlineId, custId, userName);
+            stringBuilder.AppendFormat(XmlTemplate, headlineId, customerId, userName);
         }
 
         return stringBuilder.Append(BackgroundJobConstants.EndRootTag).ToString();
@@ -923,7 +922,7 @@ public class FeedbackService : IFeedbackService
         return stringBuilder.ToString();
     }
 
-    protected internal virtual string GetDescriptionForDepositeSite(string messageId, string requestIds)
+    protected internal virtual string GetDescriptionForDepositSite(string messageId, string requestIds)
     {
         var stringBuilder = new StringBuilder(DefaultValue.autoGenerated);
         stringBuilder.AppendFormat(DefaultValue.messageDescription, messageId, requestIds);

@@ -341,15 +341,15 @@
         }
 
         [Fact]
-        public void GetBettypeName_CallFunction_ReturnExpectedBettypeName()
+        public void GetBetTypeName_CallFunction_ReturnExpectedBetTypeName()
         {
             // Arrange
-            var expect = "Bettype";
+            var expect = "BetType";
             var service = GetService();
-            remotingRefService.GetBetTypeName(Arg.Any<string>(), Arg.Any<string>()).Returns("Bettype");
+            remotingRefService.GetBetTypeName(Arg.Any<string>(), Arg.Any<string>()).Returns("BetType");
 
             // Act
-            var actual = service.GetBettypeName("2", Language.en_US);
+            var actual = service.GetBetTypeName("2", Language.en_US);
 
             // Assert
             Assert.Equal(expect, actual);

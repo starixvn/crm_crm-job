@@ -35,12 +35,12 @@
         public async Task Public_CreateWinLossFeedbackCreditAsync(
             bool isVipHeadline,
             WinLimitFeedBackInfo winLimit,
-            IEnumerable<BettypeInfo> bettype,
+            IEnumerable<BettypeInfo> betType,
             IEnumerable<SportInfo> sports,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings)
         {
-            await base.CreateWinLossFeedbackCreditAsync(isVipHeadline, winLimit, bettype, sports, settings, settingMappings);
+            await base.CreateWinLossFeedbackCreditAsync(isVipHeadline, winLimit, betType, sports, settings, settingMappings);
         }
 
         public async Task Public_CheckValidParamsAndInsertFeedbackAsync(
@@ -78,13 +78,13 @@
             return base.GetSubProduct(winLimit, sports, productId, settings, settingMappings);
         }
        
-        public IList<SettingItem> Public_GetBettype(
+        public IList<SettingItem> Public_GetBetType(
            IEnumerable<int> subProducts,
            List<BettypeInfo> betTypeMappings,
            IEnumerable<SystemSettingMapping> settingMappings,
            IEnumerable<SettingItem> settings)
         {
-            return base.GetBettype(subProducts, betTypeMappings, settingMappings, settings);
+            return base.GetBetType(subProducts, betTypeMappings, settingMappings, settings);
         }
 
         public string Public_GetSolution(WinLimitFeedBackInfo winLimit, bool isVipHeadline)
@@ -92,9 +92,9 @@
             return base.GetSolution(winLimit, isVipHeadline);
         }
 
-        public string Public_GetDescription(WinLimitFeedBackInfo winlimit, List<BettypeInfo> bettype)
+        public string Public_GetDescription(WinLimitFeedBackInfo winLimit, List<BettypeInfo> betType)
         {
-            return base.GetDescription(winlimit, bettype);
+            return base.GetDescription(winLimit, betType);
         }
 
         public string Public_GetRelatedCustomerXml(WinLimitFeedBackInfo winLimit)

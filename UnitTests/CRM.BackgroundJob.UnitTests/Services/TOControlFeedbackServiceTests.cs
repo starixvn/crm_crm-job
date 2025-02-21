@@ -445,7 +445,7 @@
         #region GetTOBettype
 
         [Fact]
-        public void GetTOBettype_NotExistedbetTypeMappings_ReturnDefaultBettype()
+        public void GetTOBetType_NotExistedBetTypeMappings_ReturnDefaultBetType()
         {
             // Arrange
             var betTypeMappings = fixture.Create<List<string>>();
@@ -454,7 +454,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetTOBettype(betTypeMappings, settingMappings);
+            var actual = service.Public_GetTOBetType(betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -462,7 +462,7 @@
         }
 
         [Fact]
-        public void GetTOBettype_ExistedbetTypeMappings_ReturnExpectedBettype()
+        public void GetTOBetType_ExistedBetTypeMappings_ReturnExpectedBetType()
         {
             // Arrange
             var betTypeMappings = new List<string>
@@ -473,7 +473,7 @@
             {
                 new SystemSettingMapping
                 {
-                    SettingName = "Bettype",
+                    SettingName = "BetType",
                     SettingSource = "1",
                     SettingId = 1
                 }
@@ -481,7 +481,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetTOBettype(betTypeMappings, settingMappings);
+            var actual = service.Public_GetTOBetType(betTypeMappings, settingMappings);
 
             // Assert
             Assert.Single(actual);

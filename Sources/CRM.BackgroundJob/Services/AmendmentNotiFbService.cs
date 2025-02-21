@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
-using CRM.Models;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;
@@ -144,11 +143,11 @@ public class AmendmentNotiFbService(
                                                     && x.SettingValue.Equals(DefaultValue.Neutral, StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
                                                    && x.SettingId == BackgroundJobConstants.ExtentionNA);
-        var bettypeSplits = amendment.Listbettype.Split(",");
+        var betTypeSplits = amendment.Listbettype.Split(",");
         var betTypeMappings = new List<string>();
-        foreach (var betType in bettypeSplits.Distinct().ToList())
+        foreach (var betType in betTypeSplits.Distinct().ToList())
         {
-            var betTypeName = commonFeedback.GetBettypeName(betType, Language.en_US);
+            var betTypeName = commonFeedback.GetBetTypeName(betType, Language.en_US);
             betTypeMappings.Add(betTypeName);
         }
         var category = GetCategorySubCategoryResultAmendment(settings, DefaultValue.ResultAmended);
@@ -234,15 +233,15 @@ public class AmendmentNotiFbService(
     {
         var product = GetAmenmentProduct(settings, settingMappings, productId);
         var subProducts = GetAmendmentSubProduct(product.SettingId, sportTypeId, settings, settingMappings);
-        var tempBettypes = GetAmendmentBettype(betTypeMappings, settingMappings);
+        var tempBetTypes = GetAmendmentBetType(betTypeMappings, settingMappings);
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
         foreach (var settingId in subProducts.Select(x => x.SettingId))
         {
-            if (tempBettypes.Any())
+            if (tempBetTypes.Any())
             {
-                foreach (var bettype in tempBettypes)
+                foreach (var betType in tempBetTypes)
                 {
-                    stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, settingId, bettype.SettingId);
+                    stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, settingId, betType.SettingId);
                 }
             }
             else
@@ -293,15 +292,15 @@ public class AmendmentNotiFbService(
             };
     }
 
-    protected internal virtual IList<SystemSettingMapping> GetAmendmentBettype(
+    protected internal virtual IList<SystemSettingMapping> GetAmendmentBetType(
         List<string> betTypeMappings,
         IEnumerable<SystemSettingMapping> settingMappings)
     {
-        IList<SystemSettingMapping> bettypes = settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
+        IList<SystemSettingMapping> betTypes = settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
             && !string.IsNullOrWhiteSpace(mapping.SettingSource)
             && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
-        return bettypes != null && bettypes.Any()
-            ? bettypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
+        return betTypes != null && betTypes.Any()
+            ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
             : new List<SystemSettingMapping>
             {
                 new() { SettingId = BackgroundJobConstants.BettypeNA }
@@ -349,7 +348,7 @@ public class AmendmentNotiFbService(
     protected internal virtual Func<string, string, string> GetTeamNameFunction(int eventType)
     {
         return eventType == EventType5
-            ? new Func<string, string, string>(commonFeedback.GetTeamName3rd)
+            ? commonFeedback.GetTeamName3rd
             : new Func<string, string, string>(commonFeedback.GetTeamName);
     }
 
@@ -399,20 +398,18 @@ public class AmendmentNotiFbService(
                         stringBuilder.Append(outright);
                         break;
                     }
-                    else
-                    {
-                        stringBuilder.AppendFormat(
-                            amendmentDescTemplate.Sportsbook,
-                            EventdateGMT4Format,
-                            sportName,
-                            kO_time,
-                            leagueName,
-                            homeName,
-                            awayName,
-                            BackgroundJobConstants.Break
-                        );
-                        break;
-                    }
+
+                    stringBuilder.AppendFormat(
+                        amendmentDescTemplate.Sportsbook,
+                        EventdateGMT4Format,
+                        sportName,
+                        kO_time,
+                        leagueName,
+                        homeName,
+                        awayName,
+                        BackgroundJobConstants.Break
+                    );
+                    break;
                 case "Virtual Sports 2":
                     stringBuilder.AppendFormat(
                         amendmentDescTemplate.VirtualSports2,

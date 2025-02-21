@@ -86,11 +86,11 @@
             return base.GetAmendmentSubProduct(productId, sportTypeId, settings, settingMappings);
         }
 
-        public IList<SystemSettingMapping> Public_GetAmendmentBettype(
+        public IList<SystemSettingMapping> Public_GetAmendmentBetType(
             List<string> betTypeMappings,
             IEnumerable<SystemSettingMapping> settingMappings)
         {
-            return base.GetAmendmentBettype(betTypeMappings, settingMappings);
+            return base.GetAmendmentBetType(betTypeMappings, settingMappings);
         }
 
         public Tuple<int, int, string> Public_GetCategorySubCategoryResultAmendment(

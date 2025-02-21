@@ -5,14 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Constants;
-using CRM.BackgroundJob.Models.AbnormalBet;
-using CRM.BackgroundJob.Models.ChatBotCTO;
-using CRM.BackgroundJob.Models.ChatBotCWL;
-using CRM.BackgroundJob.Models.ChatBotProblemsAccount;
 using CRM.BackgroundJob.Models.ChatBotResulAmendment;
 using CRM.Services;
 using Microsoft.Extensions.Configuration;
-using Models;
 
 public interface IChatBotJobService
 {

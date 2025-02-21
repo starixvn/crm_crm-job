@@ -73,11 +73,11 @@
             return base.GetTOSubProduct(productId, sportName, settings, settingMappings);
         }
 
-        public IList<SystemSettingMapping> Public_GetTOBettype(
+        public IList<SystemSettingMapping> Public_GetTOBetType(
            List<string> betTypeMappings,
            IEnumerable<SystemSettingMapping> settingMappings)
         {
-            return base.GetTOBettype(betTypeMappings, settingMappings);
+            return base.GetTOBetType(betTypeMappings, settingMappings);
         }
 
         public string Public_GetTORelatedCustomerXml(TOControlFeedbackInfor ToInfor)

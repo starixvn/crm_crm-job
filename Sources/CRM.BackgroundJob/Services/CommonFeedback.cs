@@ -33,7 +33,7 @@ public interface ICommonFeedback
 
     string GetTeamName3rd(string teamId, string languageCode);
 
-    string GetBettypeName(string betTypeId, string languageCode);
+    string GetBetTypeName(string betTypeId, string languageCode);
 
     string GetMatchCode(string matchCode, string languageCode);
 
@@ -139,7 +139,7 @@ public class CommonFeedback(
         return teamName3rd;
     }
 
-    public string GetBettypeName(string betTypeId, string languageCode)
+    public string GetBetTypeName(string betTypeId, string languageCode)
     {
         var betTypeName = remotingRefService.GetBetTypeName(betTypeId, languageCode);
         return betTypeName;

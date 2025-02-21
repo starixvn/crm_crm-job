@@ -331,11 +331,11 @@
             {
                 new SportInfo{LogID = 1, SportType = 1, SportName = "test"}
             };
-            var bettypes = new List<SettingItem>();
+            var betTypes = new List<SettingItem>();
             var service = MockService();
             service.Protected("GetProduct", settings, settingMappings, winLimit.ProductName).Returns(product);
             service.Protected("GetSubProduct", winLimit, sport, product.SettingId, settings, settingMappings).Returns(subProducts);
-            service.Protected("GetBettype", subProducts.Select(x => x.SettingId), betTypeMappings, settingMappings, settings).Returns(bettypes);
+            service.Protected("GetBetType", subProducts.Select(x => x.SettingId), betTypeMappings, settingMappings, settings).Returns(betTypes);
 
             // Act
             var actual = service.Public_GetProductXml(winLimit, betTypeMappings, sport, settings, settingMappings);
@@ -352,7 +352,7 @@
             var betTypeMappings = fixture.Create<List<BettypeInfo>>();
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Bettype", ParentIds = new List<int> { 1 } }
+                new SettingItem { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
             };
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var subProducts = new List<SettingItem>
@@ -367,7 +367,7 @@
             {
                 SettingId = 1
             };
-            var bettypes = new List<SettingItem>
+            var betTypes = new List<SettingItem>
             {
                 new SettingItem { SettingId = 1, ParentIds = new List<int> { 1 } }
             };
@@ -378,7 +378,7 @@
             var service = MockService();
             service.Protected("GetProduct", settings, settingMappings, winLimit.ProductName).Returns(product);
             service.Protected("GetSubProduct", winLimit, sport, product.SettingId, settings, settingMappings).Returns(subProducts);
-            service.Protected("GetBettype", Arg.Any<IEnumerable<int>>(), betTypeMappings, settingMappings, settings).Returns(bettypes);
+            service.Protected("GetBetType", Arg.Any<IEnumerable<int>>(), betTypeMappings, settingMappings, settings).Returns(betTypes);
 
             // Act
             var actual = service.Public_GetProductXml(winLimit, betTypeMappings, sport, settings, settingMappings);
@@ -543,10 +543,10 @@
 
         #endregion GetSubProduct
 
-        #region GetBettype
+        #region GetBetType
 
         [Fact]
-        public void GetBettype_NotExistBetTypeMappings_ReturnDefaultBetType()
+        public void GetBetType_NotExistBetTypeMappings_ReturnDefaultBetType()
         {
             // Arrange
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
@@ -557,7 +557,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetBettype(subProducts, betTypeMappings, settingMappings, settings);
+            var actual = service.Public_GetBetType(subProducts, betTypeMappings, settingMappings, settings);
 
             // Assert
             Assert.Single(actual);
@@ -569,12 +569,12 @@
 
 
         [Fact]
-        public void GetBettype_ExistBetTypeMappings_ReturnExpectedBetType()
+        public void GetBetType_ExistBetTypeMappings_ReturnExpectedBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingId = 1, SettingName = "Bettype", SettingSource = "a" }
+                    new SystemSettingMapping { SettingId = 1, SettingName = "BetType", SettingSource = "a" }
                 };
             var betTypeMappings = new List<BettypeInfo>
                 {
@@ -583,7 +583,7 @@
 
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Bettype", ParentIds = new List<int> { 1 } }
+                new SettingItem { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
             };
 
             var subProducts = new List<int>
@@ -594,14 +594,14 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetBettype(subProducts, betTypeMappings, settingMappings, settings);
+            var actual = service.Public_GetBetType(subProducts, betTypeMappings, settingMappings, settings);
 
             // Assert
             Assert.Single(actual);
             Assert.Equal(settings.First(), actual.First());
         }
 
-        #endregion GetBettype
+        #endregion GetBetType
 
         #region GetSolution
 
@@ -761,7 +761,7 @@
         [Theory]
         [MemberData(nameof(TestBetTypesCount))]
         public void GetDescription_WhenCalled_ReturnExpectTemplate(
-                List<BettypeInfo> bettypes,
+                List<BettypeInfo> betTypes,
                 string numGamesFormat)
         {
             // Arrange
@@ -782,7 +782,7 @@
             description.Append("<br />Informed Headline Win/Loss Alert for below member:");
             description.AppendFormat("<br />Product: {0}", winlimit.ProductName);
             description.Append("<br />Game Type: ");
-            description.AppendFormat(bettypes.Count > 3 ? "{0} ..." : "{0}", numGamesFormat);
+            description.AppendFormat(betTypes.Count > 3 ? "{0} ..." : "{0}", numGamesFormat);
             description.AppendFormat("<br /> UserName: {0}, Site: {1} ({2})", winlimit.UserName, winlimit.Site, winlimit.SiteLabel);
             description.AppendFormat("<br /> Winning/Losing Limit Amount: {0} (RM), Winning/Losing Amount in RM: {1} (RM), Winloss Amount in player currency: {2} ({3})"
             , "1,000", "1,000", "1,000", winlimit.Currency);
@@ -790,7 +790,7 @@
             description.Append(BackgroundJobConstants.LineBreak);
 
             // Act
-            var actual = service.Public_GetDescription(winlimit, bettypes);
+            var actual = service.Public_GetDescription(winlimit, betTypes);
 
             // Assert
             Assert.Equal(description.ToString(), actual);

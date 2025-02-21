@@ -120,12 +120,12 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         var category = commonFeedback.GetCategorySubCategoryCWL(settings, DefaultValue.MANotification);
 
         var sportTypeName = commonFeedback.GetSportName(ToInfor.SportType.ToString(), Language.en_US);
-        var bettypeSplits = ToInfor.BettypeList.Split(",");
+        var betTypeSplits = ToInfor.BettypeList.Split(",");
         var betTypeMappings = new List<string>();
 
-        foreach (var betType in bettypeSplits.Distinct().ToList())
+        foreach (var betType in betTypeSplits.Distinct().ToList())
         {
-            var betTypeName = commonFeedback.GetBettypeName(betType, Language.en_US);
+            var betTypeName = commonFeedback.GetBetTypeName(betType, Language.en_US);
             betTypeMappings.Add(betTypeName);
         }
 
@@ -206,16 +206,16 @@ public class TOControlFeedbackService : ITOControlFeedbackService
     {
         var subProducts = GetTOSubProduct(productId, sportName, settings, settingMappings);
         var product = GetTOSportsbookProduct(settings);
-        var tempBettypes = GetTOBettype(betTypeMappings, settingMappings);
+        var tempBetTypes = GetTOBetType(betTypeMappings, settingMappings);
 
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
         foreach (var settingId in subProducts.Select(x => x.SettingId))
         {
-            if (tempBettypes.Any())
+            if (tempBetTypes.Any())
             {
-                foreach (var bettype in tempBettypes)
+                foreach (var betType in tempBetTypes)
                 {
-                    stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, settingId, bettype.SettingId);
+                    stringBuilder.AppendFormat(DefaultValue.ProductXml, product.SettingId, settingId, betType.SettingId);
                 }
             }
             else
@@ -256,16 +256,16 @@ public class TOControlFeedbackService : ITOControlFeedbackService
             };
     }
 
-    protected internal virtual IList<SystemSettingMapping> GetTOBettype(
+    protected internal virtual IList<SystemSettingMapping> GetTOBetType(
         List<string> betTypeMappings,
         IEnumerable<SystemSettingMapping> settingMappings)
     {
-        IList<SystemSettingMapping> bettypes = settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
+        IList<SystemSettingMapping> betTypes = settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
             && !string.IsNullOrWhiteSpace(mapping.SettingSource)
             && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
-        return bettypes != null && bettypes.Any()
-            ? bettypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
+        return betTypes != null && betTypes.Any()
+            ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
             : new List<SystemSettingMapping>
             {
                 new() { SettingId = BackgroundJobConstants.BettypeNA }

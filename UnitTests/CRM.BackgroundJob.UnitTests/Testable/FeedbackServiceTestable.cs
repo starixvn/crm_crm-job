@@ -141,22 +141,22 @@
             return base.GetSubProduct(isMixParlay, productId, matchInfo, settings, settingMappings);
         }
 
-        public IList<SettingItem> Public_GetBettype(
+        public IList<SettingItem> Public_GetBetType(
             bool isMixParlay,
             IEnumerable<int> subProducts,
             IEnumerable<TransactionInfo> transactionInfos,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings)
         {
-            return base.GetBettype(isMixParlay, subProducts, transactionInfos, settings, settingMappings);
+            return base.GetBetType(isMixParlay, subProducts, transactionInfos, settings, settingMappings);
         }
 
-        public IList<SettingItem> Public_GetBettypeParlay(
+        public IList<SettingItem> Public_GetBetTypeParlay(
             IEnumerable<int> subProducts,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings)
         {
-            return base.GetBettypeParlay(subProducts, settings, settingMappings);
+            return base.GetBetTypeParlay(subProducts, settings, settingMappings);
         }
 
         public Tuple<int, int, string> Public_GetCategorySubCategory(IEnumerable<SettingItem> settings, int IssueTypeId)
@@ -177,9 +177,9 @@
             return base.GetAutoField(feedbackDate, communicationTool, licenseeManagers);
         }
 
-        public string Public_GetDescriptionForDepositeSite(string messageId, string requestIds)
+        public string Public_GetDescriptionForDepositSite(string messageId, string requestIds)
         {
-            return base.GetDescriptionForDepositeSite(messageId, requestIds);
+            return base.GetDescriptionForDepositSite(messageId, requestIds);
         }
 
         public string Public_GetDescriptionForCreditSite(string messageId, string requestIds, MatchInfo matchInfo, IEnumerable<TransactionInfo> transactionInfos)

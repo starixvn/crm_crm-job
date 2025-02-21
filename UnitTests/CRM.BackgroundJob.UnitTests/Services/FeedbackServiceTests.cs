@@ -557,7 +557,7 @@
         }
 
         [Fact]
-        public void GetProductXml_NotExistedBettype_ReturnExpectedXml()
+        public void GetProductXml_NotExistedBetType_ReturnExpectedXml()
         {
             // Arrange
             var matchInfo = fixture.Create<MatchInfo>();
@@ -569,11 +569,11 @@
             {
                 new SettingItem { SettingId = 1 }
             };
-            var bettypes = new List<SettingItem>();
+            var betTypes = new List<SettingItem>();
             var service = MockService();
             service.Protected("GetSportsbookProduct", settings).Returns(sportsbook);
             service.Protected("GetSubProduct", Arg.Any<bool>(), sportsbook.SettingId, matchInfo, settings, settingMappings).Returns(subProducts);
-            service.Protected("GetBettype", Arg.Any<bool>(), Arg.Any<IEnumerable<int>>(), transactionInfos, settings, settingMappings).Returns(bettypes);
+            service.Protected("GetBetType", Arg.Any<bool>(), Arg.Any<IEnumerable<int>>(), transactionInfos, settings, settingMappings).Returns(betTypes);
 
             // Act
             var actual = service.Public_GetProductXml(false, matchInfo, transactionInfos, settings, settingMappings);
@@ -595,14 +595,14 @@
             {
                 new SettingItem { SettingId = 1 }
             };
-            var bettypes = new List<SettingItem>
+            var betTypes = new List<SettingItem>
             {
                 new SettingItem { SettingId = 1, ParentIds = new List<int> { 1 } }
             };
             var service = MockService();
             service.Protected("GetSportsbookProduct", settings).Returns(sportsbook);
             service.Protected("GetSubProduct", Arg.Any<bool>(), sportsbook.SettingId, matchInfo, settings, settingMappings).Returns(subProducts);
-            service.Protected("GetBettype", Arg.Any<bool>(), Arg.Any<IEnumerable<int>>(), transactionInfos, settings, settingMappings).Returns(bettypes);
+            service.Protected("GetBetType", Arg.Any<bool>(), Arg.Any<IEnumerable<int>>(), transactionInfos, settings, settingMappings).Returns(betTypes);
 
             // Act
             var actual = service.Public_GetProductXml(false, matchInfo, transactionInfos, settings, settingMappings);
@@ -692,7 +692,7 @@
         }
 
         [Fact]
-        public void GetBettype_ExistedMapping_ReturnExpectedSubProducts()
+        public void GetBetType_ExistedMapping_ReturnExpectedSubProducts()
         {
             // Arrange
             var productId = 1;
@@ -717,22 +717,22 @@
 
         #endregion GetSubProduct
 
-        #region GetBettype
+        #region GetBetType
 
         [Fact]
-        public void GetBettype_IsMixParlay_ReturnDefaultBettype()
+        public void GetBetType_IsMixParlay_ReturnDefaultBetType()
         {
             // Arrange
             var subProducts = fixture.Create<IEnumerable<int>>();
             var transactionInfos = fixture.Create<IEnumerable<TransactionInfo>>();
             var settings = fixture.Create<IEnumerable<SettingItem>>();
-            var bettypeMixparlay = new List<SettingItem>();
+            var betTypeMixParlay = new List<SettingItem>();
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var service = MockService();
-            service.Protected("GetBettypeParlay", subProducts, settings, settingMappings).Returns(bettypeMixparlay);
+            service.Protected("GetBetTypeParlay", subProducts, settings, settingMappings).Returns(betTypeMixParlay);
 
             // Act
-            var actual = service.Public_GetBettype(true, subProducts, transactionInfos, settings, settingMappings);
+            var actual = service.Public_GetBetType(true, subProducts, transactionInfos, settings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -743,7 +743,7 @@
         }
 
         [Fact]
-        public void GetBettype_NotExistedMapping_ReturnDefaultBettype()
+        public void GetBetType_NotExistedMapping_ReturnDefaultBetType()
         {
             // Arrange
             var subProducts = fixture.Create<IEnumerable<int>>();
@@ -753,7 +753,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetBettype(false, subProducts, transactionInfos, settings, settingMappings);
+            var actual = service.Public_GetBetType(false, subProducts, transactionInfos, settings, settingMappings);
 
             // Assert
             Assert.Single(actual);
@@ -764,38 +764,38 @@
         }
 
         [Fact]
-        public void GetBettype_ExistedMapping_ReturnExpectedBettypes()
+        public void GetBetType_ExistedMapping_ReturnExpectedBetTypes()
         {
             // Arrange
             var subProducts = new List<int> { 1 };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Bettype", ParentIds = new List<int> { 1 } }
+                new SettingItem { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping { SettingId = 1, SettingName = "Bettype", SettingSource = "Bettype" }
+                new SystemSettingMapping { SettingId = 1, SettingName = "BetType", SettingSource = "BetType" }
             };
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { Bettype = "Bettype" }
+                new TransactionInfo { Bettype = "BetType" }
             };
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetBettype(false, subProducts, transactionInfos, settings, settingMappings);
+            var actual = service.Public_GetBetType(false, subProducts, transactionInfos, settings, settingMappings);
 
             // Assert
             Assert.Single(actual);
             Assert.Equal(settings.First(), actual.First());
         }
 
-        #endregion GetBettype
+        #endregion GetBetType
 
-        #region GetBettypeParlay
+        #region GetBetTypeParlay
 
         [Fact]
-        public void GetBettypeParlay_IsMixParlayAndExistMapping_ReturnDefaultBettype()
+        public void GetBetTypeParlay_IsMixParlayAndExistMapping_ReturnDefaultBettype()
         {
             // Arrange
             var subProducts = new List<int> { 1 };
@@ -810,14 +810,14 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetBettypeParlay(subProducts, settings, settingMappings);
+            var actual = service.Public_GetBetTypeParlay(subProducts, settings, settingMappings);
 
             // Assert
             Assert.Single(actual);
             Assert.Equal(settings.First(), actual.First());
         }
 
-        #endregion GetBettypeParlay
+        #endregion GetBetTypeParlay
 
         #region GetCategorySubCategory
 
@@ -961,7 +961,7 @@
         #region GetDescription
 
         [Fact]
-        public void GetDescriptionForDepositeSite_WhenCalled_ReturnExpectedDescription()
+        public void GetDescriptionForDepositSite_WhenCalled_ReturnExpectedDescription()
         {
             // Arrange
             var messageId = fixture.Create<string>();
@@ -973,7 +973,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetDescriptionForDepositeSite(messageId, requestIds);
+            var actual = service.Public_GetDescriptionForDepositSite(messageId, requestIds);
 
             // Assert
             Assert.Equal(description.ToString(), actual);
