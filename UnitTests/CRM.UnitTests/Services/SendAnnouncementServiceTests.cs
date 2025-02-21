@@ -5,12 +5,12 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Constants;
-    using CRM.BackgroundJob.Core.Criteria.Announcement;
-    using CRM.BackgroundJob.Core.Enumerables;
-    using CRM.BackgroundJob.Core.Models.BotServices.Announcement;
-    using CRM.BackgroundJob.Core.Services;
-    using CRM.BackgroundJob.Core.UnitTests.Testable;
+    using CRM.Constants;
+    using CRM.Criteria.Announcement;
+    using CRM.Enumerables;
+    using CRM.Models.BotServices.Announcement;
+    using CRM.Services;
+    using CRM.UnitTests.Testable;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using NSubstitute;

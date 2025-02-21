@@ -6,8 +6,8 @@
     using CRM.BackgroundJob.Criteria.CaptureSettlementData;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
     using Xunit;
 

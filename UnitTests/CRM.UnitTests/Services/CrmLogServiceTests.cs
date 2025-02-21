@@ -2,8 +2,8 @@
 {
     using System;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using Fanex.Data.Repository;
     using Fanex.Logging.Extensions;
     using Newtonsoft.Json;

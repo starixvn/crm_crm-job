@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;

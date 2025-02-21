@@ -1,6 +1,6 @@
 ﻿namespace CRM.BackgroundJob.Core.UnitTests.Criteria
 {
-    using CRM.BackgroundJob.Core.Criteria;
+    using CRM.Criteria;
     using Xunit;
 
     public class UpdateNotificationStatusCommandTests

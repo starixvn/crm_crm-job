@@ -2,7 +2,7 @@
 {
     using AutoFixture;
     using BackgroundJob.Criteria.AutoFeedback;
-    using Fanex.CRM.BackgroundJob.Criteria;
+    using CRM.Criteria;
     using Xunit;
 
     public class EditFeedbackInfoCommandTests

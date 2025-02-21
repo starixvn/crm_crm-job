@@ -9,9 +9,9 @@ using CRM.BackgroundJob.Models.ProblemsAccount;
 using CRM.BackgroundJob.Models.TurnoverControll;
 using CRM.BackgroundJob.Models.WinLossLimit;
 using CRM.BackgroundJob.Services;
-using CRM.BackgroundJob.Core.Models;
-using CRM.BackgroundJob.Core.Services;
-using Fanex.CRM.BackgroundJob.Models;
+using CRM.Models;
+using CRM.Services;
+using CRM.BackgroundJob.Models;
 using NSubstitute;
 using Xunit;
 

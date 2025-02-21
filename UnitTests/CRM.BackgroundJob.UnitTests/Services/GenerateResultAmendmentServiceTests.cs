@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.GenerateResultAmendment;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;

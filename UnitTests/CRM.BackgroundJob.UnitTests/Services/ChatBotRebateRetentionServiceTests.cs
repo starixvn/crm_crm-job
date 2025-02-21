@@ -3,7 +3,7 @@
     using AutoFixture;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Services;
     using NSubstitute;
     using Xunit;
@@ -11,7 +11,7 @@
     using CRM.BackgroundJob.Criteria.ChatBotRebateRetention;
     using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
     using CRM.BackgroundJob.Models.ChatBotResulAmendment;
-    using CRM.BackgroundJob.Core.Models;
+    using CRM.Models;
 
     public class ChatBotRebateRetentionServiceTests
     {

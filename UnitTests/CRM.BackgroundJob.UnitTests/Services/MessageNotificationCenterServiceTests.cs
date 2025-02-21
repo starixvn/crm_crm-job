@@ -1,14 +1,14 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.UnitTests.Testable;
     using Fanex.BotService.Client.Core.Services.Interfaces;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using System;

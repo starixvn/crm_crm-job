@@ -1,7 +1,7 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Criteria.WinLossLimit
 {
     using CRM.BackgroundJob.Criteria.WinLossLimit;
-    using Fanex.CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Constants;
     using Xunit;
     public class GetListCustomerReachLimitCriteriaTests
     {

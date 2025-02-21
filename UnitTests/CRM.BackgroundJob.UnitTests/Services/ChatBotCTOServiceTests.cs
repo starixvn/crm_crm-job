@@ -5,12 +5,12 @@
     using System.Text;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.ChatBot_CTO;
     using CRM.BackgroundJob.Models.ChatBotCTO;
     using CRM.BackgroundJob.Services;
-    using Fanex.CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Constants;
     using NSubstitute;
     using Xunit;
 

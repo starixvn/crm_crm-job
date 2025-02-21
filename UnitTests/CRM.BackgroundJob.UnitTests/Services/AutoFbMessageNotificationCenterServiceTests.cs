@@ -3,8 +3,8 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.AutoFbMessageNotificationCenter;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Services;

@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
     using AutoFixture;
-    using Fanex.CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using NSubstitute;

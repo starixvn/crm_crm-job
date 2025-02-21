@@ -6,14 +6,14 @@
     using System.Text;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
     using CRM.BackgroundJob.Models.AbnormalBet;
     using CRM.BackgroundJob.Models.ChatBotResulAmendment;
     using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Core.Extensions.Xml;
-    using Fanex.CRM.BackgroundJob.Constants;
+    using CRM.Extensions.Xml;
+    using CRM.BackgroundJob.Constants;
     using NSubstitute;
     using Xunit;
 

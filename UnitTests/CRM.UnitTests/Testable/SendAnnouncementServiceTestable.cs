@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Enumerables;
-    using CRM.BackgroundJob.Core.Models.BotServices.Announcement;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Enumerables;
+    using CRM.Models.BotServices.Announcement;
+    using CRM.Services;
     using Microsoft.Extensions.Configuration;
 
     public class SendAnnouncementServiceTestable : SendAnnouncementService

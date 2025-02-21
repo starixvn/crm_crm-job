@@ -4,16 +4,16 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.ChatBot_ArchivingDA;
     using CRM.BackgroundJob.Models.ChatBot;
     using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Core.Constants;
-    using CRM.BackgroundJob.Core.Extensions.Xml;
+    using CRM.Constants;
+    using CRM.Extensions.Xml;
     using NSubstitute;
     using Xunit;
-    using Fanex.CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Constants;
 
     public class ChatBotArchivingDAServiceTests
     {

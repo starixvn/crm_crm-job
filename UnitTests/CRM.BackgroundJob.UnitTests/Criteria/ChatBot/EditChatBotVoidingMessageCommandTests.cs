@@ -1,6 +1,6 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Criteria.ChatBot
 {
-    using Fanex.CRM.BackgroundJob.Criteria.ChatBot;
+    using CRM.BackgroundJob.Criteria.ChatBot;
     using Xunit;
 
     public class EditChatBotVoidingMessageCommandTests

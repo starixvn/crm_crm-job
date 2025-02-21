@@ -1,6 +1,6 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Criteria
 {
-    using Fanex.CRM.BackgroundJob.Criteria;
+    using CRM.BackgroundJob.Criteria;
     using Xunit;
 
     public class GetAllSettingRelationCriteriaTests

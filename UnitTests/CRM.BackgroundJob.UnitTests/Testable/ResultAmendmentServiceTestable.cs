@@ -4,13 +4,14 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Models.AmendmentNotiFB;
     using CRM.BackgroundJob.Services;
-    using Fanex.CRM.BackgroundJob.Criteria;
-    using Fanex.CRM.BackgroundJob.Models;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Criteria;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Options;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
     public class ResultAmendmentServiceTestable : AmendmentNotiFbService
     {

@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
     using Microsoft.Extensions.Options;

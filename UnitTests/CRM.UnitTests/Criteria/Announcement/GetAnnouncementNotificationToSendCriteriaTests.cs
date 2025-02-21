@@ -1,6 +1,6 @@
 ﻿namespace CRM.BackgroundJob.Core.UnitTests.Criteria.Announcement
 {
-    using CRM.BackgroundJob.Core.Criteria.Announcement;
+    using CRM.Criteria.Announcement;
     using Xunit;
 
     public class GetAnnouncementNotificationToSendCriteriaTests

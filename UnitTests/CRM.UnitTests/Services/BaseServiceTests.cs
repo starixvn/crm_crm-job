@@ -5,10 +5,10 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Criteria;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Repositories;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Criteria;
+    using CRM.Models;
+    using CRM.Repositories;
+    using CRM.Services;
     using Fanex.Caching;
     using Fanex.Data.Repository;
     using NSubstitute;

@@ -2,13 +2,13 @@
 namespace CRM.BackgroundJob.UnitTests.Testable
 {
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Models.AbnormalBet;
     using CRM.BackgroundJob.Models.AmendmentNotiFB;
     using CRM.BackgroundJob.Models.ProblemsAccount;
     using CRM.BackgroundJob.Services;
-    using Fanex.CRM.BackgroundJob.Models;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
 

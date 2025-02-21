@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.AbnormalBet;
     using CRM.BackgroundJob.Criteria.AutoFbMessageNotificationCenter;
     using CRM.BackgroundJob.Criteria.AutoFbRebateRetention;
@@ -22,9 +22,9 @@
     using CRM.BackgroundJob.Models.WinLossLimit;
     using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.UnitTests.Testable;
-    using Fanex.CRM.BackgroundJob.Constants;
-    using Fanex.CRM.BackgroundJob.Models;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using NSubstitute;

@@ -6,7 +6,7 @@
     using CRM.BackgroundJob.Criteria.GenerateLapNotification;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using NSubstitute;
     using Xunit;
 

@@ -2,12 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;
     using Fanex.BotService.Client.Core.Services.Interfaces;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Configuration;
 
     public class MessageNotificationCenterServiceTestable : MessageNotificationCenterService

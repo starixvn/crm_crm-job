@@ -5,8 +5,8 @@ namespace CRM.BackgroundJob.UnitTests.Workers
     using System.Threading.Tasks;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
-    using CRM.BackgroundJob.Core.Services;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.Services;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;

@@ -4,11 +4,12 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Services;
-    using Fanex.CRM.BackgroundJob.Constants;
-    using Fanex.CRM.BackgroundJob.Criteria;
-    using Fanex.CRM.BackgroundJob.Models;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Services;
+    using CRM.Services;
     using NSubstitute;
     using Xunit;
 

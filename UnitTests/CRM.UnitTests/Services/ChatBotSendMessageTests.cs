@@ -1,9 +1,9 @@
 ﻿namespace CRM.BackgroundJob.Core.UnitTests.Services
 {
-    using CRM.BackgroundJob.Core.Enumerables;
-    using CRM.BackgroundJob.Core.Models.BotServices;
-    using CRM.BackgroundJob.Core.Services;
-    using CRM.BackgroundJob.Core.UnitTests.Helpers;
+    using CRM.Enumerables;
+    using CRM.Models.BotServices;
+    using CRM.Services;
+    using CRM.UnitTests.Helpers;
     using Fanex.Caching;
     using Newtonsoft.Json;
     using NSubstitute;

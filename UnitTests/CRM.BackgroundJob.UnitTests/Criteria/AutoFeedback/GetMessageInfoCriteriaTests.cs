@@ -2,7 +2,6 @@
 {
     using AutoFixture;
     using BackgroundJob.Criteria.AutoFeedback;
-    using Fanex.CRM.BackgroundJob.Criteria;
     using Xunit;
 
     public class GetMessageInfoCriteriaTests

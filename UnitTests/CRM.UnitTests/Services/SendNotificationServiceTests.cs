@@ -3,10 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Criteria;
-    using CRM.BackgroundJob.Core.Enumerables;
-    using CRM.BackgroundJob.Core.Models.BotServices;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Criteria;
+    using CRM.Enumerables;
+    using CRM.Models.BotServices;
+    using CRM.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;

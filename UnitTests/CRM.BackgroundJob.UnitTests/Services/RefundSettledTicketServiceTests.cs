@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.RefundSettledTicket;
     using CRM.BackgroundJob.Criteria.VoidingBetID;
     using CRM.BackgroundJob.Models.ChatBotResulAmendment;

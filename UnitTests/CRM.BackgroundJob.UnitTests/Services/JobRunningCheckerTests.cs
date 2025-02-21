@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Fanex.Caching;
-    using Fanex.CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Services;
     using NSubstitute;
     using Xunit;
 

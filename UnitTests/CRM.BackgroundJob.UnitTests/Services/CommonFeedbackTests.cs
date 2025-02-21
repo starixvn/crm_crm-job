@@ -3,12 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Models.TurnoverControll;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Services;
-    using Fanex.CRM.BackgroundJob.Constants;
-    using Fanex.CRM.BackgroundJob.Criteria;
-    using Fanex.CRM.BackgroundJob.Models;
-    using Fanex.CRM.BackgroundJob.Services;
     using Fanex.RemotingRef;
     using Microsoft.AspNetCore.Hosting;
     using NSubstitute;

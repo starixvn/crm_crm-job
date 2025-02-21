@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.BackgroundJob.Core.Extensions.Xml;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Services;
+    using CRM.Extensions.Xml;
+    using CRM.Models;
+    using CRM.Services;
     using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
     using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
     using CRM.BackgroundJob.Models.AmendmentNotiFB;

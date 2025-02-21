@@ -2,8 +2,8 @@
 {
     using System.Collections;
     using System.Threading.Tasks;
-    using CRM.BackgroundJob.Core.Models;
-    using CRM.BackgroundJob.Core.Repositories;
+    using CRM.Models;
+    using CRM.Repositories;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using NSubstitute;
