@@ -255,7 +255,7 @@
             transactionService.GetMessageContentInfoAsync(amendment.MessageId).Returns(message);
             commonFeedback.GetBetTypeName(Arg.Any<string>(), Language.en_US).Returns("BetTypeName");
             service.Protected("GetAmendmentProductXml", amendment.SportType, amendment.ProductId, Arg.Any<List<string>>(), settings, settingMappings).Returns("product");
-            service.Protected("GetAmenmendSolution", amendment, message, false).Returns("product xml");
+            service.Protected("GetAmendmentSolution", amendment, message, false).Returns("product xml");
             service.Protected("GetAmendmentRelatedCustomerXml", amendment).Returns("relatedCustomerXml");
             service.Protected("GetAmendmentDescription", amendment, false).Returns("description");
             // Act
@@ -430,7 +430,7 @@
             };
             var tempBetTypes = new List<SystemSettingMapping>();
             var service = MockService();
-            service.Protected("GetAmenmentProduct", settings, settingMappings, 1).Returns(product);
+            service.Protected("GetAmendmentProduct", settings, settingMappings, 1).Returns(product);
             service.Protected("GetAmendmentSubProduct", product.SettingId, 1, settings, settingMappings).Returns(subProduct);
             service.Protected("GetAmendmentBetType", betTypeMappings, settingMappings).Returns(tempBetTypes);
 
@@ -460,7 +460,7 @@
                 }
             };
             var service = MockService();
-            service.Protected("GetAmenmentProduct", settings, settingMappings, 1).Returns(product);
+            service.Protected("GetAmendmentProduct", settings, settingMappings, 1).Returns(product);
             service.Protected("GetAmendmentSubProduct", product.SettingId, 1, settings, settingMappings).Returns(subProduct);
             service.Protected("GetAmendmentBetType", betTypeMappings, settingMappings).Returns(tempBetTypes);
 

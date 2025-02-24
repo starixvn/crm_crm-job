@@ -18,7 +18,7 @@ COPY ["Sources/CRM/CRM.csproj", "Sources/CRM/"]
 
 RUN dotnet nuget add source https://nuget.nexdev.net/api/v2
 
-RUN dotnet restore -v n -r linux-x64 "CRM.BackgroundJob/CRM.BackgroundJob.csproj"
+RUN dotnet restore -v n -r linux-x64 "./Sources/CRM.BackgroundJob/CRM.BackgroundJob.csproj"
 
 COPY . .
 

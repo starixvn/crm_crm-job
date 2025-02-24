@@ -46,6 +46,7 @@
             var voidingMessages = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var voidingTickets = fixture.Create<ValueTuple<IEnumerable<VoidingTicketEventInfo>, IEnumerable<MsgTarget>>>();
             var feedbackInfos = fixture.Create<ValueTuple<IEnumerable<VoidingAutoFeedbackInfo>, IEnumerable<AutoVoidingEventDetails>>>();
+
             settingService.GetAllSettingAsync().Returns(settings);
             settingService.GetSystemSettingMappingAsync(settingNames).Returns(settingMappings);
             voidingSettledTicketsService.GetMessageVoidSettledAsync().Returns(messageVoidSettled);
@@ -309,7 +310,7 @@
             var settingMappings = fixture.Create<IList<SystemSettingMapping>>();
             var products = fixture.Create<SettingItem>();
             var subProducts = new List<SettingItem> { new() { SettingId = 1 } };
-            service.Protected("GetBettpeXml", Arg.Any<SettingItem>(), Arg.Any<SettingItem>(), Arg.Any<IList<SystemSettingMapping>>()).Returns("test");
+            service.Protected("GetBetTypeXml", Arg.Any<SettingItem>(), Arg.Any<SettingItem>(), Arg.Any<IList<SystemSettingMapping>>()).Returns("test");
 
             // Act
             var actual = service.Public_GetProductSubXml(products, subProducts, settingMappings);

@@ -104,7 +104,7 @@
             await service.AbnormalBetExecuteJobAsync();
 
             // Assert
-            service.Received().Protected("AbnormalbetRunJobByEnviromentAsync",
+            service.Received().Protected("AbnormalBetRunJobByEnvironmentAsync",
                 false, false, true, setting, BackgroundJobConstants.DefaultEnvironment
                 );
         }
@@ -376,7 +376,7 @@
             await service.TurnoverControlExecuteJobAsync();
 
             // Assert
-            logService.Received().LogInformation("Service Turnover Controll is shutdown.");
+            logService.Received().LogInformation("Service Turnover Control is shutdown.");
         }
 
         [Fact]
@@ -418,7 +418,7 @@
             await service.TurnoverControlExecuteJobAsync();
 
             // Assert
-            logService.Received().LogInformation("Rerun Turnover Controll service.");
+            logService.Received().LogInformation("Rerun Turnover Control service.");
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_TOControlFB);
         }
 
@@ -497,7 +497,7 @@
             await service.VoidingSettledTicketsExecuteJobAsync();
 
             // Assert
-            service.Received().Protected("VoidingSettledTicketsRunJobByEnviromentAsync",
+            service.Received().Protected("VoidingSettledTicketsRunJobByEnvironmentAsync",
                 false, false, true, setting, BackgroundJobConstants.DefaultEnvironment
                 );
         }
@@ -568,7 +568,7 @@
         }
 
         [Fact]
-        public async Task VoidingSettledTicketsRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
+        public async Task VoidingSettledTicketsRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -586,12 +586,12 @@
             await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
 
             // Assert
-            logService.Received().LogInformation("Update  status and return serive voidding settled tickets.");
+            logService.Received().LogInformation("Update  status and return service voiding settled tickets.");
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_AutoVoidFB);
         }
 
         [Fact]
-        public async Task VoidingSettledTicketsRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsNotRunning_CallExactFunction()
+        public async Task VoidingSettledTicketsRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsNotRunning_CallExactFunction()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -615,7 +615,7 @@
         }
 
         [Fact]
-        public async Task VoidingSettledTicketsRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsNotRunning_CallExactFunction()
+        public async Task VoidingSettledTicketsRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsNotRunning_CallExactFunction()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -643,7 +643,7 @@
         #region ProblemsAcccountExecuteJobAsync
 
         [Fact]
-        public async Task ProblemsAcccountExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
+        public async Task ProblemsAccountExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
             // Arrange
             var exception = fixture.Create<Exception>();
@@ -659,7 +659,7 @@
         }
 
         [Fact]
-        public async Task ProblemsAcccountExecuteJobAsync_ServiceIsShutdown_ExpectedWriteLog()
+        public async Task ProblemsAccountExecuteJobAsync_ServiceIsShutdown_ExpectedWriteLog()
         {
             // Arrange
             var setting = new ProblemsAccountSetting { ServiceFlag = false };
@@ -674,7 +674,7 @@
         }
 
         [Fact]
-        public async Task ProblemsAcccountExecuteJobAsync_LIVEEnvironment_ExpectedCallExactFunction()
+        public async Task ProblemsAccountExecuteJobAsync_LIVEEnvironment_ExpectedCallExactFunction()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -692,13 +692,13 @@
             await service.ProblemsAccountExecuteJobAsync();
 
             // Assert
-            service.Received().Protected("ProblemsAcccountRunJobByEnviromentAsync",
+            service.Received().Protected("ProblemsAccountRunJobByEnvironmentAsync",
                 false, false, true, setting, BackgroundJobConstants.DefaultEnvironment
                 );
         }
 
         [Fact]
-        public async Task ProblemsAcccountRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
+        public async Task ProblemsAccountRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -720,7 +720,7 @@
         }
 
         [Fact]
-        public async Task ProblemsAcccountRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
+        public async Task ProblemsAccountRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -742,7 +742,7 @@
         }
 
         [Fact]
-        public async Task ProblemsAcccountRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
+        public async Task ProblemsAccountRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -764,7 +764,7 @@
         }
 
         [Fact]
-        public async Task ProblemsAcccountRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
+        public async Task ProblemsAccountRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -782,12 +782,12 @@
             await service.Public_ProblemsAcccountRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
 
             // Assert
-            logService.Received().LogInformation("Update  status and return serive problems account.");
+            logService.Received().LogInformation("Update  status and return service problems account.");
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_ProblemsAccount);
         }
 
         [Fact]
-        public async Task ProblemsAcccountRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsNotRunning_CallExactFunction()
+        public async Task ProblemsAccountRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsNotRunning_CallExactFunction()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -811,7 +811,7 @@
         }
 
         [Fact]
-        public async Task ProblemsAcccountRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsNotRunning_CallExactFunction()
+        public async Task ProblemsAccountRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsNotRunning_CallExactFunction()
         {
             // Arrange
             var setting = new ProblemsAccountSetting
@@ -958,7 +958,7 @@
             await service.AmendmentNotiFbExecuteJobAsync();
 
             // Assert
-            service.Received().Protected("ResultAmendmentRunJobByEnviromentAsync",
+            service.Received().Protected("ResultAmendmentRunJobByEnvironmentAsync",
                 false, false, true, setting, BackgroundJobConstants.DefaultEnvironment
                 );
         }
@@ -1047,7 +1047,7 @@
             await service.Public_ResultAmendmentRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
 
             // Assert
-            logService.Received().LogInformation("Update  status and return serive result amendment.");
+            logService.Received().LogInformation("Update  status and return service result amendment.");
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_AmendmentNotiFB);
         }
 

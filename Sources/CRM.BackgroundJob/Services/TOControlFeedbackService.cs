@@ -340,7 +340,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
 
         var stringBuilder = new StringBuilder();
         var solutionTemplateEN = GetTOSolutionTemplateEN(toInfo, TOSolTemplate, smaLevelEN);
-        var solutionTemplateSC = GetTOSolutionTemplateYnSc(toInfo, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
+        var solutionTemplateSC = GetTOSolutionTemplateYNSC(toInfo, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
 
         stringBuilder.Append(solutionTemplateEN);
         stringBuilder.Append(BackgroundJobConstants.Break);
@@ -375,12 +375,12 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         return stringBuilder;
     }
 
-    protected internal virtual StringBuilder GetTOSolutionTemplateYnSc(
+    protected internal virtual StringBuilder GetTOSolutionTemplateYNSC(
         TOControlFeedbackInfo toInfo,
         bool isVipCust,
         string smaLevelEN,
         string smaLevelSC,
-        TOSolutionTemplate TOSolTemplate)
+        TOSolutionTemplate turnoverSolTemplate)
     {
         var stringBuilder = new StringBuilder();
         var outstanding = toInfo.Outstanding.ToString(BackgroundJobConstants.ThousandParseMoney);
@@ -394,7 +394,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         if (isVipCust)
         {
             smaLevel = smaLevelEN;
-            solutionTemplate = TOSolTemplate.SolutionYN;
+            solutionTemplate = turnoverSolTemplate.SolutionYN;
             sportName = commonFeedback.GetSportName(toInfo.SportType.ToString(), Language.vi_VN);
             leagueName = commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), Language.vi_VN);
             homeName = commonFeedback.GetTeamName(toInfo.HomeID.ToString(), Language.vi_VN);
@@ -403,7 +403,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         else
         {
             smaLevel = smaLevelSC;
-            solutionTemplate = TOSolTemplate.SolutionSC;
+            solutionTemplate = turnoverSolTemplate.SolutionSC;
             sportName = commonFeedback.GetSportName(toInfo.SportType.ToString(), Language.zh_CN);
             leagueName = commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), Language.zh_CN);
             homeName = commonFeedback.GetTeamName(toInfo.HomeID.ToString(), Language.zh_CN);

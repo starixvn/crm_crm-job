@@ -293,11 +293,11 @@ namespace CRM.BackgroundJob.UnitTests.Services
                 SettingId = 1,
                 SettingName = "test"
             };
-            var tempBettypes = new List<SystemSettingMapping>();
+            var tempBetTypes = new List<SystemSettingMapping>();
             var service = MockService();
             service.Protected("GetTOSportsbookProduct", settings).Returns(product);
             service.Protected("GetTOSubProduct", product.SettingId, sportName, settings, settingMappings).Returns(subProduct);
-            service.Protected("GetTOBettype", betTypeMappings, settingMappings).Returns(tempBettypes);
+            service.Protected("GetTOBetType", betTypeMappings, settingMappings).Returns(tempBetTypes);
 
             // Act
             var actual = service.Public_GetTOProductXml(sportName, product.SettingId, betTypeMappings, settings, settingMappings);
@@ -323,14 +323,14 @@ namespace CRM.BackgroundJob.UnitTests.Services
                 SettingId = 1,
                 SettingName = "test"
             };
-            var tempBettypes = new List<SystemSettingMapping>
+            var tempBetTypes = new List<SystemSettingMapping>
             {
                 new() { SettingId = 1 }
             };
             var service = MockService();
             service.Protected("GetTOSportsbookProduct", settings).Returns(product);
             service.Protected("GetTOSubProduct", product.SettingId, sportName, settings, settingMappings).Returns(subProduct);
-            service.Protected("GetTOBettype", betTypeMappings, settingMappings).Returns(tempBettypes);
+            service.Protected("GetTOBetType", betTypeMappings, settingMappings).Returns(tempBetTypes);
 
             // Act
             var actual = service.Public_GetTOProductXml(sportName, product.SettingId, betTypeMappings, settings, settingMappings);
@@ -574,14 +574,14 @@ namespace CRM.BackgroundJob.UnitTests.Services
         [InlineData(2, SMALevel.Agent, "789y", true, true, SMALevel.AgentSC)]
         public void GetTOSolution_BaseOnSmaLevelAndIsVipCustomer_ReturnExpectedTemplate(
             byte RoleID,
-            string smslevel,
+            string smsLevel,
             string Site,
             bool IsVip,
             bool IsVipCust,
-            string smslevelSc)
+            string smsLevelSc)
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var ToInfo = new TOControlFeedbackInfo
             {
                 RoleID = RoleID,
                 ProfileID = 1,
@@ -614,12 +614,12 @@ namespace CRM.BackgroundJob.UnitTests.Services
             var templateENReturn = new StringBuilder("test1");
             var templateSCReturn = new StringBuilder("test2");
 
-            service.Protected("GetTOSolutionTemplateEN", ToInfor, sol, smslevel).Returns(templateENReturn);
-            service.Protected("GetTOSolutionTemplateYNSC", ToInfor, IsVipCust, smslevel, smslevelSc, sol).Returns(templateSCReturn);
+            service.Protected("GetTOSolutionTemplateEN", ToInfo, sol, smsLevel).Returns(templateENReturn);
+            service.Protected("GetTOSolutionTemplateYNSC", ToInfo, IsVipCust, smsLevel, smsLevelSc, sol).Returns(templateSCReturn);
             var expected = stringBuilder.Append(templateENReturn).Append(BackgroundJobConstants.Break).Append(templateSCReturn).Append(BackgroundJobConstants.Break).ToString();
 
             // Act
-            var actual = service.Public_GetTOSolution(ToInfor);
+            var actual = service.Public_GetTOSolution(ToInfo);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -631,7 +631,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public void GetTOSolutionTemplateEN_CallFunction_ReturnExpectedTemplate()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var turnoverInfo = new TOControlFeedbackInfo
             {
                 ProfileID = 1,
                 SportType = 1,
@@ -648,10 +648,10 @@ namespace CRM.BackgroundJob.UnitTests.Services
             };
             var service = MockService();
 
-            commonFeedback.GetSportName(ToInfor.SportType.ToString(), "en-US").Returns("sportName");
-            commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), "en-US").Returns("leagueName");
-            commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), "en-US").Returns("homeName");
-            commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), "en-US").Returns("awayName");
+            commonFeedback.GetSportName(turnoverInfo.SportType.ToString(), "en-US").Returns("sportName");
+            commonFeedback.GetLeagueName(turnoverInfo.LeagueID.ToString(), "en-US").Returns("leagueName");
+            commonFeedback.GetTeamName(turnoverInfo.HomeID.ToString(), "en-US").Returns("homeName");
+            commonFeedback.GetTeamName(turnoverInfo.AwayID.ToString(), "en-US").Returns("awayName");
             var sol = new TOSolutionTemplate
             {
                 SolutionEN = "test",
@@ -662,7 +662,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             var expected = stringBuilder.ToString();
 
             // Act
-            var actual = service.Public_GetTOSolutionTemplateEN(ToInfor, sol, SMALevel.Master);
+            var actual = service.Public_GetTOSolutionTemplateEN(turnoverInfo, sol, SMALevel.Master);
 
             // Assert
             Assert.Equal(expected, actual.ToString());

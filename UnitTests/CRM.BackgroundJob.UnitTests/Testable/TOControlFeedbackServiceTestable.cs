@@ -1,9 +1,8 @@
-﻿using CRM.BackgroundJob.Models.TurnoverControl;
-
-namespace CRM.BackgroundJob.UnitTests.Testable
+﻿namespace CRM.BackgroundJob.UnitTests.Testable
 {
     using CRM.BackgroundJob.Criteria.AutoFeedback;
     using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.TurnoverControl;
     using CRM.BackgroundJob.Services;
     using CRM.Services;
     using Microsoft.Extensions.Options;
@@ -30,18 +29,18 @@ namespace CRM.BackgroundJob.UnitTests.Testable
             transactionService)
     {
         public async Task Public_CreateTOControlFeedbackAsync(
-            TOControlFeedbackInfo ToInfor,
+            TOControlFeedbackInfo ToInfo,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings)
         {
-            await base.CreateTOControlFeedbackAsync(ToInfor, settings, settingMappings);
+            await base.CreateTOControlFeedbackAsync(ToInfo, settings, settingMappings);
         }
 
         public async Task Public_CheckValidTOParamsAndInsertFeedbackAsync(
-            TOControlFeedbackInfo ToInfor,
+            TOControlFeedbackInfo ToInfo,
             CreateMultipleFeedbackCommand criteria)
         {
-            await base.CheckValidTOParamsAndInsertFeedbackAsync(ToInfor, criteria);
+            await base.CheckValidTOParamsAndInsertFeedbackAsync(ToInfo, criteria);
         }
 
         public string Public_GetTOProductXml(
@@ -105,7 +104,7 @@ namespace CRM.BackgroundJob.UnitTests.Testable
             string smaLevelSC,
             TOSolutionTemplate TOSolTemplate)
         {
-            return base.GetTOSolutionTemplateYnSc(ToInfor, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
+            return base.GetTOSolutionTemplateYNSC(ToInfor, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
         }
     }
 }
