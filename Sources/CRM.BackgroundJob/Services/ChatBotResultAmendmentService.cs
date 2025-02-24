@@ -1,10 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Constants;
 using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
 using CRM.BackgroundJob.Models.AbnormalBet;
@@ -12,15 +7,24 @@ using CRM.BackgroundJob.Models.ChatBotResulAmendment;
 using CRM.Extensions.Xml;
 using CRM.Models;
 using CRM.Services;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 public interface IChatBotResultAmendmentService
 {
     Task<(IEnumerable<MessageVoidSettled>, IEnumerable<MessageVoidSettled>)> GetChatBotMessageVoidSettledAsync(int lastMsgTargetId, int batchSizeGetMsg);
-    Task<IEnumerable<MessageVoidSettled>> GetVoidingMessasgeCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment);
-    Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, int siteDBGroupId);
+
+    Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> voidSettleMessages, string environment);
+
+    Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> voidSettleMessages, int siteDBGroupId);
+
     Task<CommandResult> ImportMessageVoidSettledAsync(IEnumerable<MessageVoidSettled> messages);
+
     Task<ValueTuple<IEnumerable<int>, IEnumerable<TargetMessage>, IEnumerable<TargetMessageInfo>>>
-        GetChatbotMessageVoidSettledInfoAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds);
+        GetChatbotMessageVoidSettledInfoAsync(IEnumerable<MessageVoidSettled> messageVoidSettles);
 
     Task<ValueTuple<ValueTuple<IEnumerable<AmendmentResultTicketEvent>, IEnumerable<AmendmentResultTransaction>, IEnumerable<int>>, string>>
         GetChatBotResultAmendmentInfoAsync(AbnormalBetSystemSetting settingResultAmendment);
@@ -33,8 +37,8 @@ public interface IChatBotResultAmendmentService
         IEnumerable<MessageContent> messages,
         IEnumerable<TargetMessage> targetMessages,
         IEnumerable<TargetMessageInfo> targetMessagesInfo,
-        string Environment,
-        string Servername
+        string environment,
+        string serverName
     );
 }
 
@@ -45,7 +49,7 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
 
     public async Task<(IEnumerable<MessageVoidSettled>, IEnumerable<MessageVoidSettled>)> GetChatBotMessageVoidSettledAsync(int lastMsgTargetId, int batchSizeGetMsg)
     {
-        var criteria = new GetMesssagesVoidSettledCriteria
+        var criteria = new GetMessagesVoidSettledCriteria
         {
             LastMsgTargetId = lastMsgTargetId,
             BatchSizeGetMsg = batchSizeGetMsg
@@ -53,7 +57,7 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
         return await baseService.FetchMultipleAsync<MessageVoidSettled, MessageVoidSettled>(criteria);
     }
 
-    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessasgeCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment)
+    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment)
     {
         var criteria = new GetChatbotVoidingMessageCheck
         {
@@ -92,7 +96,7 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
         return await baseService.FetchMultipleAsync<int, TargetMessage, TargetMessageInfo>(criteria);
     }
 
-    public async Task<ValueTuple<ValueTuple<IEnumerable<AmendmentResultTicketEvent>, IEnumerable<AmendmentResultTransaction>, IEnumerable<int>>, string>> 
+    public async Task<ValueTuple<ValueTuple<IEnumerable<AmendmentResultTicketEvent>, IEnumerable<AmendmentResultTransaction>, IEnumerable<int>>, string>>
         GetChatBotResultAmendmentInfoAsync(AbnormalBetSystemSetting settingResultAmendment)
     {
         var criteria = new GetChatBotResultAmendmentCriteria
@@ -101,7 +105,7 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
             SubmitDate = settingResultAmendment.SubmitDate.ToString("yyyy-MM-dd H:mm:ss.fffffff"),
             Seq = settingResultAmendment.Seq
         };
-        var result =  await baseService.FetchMultipleAsync<AmendmentResultTicketEvent, AmendmentResultTransaction, int>(criteria);
+        var result = await baseService.FetchMultipleAsync<AmendmentResultTicketEvent, AmendmentResultTransaction, int>(criteria);
         return new ValueTuple<ValueTuple<IEnumerable<AmendmentResultTicketEvent>, IEnumerable<AmendmentResultTransaction>, IEnumerable<int>>, string>(result, criteria.ServerName);
     }
 
@@ -156,10 +160,10 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
                 ? commonFeedback.GetMatchCodeVirtualSportFormat
                 : new Func<string, string, string>(commonFeedback.GetMatchCodeFormat);
 
-            var sportNameEN = commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.en_US);
-            var sportNameSC = commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.zh_CN);
-            var sportNameTH = commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.th_TH);
-            var sportNameYN = commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.vi_VN);
+            var sportNameEN = commonFeedback.GetSportName(transaction.SportType.ToString(), Language.en_US);
+            var sportNameSC = commonFeedback.GetSportName(transaction.SportType.ToString(), Language.zh_CN);
+            var sportNameTH = commonFeedback.GetSportName(transaction.SportType.ToString(), Language.th_TH);
+            var sportNameYN = commonFeedback.GetSportName(transaction.SportType.ToString(), Language.vi_VN);
 
             var leagueNameEN = HttpUtility.HtmlEncode(getLeagueNameFunc(transaction.LeagueId.ToString(), Language.en_US));
             var leagueNameSC = HttpUtility.HtmlEncode(getLeagueNameFunc(transaction.LeagueId.ToString(), Language.zh_CN));
@@ -218,7 +222,7 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
             TargetMessage = targetMessages.ToXML("root").ToString(),
             InfoMessage = targetMessagesInfo.ToXML("root").ToString(),
             Environment = Environment,
-            Servername = Servername
+            ServerName = Servername
         };
         var commandResult = await baseService.ExecuteNonQueryAsync(criteria);
         return new ValueTuple<CommandResult, ImportChatBotResultAmendmentCommand>(commandResult, criteria);

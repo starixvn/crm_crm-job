@@ -1,37 +1,32 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Testable
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Models.WinLossLimit;
     using CRM.BackgroundJob.Services;
     using CRM.Services;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Options;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-    public class WinLossFeedbackServiceTesable : WinLossFeedbackService
+    public class WinLossFeedbackServiceTesable(
+        IOptionsSnapshot<AppJobSettings> appSettings,
+        IBaseService baseService,
+        ISettingService settingService,
+        ISystemSettingService systemSettingService,
+        ICustomerService customerService,
+        ICrmLogService logService,
+        IFeedbackTransactionService transactionService,
+        ICommonFeedback commonFeedback)
+        : WinLossFeedbackService(appSettings,
+            baseService,
+            settingService,
+            systemSettingService,
+            customerService,
+            logService,
+            transactionService,
+            commonFeedback)
     {
-        public WinLossFeedbackServiceTesable(IOptionsSnapshot<AppJobSettings> appSettings,
-            IBaseService baseService,
-            ISettingService settingService,
-            ISystemSettingService systemSettingService,
-            ICustomerService customerService,
-            ICrmLogService logService,
-            IFeedbackTransactionService transactionService,
-            ICommonFeedback commonFeedback)
-            : base(appSettings,
-                baseService,
-                settingService,
-                systemSettingService,
-                customerService,
-                logService,
-                transactionService,
-                commonFeedback)
-        {
-        }
-
         public async Task Public_CreateWinLossFeedbackCreditAsync(
             bool isVipHeadline,
             WinLimitFeedBackInfo winLimit,
@@ -45,7 +40,7 @@
 
         public async Task Public_CheckValidParamsAndInsertFeedbackAsync(
             WinLimitFeedBackInfo winLimit,
-            CreateMutipleFeedbackCommand criteria)
+            CreateMultipleFeedbackCommand criteria)
         {
             await base.CheckValidParamsAndInsertFeedbackAsync(winLimit, criteria);
         }
@@ -77,7 +72,7 @@
         {
             return base.GetSubProduct(winLimit, sports, productId, settings, settingMappings);
         }
-       
+
         public IList<SettingItem> Public_GetBetType(
            IEnumerable<int> subProducts,
            List<BettypeInfo> betTypeMappings,

@@ -1,22 +1,23 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Services
+﻿using CRM.BackgroundJob.Criteria.TurnoverControl;
+using CRM.BackgroundJob.Models.TurnoverControl;
+
+namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
-    using CRM.BackgroundJob.Criteria.TurnoverControll;
     using CRM.BackgroundJob.Criteria.WinLossLimit;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.TurnoverControll;
     using CRM.BackgroundJob.Models.WinLossLimit;
     using CRM.BackgroundJob.Services;
     using CRM.Services;
     using Fanex.Data.Repository;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class CustomerServiceTests
@@ -113,7 +114,6 @@
             Assert.Equal(setting.IsDeposit, criteria.IsDeposit);
         }
 
-
         [Fact]
         public async Task GetListCustReachLimitAsync_WhenCalled_ReturnExpectedLimitInfor()
         {
@@ -143,10 +143,9 @@
         {
             // Arrange
             var expected = fixture.Create<IEnumerable<CustOutStanding>>();
-            var criteria = new GetTOControllCustOutstandingCriteria();
             var custNotifications = fixture.Create<IEnumerable<TONotification>>();
             var service = GetService();
-            baseService.GetDataAsync<CustOutStanding>(Arg.Do<GetTOControllCustOutstandingCriteria>(x => criteria = x)).Returns(expected);
+            baseService.GetDataAsync<CustOutStanding>(Arg.Do<GetTOControlCustOutstandingCriteria>(x => _ = x)).Returns(expected);
 
             // Act
             var actual = await service.GetListCustOutStandingAsync(custNotifications);
@@ -154,6 +153,7 @@
             // Assert
             Assert.Equal(expected, actual);
         }
+
         #region Helpers
 
         private CustomerService GetService()

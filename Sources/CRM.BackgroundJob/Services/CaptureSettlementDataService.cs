@@ -11,7 +11,7 @@ public interface ICaptureSettlementDataService
 {
     Task<IEnumerable<SiteDbConfig>> GetInitialSiteDbConfigsAsync(string environment);
 
-    Task<IEnumerable<SettlResultHistory>> GetSessionByDateAsync(SiteDbConfig siteDbConfig);
+    Task<IEnumerable<SettleResultHistory>> GetSessionByDateAsync(SiteDbConfig siteDbConfig);
 
     Task InsertDataLoadAsync(string environment, string JSSettlResultHist);
 }
@@ -20,14 +20,14 @@ public class CaptureSettlementDataService(IBaseService baseService) : ICaptureSe
 {
     public async Task<IEnumerable<SiteDbConfig>> GetInitialSiteDbConfigsAsync(string environment)
     {
-        var criteria = new GetInitalSiteDBConfigCriteria
+        var criteria = new GetInitialSiteDBConfigCriteria
         {
             Environment = environment
         };
         return await baseService.GetDataAsync<SiteDbConfig>(criteria);
     }
 
-    public async Task<IEnumerable<SettlResultHistory>> GetSessionByDateAsync(SiteDbConfig siteDbConfig)
+    public async Task<IEnumerable<SettleResultHistory>> GetSessionByDateAsync(SiteDbConfig siteDbConfig)
     {
         var criteria = new GetSessionByDateCriteria
         {
@@ -35,7 +35,7 @@ public class CaptureSettlementDataService(IBaseService baseService) : ICaptureSe
             FDTime = siteDbConfig.FDTime,
             SiteDBGroupID = siteDbConfig.SiteDBGroupID
         };
-        return await baseService.GetDataByIpConfigAsync<SettlResultHistory>(siteDbConfig.AGIP, siteDbConfig.LinkedServerName, criteria);
+        return await baseService.GetDataByIpConfigAsync<SettleResultHistory>(siteDbConfig.AGIP, siteDbConfig.LinkedServerName, criteria);
     }
 
     public async Task InsertDataLoadAsync(string environment, string JSSettlResultHist)

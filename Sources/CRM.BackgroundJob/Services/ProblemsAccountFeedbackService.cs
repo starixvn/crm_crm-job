@@ -1,16 +1,16 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.ProblemsAccount;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 public interface IProblemsAccountFeedbackService
 {
@@ -39,11 +39,11 @@ public class ProblemsAccountFeedbackService(
         string JobStatusNameEnv, string Environment)
     {
         await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_ProblemsAccount);
-        var custCategory = await customerService.GetCustCategoryInfor(problemsAccountSetting, isUAT);
+        var custCategory = await customerService.GetCustCategoryInfo(problemsAccountSetting, isUAT);
         var custIds = custCategory.Select(x => x.CustID).Distinct();
         var headlines = await customerService.GetGroupHeadlineAsync(custIds);
-        var problemsAccountInfor = await transactionService.ImportProblemsAccountFeedbackInfoAsync(headlines, custCategory, Environment);
-        if (!problemsAccountInfor.Any())
+        var problemsAccountInfo = await transactionService.ImportProblemsAccountFeedbackInfoAsync(headlines, custCategory, Environment);
+        if (!problemsAccountInfo.Any())
         {
             logService.LogInformation(
                 $"Import problems account doesn't have any data with custId: {string.Join(",", headlines.Select(x => x.HeadlineId))} headlineName: {string.Join(",", headlines.Select(x => x.HeadlineName))}!");
@@ -53,9 +53,9 @@ public class ProblemsAccountFeedbackService(
         var settingNames = new[] { SettingName.Product, SettingName.SubProduct, SettingName.Bettype };
         var settings = await settingService.GetAllSettingAsync();
         var settingMappings = await settingService.GetSystemSettingMappingAsync(settingNames);
-        var groupProblemsAccountByHeadlineId = problemsAccountInfor.GroupBy(x => x.HeadlineID);
+        var groupProblemsAccountByHeadlineId = problemsAccountInfo.GroupBy(x => x.HeadlineID);
         var cateKey = "";
-        foreach (IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts in groupProblemsAccountByHeadlineId)
+        foreach (var problemsAccounts in groupProblemsAccountByHeadlineId)
         {
             var groupCategoryProblemsAccount = problemsAccounts.GroupBy(x => x.CategoryID);
             foreach (var categoryProblemAccount in groupCategoryProblemsAccount)
@@ -87,8 +87,8 @@ public class ProblemsAccountFeedbackService(
     }
 
     protected internal virtual async Task CreateProblemsAccountFeedbackByBatchAsync(
-        IEnumerable<ProblemsAccountAutoFeedbackInfor> categoryProblemAccount,
-        IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts,
+        IEnumerable<ProblemsAccountAutoFeedbackInfo> categoryProblemAccount,
+        IEnumerable<ProblemsAccountAutoFeedbackInfo> problemsAccounts,
         string cateKey,
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings
@@ -123,7 +123,7 @@ public class ProblemsAccountFeedbackService(
     }
 
     protected internal virtual async Task CreateProblemsAccountFeedbackCreditAsync(
-        IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts,
+        IEnumerable<ProblemsAccountAutoFeedbackInfo> problemsAccounts,
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings)
     {
@@ -134,10 +134,10 @@ public class ProblemsAccountFeedbackService(
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals(DefaultValue.Neutral, StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var category = commonFeedback.GetCategorySubCategoryCWL(settings, DefaultValue.ProblemAccount);
 
-        var criteria = new CreateMutipleFeedbackCommand
+        var criteria = new CreateMultipleFeedbackCommand
         {
             CreatorId = appSettings.CreatorId,
             UserId = appSettings.CreatorId,
@@ -145,8 +145,8 @@ public class ProblemsAccountFeedbackService(
             ResolutionDate = feedbackDate.AddMinutes(1).Subtract(timeSpan),
             IsCheckedDefaultComm = true,
             StationId = station != null ? station.SettingId.ToString() : string.Empty,
-            StatusId = status != null ? status.SettingId : 0,
-            ResponseId = response != null ? response.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
+            ResponseId = response?.SettingId ?? 0,
             UserRole = BackgroundJobConstants.UserRole,
             CategoryXml = category.Item3,
             CategoryIds = category.Item1.ToString(),
@@ -168,8 +168,8 @@ public class ProblemsAccountFeedbackService(
     }
 
     protected internal virtual async Task CheckValidParamsAndInsertFeedbackAsync(
-        IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts,
-        CreateMutipleFeedbackCommand criteria)
+        IEnumerable<ProblemsAccountAutoFeedbackInfo> problemsAccounts,
+        CreateMultipleFeedbackCommand criteria)
     {
         var checkValidParamBeforeInsert = commonFeedback.CheckFeedbackValidParams(criteria);
         if (!checkValidParamBeforeInsert.Item1)
@@ -212,7 +212,7 @@ public class ProblemsAccountFeedbackService(
         return stringBuilder.Append(BackgroundJobConstants.EndRootTag).ToString();
     }
 
-    protected internal virtual string GetRelatedCustomerXml(IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts)
+    protected internal virtual string GetRelatedCustomerXml(IEnumerable<ProblemsAccountAutoFeedbackInfo> problemsAccounts)
     {
         const string XmlTemplate = DefaultValue.RelatedCustomerXml;
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
@@ -224,7 +224,7 @@ public class ProblemsAccountFeedbackService(
         return stringBuilder.Append(BackgroundJobConstants.EndRootTag).ToString();
     }
 
-    protected internal virtual string GetCustomerXml(IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts)
+    protected internal virtual string GetCustomerXml(IEnumerable<ProblemsAccountAutoFeedbackInfo> problemsAccounts)
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendFormat(DefaultValue.CustomerXml, problemsAccounts.FirstOrDefault()?.HeadlineID, problemsAccounts.FirstOrDefault()?.HeadlineName);
@@ -238,7 +238,7 @@ public class ProblemsAccountFeedbackService(
         return product ?? new SettingItem { SettingId = BackgroundJobConstants.ProductNA };
     }
 
-    protected internal virtual string GetSolution(IEnumerable<ProblemsAccountAutoFeedbackInfor> problemsAccounts)
+    protected internal virtual string GetSolution(IEnumerable<ProblemsAccountAutoFeedbackInfo> problemsAccounts)
     {
         var stringBuilder = new StringBuilder();
         var stringBuilderContent = new StringBuilder();
@@ -249,8 +249,8 @@ public class ProblemsAccountFeedbackService(
         var groupCategoryProblemsAccount = problemsAccounts.GroupBy(x => x.CategoryID);
         foreach (var categoryProblemAccount in groupCategoryProblemsAccount)
         {
-            var categoryNameEN = commonFeedback.GetCategogyName(categoryProblemAccount.Key.ToString(), Language.en_US);
-            var categoryNameYNSC = commonFeedback.GetCategogyName(categoryProblemAccount.Key.ToString(), languageContent);
+            var categoryNameEN = commonFeedback.GetCategoryName(categoryProblemAccount.Key.ToString(), Language.en_US);
+            var categoryNameYNSC = commonFeedback.GetCategoryName(categoryProblemAccount.Key.ToString(), languageContent);
             var distinctUserName = categoryProblemAccount.GroupBy(x => x.UserName)
                 .Select(group => group.First()).ToList();
             var listUserNames = string.Join(", ", distinctUserName.Select(x => x.UserName));

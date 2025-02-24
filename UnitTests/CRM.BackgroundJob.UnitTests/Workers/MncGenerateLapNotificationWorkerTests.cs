@@ -33,17 +33,17 @@
 
         private MncGenerateLapNotificationWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "Test",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   IsDisableAtWeekend = false,
-                   TimeInterval = 60
+                    JobName = "Test",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    IsDisableAtWeekend = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             messageNotificationCenter = Substitute.For<IMessageNotificationCenterService>();

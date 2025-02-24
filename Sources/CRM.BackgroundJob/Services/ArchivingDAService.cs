@@ -1,16 +1,16 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.ArchivingDA;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 public interface IArchivingDAService
 {
@@ -51,9 +51,9 @@ public class ArchivingDAService(
             }
             else
             {
-                var custInfor = await feedbackTransactionService.GetArchivingCustInfo();
-                var archivedDate = custInfor.First().ArchivedDate;
-                var custIdsJoin = string.Join(",", custInfor.Select(x => x.CustID));
+                var custInfo = await feedbackTransactionService.GetArchivingCustInfo();
+                var archivedDate = custInfo.First().ArchivedDate;
+                var custIdsJoin = string.Join(",", custInfo.Select(x => x.CustID));
                 await feedbackTransactionService.ArchivingImportDirectAccountAsync(custIdsJoin, archivedDate);
                 await commonFeedback.EditArchivingDAStatusSettingAsync(BackgroundJobConstants.ServiceName_ArchivingDA, "1");
                 archivingAutoFbInfos = await feedbackTransactionService.ArchivingAutoFeedbackInfoInsAsync(archivingDASetting, Environment);
@@ -92,7 +92,7 @@ public class ArchivingDAService(
         IEnumerable<SystemSettingMapping> settingMappings)
     {
         logService.LogInformation(
-            $"Start create achiving DA feedback logId: {archivingAutoFbInfo.LogFeedbackId} , headlineName: {archivingAutoFbInfo.HeadlineName}!");
+            $"Start create archiving DA feedback logId: {archivingAutoFbInfo.LogFeedbackId} , headlineName: {archivingAutoFbInfo.HeadlineName}!");
         var timeSpan = new TimeSpan(appSettings.TimeSpan, 0, 0);
         var feedbackDate = DateTimeOffset.Now.DateTime.Add(timeSpan);
         var status = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Status, StringComparison.OrdinalIgnoreCase)
@@ -100,10 +100,10 @@ public class ArchivingDAService(
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals(DefaultValue.Neutral, StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var category = GetCategorySubCategoryArchivingDA(settings, DefaultValue.Special_Notification);
 
-        var criteria = new CreateMutipleFeedbackCommand
+        var criteria = new CreateMultipleFeedbackCommand
         {
             CreatorId = appSettings.CreatorId,
             UserId = appSettings.CreatorId,
@@ -111,9 +111,9 @@ public class ArchivingDAService(
             FeedbackDate = feedbackDate.Subtract(timeSpan),
             ResolutionDate = feedbackDate.AddMinutes(1).Subtract(timeSpan),
             StationId = station != null ? station.SettingId.ToString() : string.Empty,
-            StatusId = status != null ? status.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
             SubCategoryIds = category.Item2.ToString(),
-            ResponseId = response != null ? response.SettingId : 0,
+            ResponseId = response?.SettingId ?? 0,
             CategoryXml = category.Item3,
             CategoryIds = category.Item1.ToString(),
             UserRole = BackgroundJobConstants.UserRole,
@@ -180,7 +180,7 @@ public class ArchivingDAService(
 
     protected internal virtual async Task CheckValidArchivingParamsAndInsertFeedbackAsync(
         ArchivingAutoFbInfo archivingAutoFbInfo,
-        CreateMutipleFeedbackCommand criteria)
+        CreateMultipleFeedbackCommand criteria)
     {
         var checkValidParamBeforeInsert = commonFeedback.CheckFeedbackValidParams(criteria);
         if (!checkValidParamBeforeInsert.Item1)
@@ -205,7 +205,7 @@ public class ArchivingDAService(
             else
             {
                 logService.LogInformation(
-                    $"Create  archiving DA feedback Faild HeadlineId {archivingAutoFbInfo.HeadlineID} HeadlineName:{archivingAutoFbInfo.HeadlineName}");
+                    $"Create  archiving DA feedback Failed HeadlineId {archivingAutoFbInfo.HeadlineID} HeadlineName:{archivingAutoFbInfo.HeadlineName}");
 
                 await feedbackTransactionService.EditArchivingDAAutoFeedback(archivingAutoFbInfo.LogFeedbackId, CreateFeedbackJobStatus.Fail, commandResult.Message);
                 await logService.ErrorAsync(commandResult, criteria);
@@ -236,13 +236,13 @@ public class ArchivingDAService(
         {
             var subCategory = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
                                                            && x.SettingValue.Equals(subCateName, StringComparison.OrdinalIgnoreCase));
-            subCategoryId = subCategory != null ? subCategory.SettingId : 0;
+            subCategoryId = subCategory?.SettingId ?? 0;
         }
 
         return new Tuple<int, int, string>(
-            category != null ? category.SettingId : 0, subCategoryId,
+            category?.SettingId ?? 0, subCategoryId,
             string.Format(DefaultValue.CategoryXml,
-                category != null ? category.SettingId : 0,
+                category?.SettingId ?? 0,
                 subCategoryId));
     }
 

@@ -1,15 +1,15 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
     using CRM.BackgroundJob.Criteria.AutoFbRebateRetention;
     using CRM.BackgroundJob.Criteria.ChatBotRebateRetention;
     using CRM.BackgroundJob.Models.ChatBotRebateRetention;
     using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AutoFbRebateRetentionServiceTests
@@ -41,23 +41,24 @@
             var fixture = new Fixture();
             var rrMessages = fixture.Create<IEnumerable<ChatBotRebateRetentionInfo>>();
             var commandResult = fixture.Create<CommandResult>();
-            var command = new ImportAutoFbRebateRetentionCommand();
             var service = GetService();
-            baseService.ExecuteNonQueryAsync(Arg.Do<ImportAutoFbRebateRetentionCommand>(x => command = x)).Returns(commandResult);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ImportAutoFbRebateRetentionCommand>(x => _ = x)).Returns(commandResult);
 
             // Act
-            var actual = await service.ImportRebateRetentionCommand(rrMessages, "1" ,"dev");
+            var actual = await service.ImportRebateRetentionCommand(rrMessages, "1", "dev");
 
             // Assert
             Assert.Equal(commandResult, actual.Item1);
         }
 
         #region Helpers
+
         private AutoFbRebateRetentionService GetService()
         {
             baseService = Substitute.For<IBaseService>();
             return new AutoFbRebateRetentionService(baseService);
         }
+
         #endregion Helpers
     }
 }

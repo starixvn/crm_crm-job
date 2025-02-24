@@ -1,9 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Constants;
 using CRM.BackgroundJob.Criteria.PushResultAmendment;
 using CRM.BackgroundJob.Models;
@@ -11,6 +7,10 @@ using CRM.BackgroundJob.Models.MessageNotificationCenter;
 using CRM.Services;
 using Fanex.BotService.Client.Core.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public interface IMessageNotificationCenterService
 {
@@ -27,6 +27,7 @@ public interface IMessageNotificationCenterService
 
 #pragma warning disable S134
 #pragma warning disable S107
+
 public class MessageNotificationCenterService(
     ICrmLogService logService,
     IConfiguration configuration,
@@ -61,12 +62,12 @@ public class MessageNotificationCenterService(
             {
                 foreach (var item in initSiteDbConfigs)
                 {
-                    var sessionResultHistorys = await captureSettlementDataService.GetSessionByDateAsync(item);
-                    var sessionResultHistory = sessionResultHistorys.FirstOrDefault();
+                    var sessionResultHistories = await captureSettlementDataService.GetSessionByDateAsync(item);
+                    var sessionResultHistory = sessionResultHistories.FirstOrDefault();
 
                     if (sessionResultHistory != null)
                     {
-                        await captureSettlementDataService.InsertDataLoadAsync(sessionResultHistory.Environment, sessionResultHistory.JSSettlResultHist);
+                        await captureSettlementDataService.InsertDataLoadAsync(sessionResultHistory.Environment, sessionResultHistory.JSSettleResultHist);
                     }
                 }
             }
@@ -268,5 +269,6 @@ public class MessageNotificationCenterService(
         }
     }
 }
+
 #pragma warning restore S134
 #pragma warning restore S107

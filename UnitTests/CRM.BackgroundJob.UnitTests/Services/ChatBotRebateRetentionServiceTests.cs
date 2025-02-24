@@ -1,17 +1,15 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
     using AutoFixture;
+    using CRM.BackgroundJob.Criteria.ChatBotRebateRetention;
+    using CRM.BackgroundJob.Models.ChatBotRebateRetention;
+    using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
+    using NSubstitute;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.Services;
-    using CRM.BackgroundJob.Services;
-    using NSubstitute;
     using Xunit;
-    using CRM.BackgroundJob.Models.ChatBotRebateRetention;
-    using CRM.BackgroundJob.Criteria.ChatBotRebateRetention;
-    using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
-    using CRM.BackgroundJob.Models.ChatBotResulAmendment;
-    using CRM.Models;
 
     public class ChatBotRebateRetentionServiceTests
     {
@@ -47,8 +45,7 @@
             var expected = fixture.Create<CommandResult>();
             var rrMessages = fixture.Create<IEnumerable<ChatBotRebateRetentionInfo>>();
             var service = GetService();
-            var command = new ImportRebateRetentionCommand();
-            baseService.ExecuteNonQueryAsync(Arg.Do<ImportRebateRetentionCommand>(x => command = x)).Returns(expected);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ImportRebateRetentionCommand>(x => _ = x)).Returns(expected);
 
             // Act
             var actual = await service.ImportRebateRetentionCommand(rrMessages, "1", "dev");
@@ -58,11 +55,13 @@
         }
 
         #region Helpers
+
         private ChatBotRebateRetentionService GetService()
         {
             baseService = Substitute.For<IBaseService>();
             return new ChatBotRebateRetentionService(baseService);
         }
+
         #endregion Helpers
     }
 }

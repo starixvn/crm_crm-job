@@ -1,38 +1,32 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Testable
 {
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.AmendmentNotiFB;
+    using CRM.BackgroundJob.Services;
+    using CRM.Services;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using CRM.Services;
-    using CRM.BackgroundJob.Models.AmendmentNotiFB;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Options;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
-    public class ResultAmendmentServiceTestable : AmendmentNotiFbService
+    public class ResultAmendmentServiceTestable(
+        IOptionsSnapshot<AppJobSettings> appSettings,
+        IBaseService baseService,
+        ISettingService settingService,
+        ICustomerService customerService,
+        ICrmLogService logService,
+        ICommonFeedback commonFeedback,
+        IFeedbackTransactionService transactionService)
+        : AmendmentNotiFbService(appSettings,
+            baseService,
+            settingService,
+            customerService,
+            logService,
+            commonFeedback,
+            transactionService)
     {
-        public ResultAmendmentServiceTestable(IOptionsSnapshot<AppJobSettings> appSettings,
-            IBaseService baseService,
-            ISettingService settingService,
-            ICustomerService customerService,
-            ICrmLogService logService,
-            ICommonFeedback commonFeedback,
-            IFeedbackTransactionService transactionService)
-        : base(appSettings,
-                baseService,
-                settingService,
-                customerService,
-                logService,
-                commonFeedback,
-                transactionService
-              )
-        {
-        }
-
         public async Task Public_ResultAmendmentUpdateSystemSetting(
             bool isUAT,
             AmendmentNotiFbSetting resultAmendmentSetting,
@@ -44,7 +38,7 @@
         }
 
         public async Task Public_CreateResultAmendmentFeedbackCreditAsync(
-           AmendmentAutoFeedbackInfor amendment,
+           AmendmentAutoFeedbackInfo amendment,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings,
             bool isNoResultTemplate)
@@ -53,8 +47,8 @@
         }
 
         public async Task Public_CheckValidAmendmentParamsAndInsertFeedbackAsync(
-           AmendmentAutoFeedbackInfor amendment,
-            CreateMutipleFeedbackCommand criteria)
+           AmendmentAutoFeedbackInfo amendment,
+            CreateMultipleFeedbackCommand criteria)
         {
             await base.CheckValidAmendmentParamsAndInsertFeedbackAsync(amendment, criteria);
         }
@@ -74,7 +68,7 @@
             IEnumerable<SystemSettingMapping> settingMappings,
             int productId)
         {
-            return base.GetAmenmentProduct(settings, settingMappings, productId);
+            return base.GetAmendmentProduct(settings, settingMappings, productId);
         }
 
         public IList<SettingItem> Public_GetAmendmentSubProduct(
@@ -100,18 +94,18 @@
             return base.GetCategorySubCategoryResultAmendment(settings, settingValueName);
         }
 
-        public string Public_GetAmendmentRelatedCustomerXml(AmendmentAutoFeedbackInfor amendment)
+        public string Public_GetAmendmentRelatedCustomerXml(AmendmentAutoFeedbackInfo amendment)
         {
             return base.GetAmendmentRelatedCustomerXml(amendment);
         }
 
-        public string Public_GetAmendmentDescription(AmendmentAutoFeedbackInfor amendment, bool isNoResultTemplate)
+        public string Public_GetAmendmentDescription(AmendmentAutoFeedbackInfo amendment, bool isNoResultTemplate)
         {
             return base.GetAmendmentDescription(amendment, isNoResultTemplate);
         }
 
         public StringBuilder Public_GetAmendmentDescriptionVirtualSports(
-            AmendmentAutoFeedbackInfor amendment,
+            AmendmentAutoFeedbackInfo amendment,
             AmendmentDescriptionTemplate amendmentDescTemplate,
             string sportName,
             string homeName,
@@ -130,7 +124,7 @@
         }
 
         public StringBuilder Public_GetAmendmentDescriptionNumberGame(
-            AmendmentAutoFeedbackInfor amendment,
+            AmendmentAutoFeedbackInfo amendment,
             AmendmentDescriptionTemplate amendmentDescTemplate,
             string leagueName,
             string sportName,
@@ -146,7 +140,7 @@
         }
 
         public StringBuilder Public_GetAmendmentDescriptionSportOutRight(
-            AmendmentAutoFeedbackInfor amendment,
+            AmendmentAutoFeedbackInfo amendment,
             AmendmentDescriptionTemplate amendmentDescTemplate,
             string kO_time,
             string leagueName,
@@ -161,14 +155,14 @@
              homeName);
         }
 
-        public string Public_GetAmenmendSolution(AmendmentAutoFeedbackInfor amendment,
+        public string Public_GetAmenmendSolution(AmendmentAutoFeedbackInfo amendment,
             IEnumerable<Message> messageContent, bool isNoResultTemplate)
         {
-            return base.GetAmenmendSolution(amendment, messageContent, isNoResultTemplate);
+            return base.GetAmendmentSolution(amendment, messageContent, isNoResultTemplate);
         }
 
         public StringBuilder Public_GetAmendmentSolutionTemplateEN(
-           AmendmentAutoFeedbackInfor amendment,
+           AmendmentAutoFeedbackInfo amendment,
            AmendmentSolutionTemplate amendmentSolTemplate,
            IEnumerable<Message> messageContent)
         {
@@ -179,7 +173,7 @@
         }
 
         public StringBuilder Public_GetAmendmentSolutionTemplateYNSC(
-            AmendmentAutoFeedbackInfor amendment,
+            AmendmentAutoFeedbackInfo amendment,
             AmendmentSolutionTemplate amendmentSolTemplate,
             IEnumerable<Message> messageContent,
             bool isVipCust)
@@ -192,7 +186,7 @@
         }
 
         public StringBuilder Public_GetAmendmentSolutionTemplateYnSportBook(
-            AmendmentAutoFeedbackInfor amendment,
+            AmendmentAutoFeedbackInfo amendment,
             AmendmentSolutionTemplate amendmentSolTemplate,
             IEnumerable<Message> messageContent,
             string sportNameYN,

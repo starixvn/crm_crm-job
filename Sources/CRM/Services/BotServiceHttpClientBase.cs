@@ -1,5 +1,9 @@
 ﻿namespace CRM.Services;
 
+using Fanex.Caching;
+using Models.BotServices;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -7,10 +11,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Fanex.Caching;
-using Models.BotServices;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 public class BotServiceHttpClientBase(
     BotEndpointSettings botSettings,
@@ -53,8 +53,8 @@ public class BotServiceHttpClientBase(
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             var data = JObject.Parse(responseString);
-            token = data["accessToken"].Value<string>();
-            var expired = data["expriedDate"].Value<DateTime>();
+            token = data["accessToken"]?.Value<string>();
+            var expired = data["expriedDate"]?.Value<DateTime>();
             await cacheService.SetAsync(JwtTokenCacheKey, token, new CacheItemOptions
             {
                 AbsoluteExpiration = expired

@@ -10,9 +10,11 @@ public class ImportChatBotResultAmendmentCommand : NonQueryCommand
     public string TargetMessage { get; set; }
     public string InfoMessage { get; set; }
     public string Environment { get; set; }
-    public string Servername { get; set; }
+    public string ServerName { get; set; }
     public int ErrCode { get; set; }
     public string ErrMsg { get; set; }
+
     public override string GetSettingKey() => "Acc_CRM_Chatbot_ResultAmendment_Import";
+
     public override bool IsValid() => true;
 }

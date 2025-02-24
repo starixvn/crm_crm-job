@@ -1,10 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
@@ -17,6 +12,11 @@
     using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class FeedbackServiceTests
@@ -40,14 +40,14 @@
             var setting = fixture.Create<AbnormalBetSystemSetting>();
             var voidingMessages = new ValueTuple<IEnumerable<VoidingMessage>, IEnumerable<VoidingHisMessage>>();
             var messageImportCheck = fixture.Create<IEnumerable<VoidingHisMessage>>();
-            var failMessages = new List<VoidingMessageUserName>();
             var voidingMessageUserName = fixture.Create<IEnumerable<VoidingMessageUserName>>();
             var transactionTickets = fixture.Create<IEnumerable<TransactionInfo>>();
+
             var service = MockService();
             messageService.GetVoidingMessageAsync(Arg.Any<int>()).Returns(voidingMessages);
             messageService.ImportVoidingMessageHistoryCheckAsync(voidingMessages.Item2).Returns(messageImportCheck);
             messageService.ImportVoidingMessageAsync(voidingMessageUserName, voidingMessages.Item1, setting.BatchSize, "Live", setting.LastDateUAT).Returns(voidingMessageUserName);
-            messageService.GetFailMessageAsync().Returns(failMessages);
+            messageService.GetFailMessageAsync().Returns(new List<VoidingMessageUserName>());
             ticketVoidingService.GetAbnormalTicketsByTransAsync(setting, Arg.Any<string>()).Returns(transactionTickets);
             // Act
             await service.CreateFeedbackForVoidingAbnormalBetAsync(setting, false, setting.LastDateUAT, "LastRuntime", setting.JobStatus, "Live");
@@ -65,6 +65,7 @@
                Arg.Any<IEnumerable<DuplicateTicketDetail>>()
                );
         }
+
         [Fact]
         public async Task CreateFeedbackForVoidingAbnormalBetAsync_NotExistedTicketVoiding_ExpectedUpdateSystemSetting()
         {
@@ -73,17 +74,16 @@
             var voidingMessages = new ValueTuple<IEnumerable<VoidingMessage>, IEnumerable<VoidingHisMessage>>();
             var messageImportCheck = fixture.Create<IEnumerable<VoidingHisMessage>>();
             var failMessages = fixture.Create<IEnumerable<VoidingMessageUserName>>();
-            var voidingMessageUserName = new List<VoidingMessageUserName>();
-            var matchInfos = new List<MatchInfo>();
             var transactionInfos = fixture.Create<IEnumerable<TransactionInfo>>();
             var transCheck = fixture.Create<string>();
             var transactionTickets = fixture.Create<IEnumerable<TransactionInfo>>();
             var duplicateTicketDetail = fixture.Create<IEnumerable<DuplicateTicketDetail>>();
-            var ticketInfo = new ValueTuple<IEnumerable<MatchInfo>, IEnumerable<TransactionInfo>, IEnumerable<DuplicateTicketDetail>, string>(matchInfos, transactionInfos, duplicateTicketDetail, transCheck);
+            var ticketInfo = new ValueTuple<IEnumerable<MatchInfo>, IEnumerable<TransactionInfo>, IEnumerable<DuplicateTicketDetail>, string>(new List<MatchInfo>(), transactionInfos, duplicateTicketDetail, transCheck);
+
             var service = MockService();
             messageService.GetVoidingMessageAsync(Arg.Any<int>()).Returns(voidingMessages);
             messageService.ImportVoidingMessageHistoryCheckAsync(voidingMessages.Item2).Returns(messageImportCheck);
-            messageService.ImportVoidingMessageAsync(voidingMessageUserName, voidingMessages.Item1, setting.BatchSize, "Live", setting.LastDateUAT).Returns(voidingMessageUserName);
+            messageService.ImportVoidingMessageAsync(Arg.Any<List<VoidingMessageUserName>>(), voidingMessages.Item1, setting.BatchSize, "Live", setting.LastDateUAT).Returns(new List<VoidingMessageUserName>());
             messageService.GetFailMessageAsync().Returns(failMessages);
             ticketVoidingService.GetTicketVoidingInfoAsync(Arg.Any<IEnumerable<VoidingMessageUserName>>(), setting).Returns(ticketInfo);
             ticketVoidingService.GetAbnormalTicketsByTransAsync(setting, ticketInfo.Item4).Returns(transactionTickets);
@@ -112,17 +112,17 @@
             var setting = fixture.Create<AbnormalBetSystemSetting>();
             var matchInfos = new List<MatchInfo>
             {
-                new MatchInfo { MessageId = "1" }
+                new() { MessageId = "1" }
             };
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { MessageId = 1, CustId = 1 },
-                new TransactionInfo { MessageId = 1, IsDeposit = true }
+                new() { MessageId = 1, CustId = 1 },
+                new() { MessageId = 1, IsDeposit = true }
             };
             var voidingMessages = new ValueTuple<IEnumerable<VoidingMessage>, IEnumerable<VoidingHisMessage>>();
             var messageImportCheck = fixture.Create<IEnumerable<VoidingHisMessage>>();
             var failMessages = fixture.Create<IEnumerable<VoidingMessageUserName>>();
-            var voidingMessageUserName = new List<VoidingMessageUserName>();
+
             var transCheck = fixture.Create<string>();
             var transactionTickets = fixture.Create<IEnumerable<TransactionInfo>>();
             var duplicateTicketDetail = fixture.Create<IEnumerable<DuplicateTicketDetail>>();
@@ -130,7 +130,7 @@
             var service = MockService();
             messageService.GetVoidingMessageAsync(Arg.Any<int>()).Returns(voidingMessages);
             messageService.ImportVoidingMessageHistoryCheckAsync(voidingMessages.Item2).Returns(messageImportCheck);
-            messageService.ImportVoidingMessageAsync(voidingMessageUserName, voidingMessages.Item1, setting.BatchSize, "Live", setting.LastDateUAT).Returns(voidingMessageUserName);
+            messageService.ImportVoidingMessageAsync(new List<VoidingMessageUserName>(), voidingMessages.Item1, setting.BatchSize, "Live", setting.LastDateUAT).Returns(new List<VoidingMessageUserName>());
             messageService.GetFailMessageAsync().Returns(failMessages);
             ticketVoidingService.GetTicketVoidingInfoAsync(Arg.Any<IEnumerable<VoidingMessageUserName>>(), setting).Returns(ticketInfo);
             ticketVoidingService.GetAbnormalTicketsByTransAsync(setting, ticketInfo.Item4).Returns(transactionTickets);
@@ -164,21 +164,20 @@
             var setting = fixture.Create<AbnormalBetSystemSetting>();
             var matchInfos = new List<MatchInfo>
             {
-                new MatchInfo { MessageId = "1" }
+                new() { MessageId = "1" }
             };
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { MessageId = 1, CustId = 1 },
-                new TransactionInfo { MessageId = 1, IsDeposit = true }
+                new() { MessageId = 1, CustId = 1 },
+                new() { MessageId = 1, IsDeposit = true }
             };
             var settings = fixture.Create<IEnumerable<SettingItem>>();
             var messages = new List<Message> {
-                new Message
+                new()
                 {
                     MessageId = 1
                 }
             };
-            var voidingMessageUserName = new List<VoidingMessageUserName>();
             var ticketInfo = new ValueTuple<IEnumerable<MatchInfo>, IEnumerable<TransactionInfo>>(matchInfos, transactionInfos);
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var siteSettingMappings = fixture.Create<IEnumerable<SiteSettingMapping>>();
@@ -186,7 +185,7 @@
             var licenseeInfo = fixture.Create<CustomerInfo>();
             var headlines = new List<GroupHeadline>
             {
-                new GroupHeadline { CustId = 1 }
+                new() { CustId = 1 }
             };
             var service = MockService();
             settingService.GetAllSettingAsync().Returns(settings);
@@ -195,7 +194,7 @@
             customerService.GetCustomerInfoAsync(appSettings.LicenseeUsername, true).Returns(licenseeInfo);
             customerService.GetGroupHeadlineVipAsync(Arg.Any<IEnumerable<int>>()).Returns(headlines);
             ticketVoidingService.ImportTicketVoidingInfoAsync(
-                    voidingMessageUserName,
+                    new List<VoidingMessageUserName>(),
                     ticketInfo.Item1,
                     ticketInfo.Item2,
                     siteSettingMappings,
@@ -207,7 +206,7 @@
             await service.Public_CreateFeedbackForCreditDepositSiteAsync(messages,
                         ticketInfo.Item1,
                         ticketInfo.Item2,
-                        voidingMessageUserName,
+                        new List<VoidingMessageUserName>(),
                         false,
                         setting,
                         duplicateTicketDetails
@@ -232,9 +231,11 @@
                 settingMappings,
                 Arg.Any<IEnumerable<DuplicateTicketDetail>>());
         }
+
         #endregion CreateFeedbackForCreditDepositSiteAsync
 
         #region CreateFeedbackForCreditSiteAsync
+
         [Fact]
         public async Task CreateFeedbackForCreditSiteAsync_WhenCalled_ExpectedCallCreateFeedbackForCreditSiteByBatchAsync()
         {
@@ -244,13 +245,13 @@
             var transactionInfos = fixture.Create<IEnumerable<TransactionInfo>>();
             var headlines = new List<GroupHeadline>
             {
-                new GroupHeadline { HeadlineId = 1, CustId = 1 }
+                new() { HeadlineId = 1, CustId = 1 }
             };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
-                new SettingItem { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
-                new SettingItem { SettingId = 2022, SettingName = "Station" }
+                new() { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
+                new() { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
+                new() { SettingId = 2022, SettingName = "Station" }
             };
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var service = MockService();
@@ -276,8 +277,9 @@
                 transactionInfos,
                 settings,
                 settingMappings,
-                Arg.Any<CreateMutipleFeedbackCommand>());
+                Arg.Any<CreateMultipleFeedbackCommand>());
         }
+
         #endregion CreateFeedbackForCreditSiteAsync
 
         #region CreateFeedbackForCreditSiteByBatchAsync
@@ -289,7 +291,7 @@
             var headline = new GroupHeadline { HeadlineId = 1 };
             var relatedCustomerIds = new List<int> { 1 };
             var messages = new List<Message>{
-                new Message
+                new()
                 {
                     MessageId = 1, RequestId = 1
                 }
@@ -298,10 +300,10 @@
             var settings = fixture.Create<IEnumerable<SettingItem>>();
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { RequestId = 1, CustId = 1 }
+                new() { RequestId = 1, CustId = 1 }
             };
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var commandResult = new CommandResult { Code = 0 };
             var service = MockService();
             baseService.ExecuteNonQueryAsync(criteria).Returns(commandResult);
@@ -338,7 +340,7 @@
             var headline = new GroupHeadline { HeadlineId = 1 };
             var relatedCustomerIds = new List<int> { 1 };
             var messages = new List<Message>{
-                new Message
+                new()
                 {
                     MessageId = 1, RequestId = 1
                 }
@@ -346,11 +348,11 @@
             var matchInfo = fixture.Create<MatchInfo>();
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { RequestId = 1, CustId = 1 }
+                new() { RequestId = 1, CustId = 1 }
             };
             var settings = fixture.Create<IEnumerable<SettingItem>>();
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var commandResult = new CommandResult();
             var service = MockService();
             baseService.ExecuteNonQueryAsync(criteria).Returns(commandResult);
@@ -380,16 +382,16 @@
             var headline = new GroupHeadline { HeadlineId = 1 };
             var relatedCustomerIds = new List<int> { 1 };
             var messages = new List<Message>{
-                new Message { MessageId = 1, RequestId = 1 }
+                new() { MessageId = 1, RequestId = 1 }
             };
             var matchInfo = fixture.Create<MatchInfo>();
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { RequestId = 1, CustId = 1 }
+                new() { RequestId = 1, CustId = 1 }
             };
             var settings = fixture.Create<IEnumerable<SettingItem>>();
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             baseService.When(x => x.ExecuteNonQueryAsync(criteria)).Throw(exception);
 
@@ -413,6 +415,7 @@
         #endregion CreateFeedbackForCreditSiteByBatchAsync
 
         #region CreateFeedbackForDepositSiteAsync
+
         [Fact]
         public async Task CreateFeedbackForDepositSiteAsync_WhenCalled_ExpectedCallCreateFeedbackForDepositByBatchAsync()
         {
@@ -426,9 +429,9 @@
             var duplicateTicketDetails = fixture.Create<IEnumerable<DuplicateTicketDetail>>();
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
-                new SettingItem { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
-                new SettingItem { SettingId = 2022, SettingName = "Station" }
+                new() { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
+                new() { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
+                new() { SettingId = 2022, SettingName = "Station" }
             };
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var service = MockService();
@@ -451,6 +454,7 @@
             service.Received().Protected("GetProductXml", false, matchInfo, transactionInfos, settings, settingMappings);
             service.Received().Protected("CreateFeedbackForDepositByBatchAsync", messages, transactionInfos, Arg.Any<string>(), Arg.Any<CreateFeedbackCommand>(), duplicateTicketDetails);
         }
+
         #endregion CreateFeedbackForDepositSiteAsync
 
         #region GetLicenseeManager
@@ -461,11 +465,11 @@
             // Arrange
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { Site = "Site" }
+                new() { Site = "Site" }
             };
             var siteSettingMappings = new List<SiteSettingMapping>
             {
-                new SiteSettingMapping { SettingSource = "Site", LicenseeManagerId = 1, LicenseeManager = "starixIT" }
+                new() { SettingSource = "Site", LicenseeManagerId = 1, LicenseeManager = "starixIT" }
             };
             var service = MockService();
 
@@ -483,13 +487,12 @@
             // Arrange
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo()
+                new()
             };
-            var siteSettingMappings = new List<SiteSettingMapping>();
             var service = MockService();
 
             // Act
-            service.Public_GetLicenseeManager(transactionInfos, siteSettingMappings);
+            service.Public_GetLicenseeManager(transactionInfos, new List<SiteSettingMapping>());
 
             // Assert
             Assert.Equal(0, transactionInfos.First().LicenseeManagerId);
@@ -505,10 +508,9 @@
         {
             // Arrange
             var service = MockService();
-            var settings = new List<SettingItem>();
 
             // Act
-            var actual = service.Public_GetCommunicationTool(settings);
+            var actual = service.Public_GetCommunicationTool(new List<SettingItem>());
 
             // Assert
             Assert.Equal(BackgroundJobConstants.CommunicationNA.ToString(), actual.SettingId.ToString());
@@ -521,7 +523,7 @@
             var service = MockService();
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Communication", SettingValue = "Skype" }
+                new() { SettingId = 1, SettingName = "Communication", SettingValue = "Skype" }
             };
 
             // Act
@@ -567,7 +569,7 @@
             var sportsbook = new SettingItem { SettingId = 1 };
             var subProducts = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var betTypes = new List<SettingItem>();
             var service = MockService();
@@ -593,11 +595,11 @@
             var sportsbook = new SettingItem { SettingId = 1 };
             var subProducts = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var betTypes = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, ParentIds = new List<int> { 1 } }
             };
             var service = MockService();
             service.Protected("GetSportsbookProduct", settings).Returns(sportsbook);
@@ -620,10 +622,9 @@
         {
             // Arrange
             var service = MockService();
-            var settings = new List<SettingItem>();
 
             // Act
-            var actual = service.Public_GetSportsbookProduct(settings);
+            var actual = service.Public_GetSportsbookProduct(new List<SettingItem>());
 
             // Assert
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.SettingId);
@@ -636,7 +637,7 @@
             var service = MockService();
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Product", SettingValue = "Sportsbook" }
+                new() { SettingId = 1, SettingName = "Product", SettingValue = "Sportsbook" }
             };
 
             // Act
@@ -649,6 +650,7 @@
         #endregion GetSportsbookProduct
 
         #region GetSubProduct
+
         [Fact]
         public void GetSubProduct_NotExistedMapping_ReturnDefaultSubProduct()
         {
@@ -699,11 +701,11 @@
             var matchInfo = new MatchInfo { SportName = "sport" };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "SubProduct", ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, SettingName = "SubProduct", ParentIds = new List<int> { 1 } }
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping { SettingId = 1, SettingName = "SubProduct", SettingSource = "sport" }
+                new() { SettingId = 1, SettingName = "SubProduct", SettingSource = "sport" }
             };
             var service = MockService();
 
@@ -770,15 +772,15 @@
             var subProducts = new List<int> { 1 };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping { SettingId = 1, SettingName = "BetType", SettingSource = "BetType" }
+                new() { SettingId = 1, SettingName = "BetType", SettingSource = "BetType" }
             };
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { Bettype = "BetType" }
+                new() { Bettype = "BetType" }
             };
             var service = MockService();
 
@@ -801,11 +803,11 @@
             var subProducts = new List<int> { 1 };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Bettype", ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, SettingName = "Bettype", ParentIds = new List<int> { 1 } }
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping { SettingId = 1, SettingName = "Bettype", SettingSource = "Mix Parlay" }
+                new() { SettingId = 1, SettingName = "Bettype", SettingSource = "Mix Parlay" }
             };
             var service = MockService();
 
@@ -825,11 +827,10 @@
         public void GetCategorySubCategory_NotExistedCategory_ReturnExpectedTuple()
         {
             // Arrange
-            var settings = new List<SettingItem>();
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetCategorySubCategory(settings, 13);
+            var actual = service.Public_GetCategorySubCategory(new List<SettingItem>(), 13);
 
             // Assert
             Assert.Equal(0, actual.Item1);
@@ -843,7 +844,7 @@
             // Arrange
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = "Special Notification" }
+                new() { SettingId = 1, SettingName = "MainCategory", SettingValue = "Special Notification" }
             };
             var service = MockService();
 
@@ -862,8 +863,8 @@
             // Arrange
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = "Special Notification" },
-                new SettingItem { SettingId = 2, SettingName = "SubCategory", SettingValue = "Abnormal Bets", ParentIds = new List<int>{ 1 } }
+                new() { SettingId = 1, SettingName = "MainCategory", SettingValue = "Special Notification" },
+                new() { SettingId = 2, SettingName = "SubCategory", SettingValue = "Abnormal Bets", ParentIds = new List<int>{ 1 } }
             };
             var service = MockService();
 
@@ -882,8 +883,8 @@
             // Arrange
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = "Special Notification" },
-                new SettingItem { SettingId = 2, SettingName = "SubCategory", SettingValue = "Abnormal Account", ParentIds = new List<int>{ 1 } }
+                new() { SettingId = 1, SettingName = "MainCategory", SettingValue = "Special Notification" },
+                new() { SettingId = 2, SettingName = "SubCategory", SettingValue = "Abnormal Account", ParentIds = new List<int>{ 1 } }
             };
             var service = MockService();
 
@@ -899,6 +900,7 @@
         #endregion GetCategorySubCategory
 
         #region GetRelatedCustomerXml
+
         [Fact]
         public void GetRelatedCustomerXml_WhenCalled_ReturnExpectedXml()
         {
@@ -906,7 +908,7 @@
             var headlineId = 1;
             var transactions = new List<TransactionInfo>
             {
-                new TransactionInfo { CustId = 1, Username = "starixIT" }
+                new() { CustId = 1, Username = "starixIT" }
             };
             var xml = "<ROOT><Row CustId='1' RelatedCustId='1' Username='starixIT' /></ROOT>";
             var service = MockService();
@@ -925,7 +927,7 @@
             var headlineId = 1;
             var transactions = new List<TransactionInfo>
             {
-                new TransactionInfo { CustId = 1, Username = "starixIT", RelatedUserName = "RelatedUserName", RelatedCustID = 2 }
+                new() { CustId = 1, Username = "starixIT", RelatedUserName = "RelatedUserName", RelatedCustID = 2 }
             };
             var xml = "<ROOT><Row CustId='1' RelatedCustId='2' Username='RelatedUserName' /></ROOT>";
             var service = MockService();
@@ -936,6 +938,7 @@
             // Assert
             Assert.Equal(xml, actual);
         }
+
         #endregion GetRelatedCustomerXml
 
         [Fact]
@@ -946,9 +949,10 @@
             var communicationTool = fixture.Create<string>();
             var licenseeManagers = fixture.Create<IEnumerable<string>>();
             var autoField = new StringBuilder("Date Time & Tool: ");
-            autoField.AppendFormat("{0}/{1}/{2}", feedbackDate.ToString("yyyyMMdd"), feedbackDate.ToString("hh:mmtt"), communicationTool);
+            autoField.Append(
+                $"{feedbackDate.ToString("yyyyMMdd")}/{feedbackDate.ToString("hh:mmtt")}/{communicationTool}");
             autoField.Append(Environment.NewLine);
-            autoField.AppendFormat("System ID: {0}", string.Join(", ", licenseeManagers));
+            autoField.Append($"System ID: {string.Join(", ", licenseeManagers)}");
             var service = MockService();
 
             // Act
@@ -967,7 +971,8 @@
             var messageId = fixture.Create<string>();
             var requestIds = fixture.Create<string>();
             var description = new StringBuilder("<span style=\"color: rgb(255, 0, 0);\">This is an auto-generated entry.</span>");
-            description.AppendFormat("<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {0}, Request No.: {1}</span>", messageId, requestIds);
+            description.Append(
+                $"<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {messageId}, Request No.: {requestIds}</span>");
             description.Append("<br />Announcement sent to affected Licensees and informed our related department found tickets of abnormal accounts.");
             description.Append("<br /><br />Please refer to the system email subject \"Voided Bets Report\" for those affected customers &amp; tickets for reference.");
             var service = MockService();
@@ -989,12 +994,13 @@
             var matchInfo = fixture.Create<MatchInfo>();
             var transactionInfos = fixture.Create<IEnumerable<TransactionInfo>>();
             var description = new StringBuilder("<span style=\"color: rgb(255, 0, 0);\">This is an auto-generated entry.</span>");
-            description.AppendFormat("<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {0}, Request No.: {1}</span>", messageId, requestIds);
-            description.AppendFormat("<br />Date: {0}", matchInfo.EventDate.ToString("dd-MMM-yyyy"));
-            description.AppendFormat("<br />Sport: {0}", matchInfo.SportName);
-            description.AppendFormat("<br />Event Start Time: {0}", matchInfo.KickOffTime);
-            description.AppendFormat("<br />League: {0}", matchInfo.LeagueName);
-            description.AppendFormat("<br />Match: {0} - vs - {1}", matchInfo.HomeName, matchInfo.AwayName);
+            description.Append(
+                $"<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {messageId}, Request No.: {requestIds}</span>");
+            description.Append($"<br />Date: {matchInfo.EventDate.ToString("dd-MMM-yyyy")}");
+            description.Append($"<br />Sport: {matchInfo.SportName}");
+            description.Append($"<br />Event Start Time: {matchInfo.KickOffTime}");
+            description.Append($"<br />League: {matchInfo.LeagueName}");
+            description.Append($"<br />Match: {matchInfo.HomeName} - vs - {matchInfo.AwayName}");
             var service = MockService();
 
             // Act
@@ -1013,15 +1019,15 @@
             var matchInfo = new MatchInfo
             {
                 IssueTypeId = 13,
-                MaxWinlostdate = new DateTime(2020 - 01 - 01),
-                MinWinlostdate = new DateTime(2020 - 01 - 01),
+                MaxWinLostDate = new DateTime(2020 - 01 - 01),
+                MinWinLostDate = new DateTime(2020 - 01 - 01),
                 DecidedBy = "DecidedBy",
-                Requestby = "Requestby",
+                RequestBy = "Requestby",
                 VoidBy = "VoidBy"
             };
 
             var transactionInfos = new List<TransactionInfo> {
-                new TransactionInfo
+                new()
                 {
                     CustId = 1,
                     RelatedUserName = "RelatedUserName"
@@ -1029,12 +1035,14 @@
             };
 
             var description = new StringBuilder("<span style=\"color: rgb(255, 0, 0);\">This is an auto-generated entry.</span>");
-            description.AppendFormat("<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {0}, Request No.: {1}</span>", messageId, requestIds);
-            description.AppendFormat("<br />Event Date: {0} - {1}", matchInfo.MinWinlostdate.ToString("dd-MMM-yyyy"), matchInfo.MaxWinlostdate.ToString("dd-MMM-yyyy"));
+            description.Append(
+                $"<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {messageId}, Request No.: {requestIds}</span>");
+            description.Append(
+                $"<br />Event Date: {matchInfo.MinWinLostDate.ToString("dd-MMM-yyyy")} - {matchInfo.MaxWinLostDate.ToString("dd-MMM-yyyy")}");
             description.AppendFormat("<br />Affected accounts: {0}", "RelatedUserName");
-            description.AppendFormat("<br />Decided By: {0}", matchInfo.DecidedBy);
-            description.AppendFormat("<br />Requested by: {0}", matchInfo.Requestby);
-            description.AppendFormat("<br />Voided by: {0}", matchInfo.VoidBy);
+            description.Append($"<br />Decided By: {matchInfo.DecidedBy}");
+            description.Append($"<br />Requested by: {matchInfo.RequestBy}");
+            description.Append($"<br />Voided by: {matchInfo.VoidBy}");
             var service = MockService();
 
             // Act
@@ -1047,6 +1055,7 @@
         #endregion GetDescription
 
         #region GetSolutionMixParlayForCreditSite
+
         [Fact]
         public void GetSolutionMixParlayForCreditSite_WhenCalled_ReturnExpectedSolution()
         {
@@ -1058,7 +1067,7 @@
             };
             var transactionInfo = new List<TransactionInfo>
             {
-                new TransactionInfo{ TransId = 1, Username = "test"}
+                new() { TransId = 1, Username = "test"}
             };
             var service = MockService();
             commonFeedback.GetFeedbackTemplates<MixParlayTemplate>("MixParlayTemplate.xml").Returns(testDescTemp);
@@ -1069,9 +1078,11 @@
             // Assert
             Assert.Equal("SolutionCreditENSC", actual);
         }
+
         #endregion GetSolutionMixParlayForCreditSite
 
         #region GetDescriptionMixParlayForCreditSite
+
         [Fact]
         public void GetDescriptionMixParlayForCreditSite_WhenCalled_ReturnExpectedSolution()
         {
@@ -1087,9 +1098,10 @@
             var service = MockService();
             commonFeedback.GetFeedbackTemplates<MixParlayTemplate>("MixParlayTemplate.xml").Returns(testDescTemp);
             var description = new StringBuilder("<span style=\"color: rgb(255, 0, 0);\">This is an auto-generated entry.</span>");
-            description.AppendFormat("<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {0}, Request No.: {1}</span>", messageId, requestIds);
+            description.Append(
+                $"<br /><span style=\"color: rgb(255, 0, 0);\">Msg ID: {messageId}, Request No.: {requestIds}</span>");
             description.Append(BackgroundJobConstants.LineBreak);
-            description.AppendFormat(testDescTemp.DescriptionCredit, matchInfo.DecidedBy, matchInfo.Requestby, matchInfo.VoidBy, BackgroundJobConstants.Break);
+            description.AppendFormat(testDescTemp.DescriptionCredit, matchInfo.DecidedBy, matchInfo.RequestBy, matchInfo.VoidBy, BackgroundJobConstants.Break);
 
             // Act
             var actual = service.Public_GetDescriptionMixParlayForCreditSite(messageId, requestIds, matchInfo);
@@ -1097,6 +1109,7 @@
             // Assert
             Assert.Equal(description.ToString(), actual);
         }
+
         #endregion GetDescriptionMixParlayForCreditSite
 
         #region GetSolution
@@ -1124,7 +1137,7 @@
             var message = fixture.Create<Message>();
             var transactions = new List<TransactionInfo>
             {
-                new TransactionInfo {TransId = 1, Username = "starixIT"}
+                new() {TransId = 1, Username = "starixIT"}
             };
             var stringBuilder = new StringBuilder(message.Content_en);
             stringBuilder.Append("<br /><br />").Append(message.Content_cs);
@@ -1145,7 +1158,7 @@
             var message = fixture.Create<Message>();
             var transactions = new List<TransactionInfo>
             {
-                new TransactionInfo {TransId = 1, Username = "starixIT"}
+                new() {TransId = 1, Username = "starixIT"}
             };
             var stringBuilder = new StringBuilder(message.Content_en);
             stringBuilder.Append("<br /><br />").Append(message.Content_cs);

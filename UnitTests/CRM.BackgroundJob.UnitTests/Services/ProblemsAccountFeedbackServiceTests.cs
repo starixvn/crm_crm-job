@@ -1,10 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
@@ -16,6 +11,11 @@
     using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class ProblemsAccountFeedbackServiceTests
@@ -32,16 +32,15 @@
         #region CreateFeedbackForProblemsAccountAsync
 
         [Fact]
-        public async Task CreateFeedbackForProblemsAccountAsync_NotExistedproblemsAccountInfor_ExpectedUpdateSystemSettingAndReturn()
+        public async Task CreateFeedbackForProblemsAccountAsync_NotExistedProblemsAccountInfo_ExpectedUpdateSystemSettingAndReturn()
         {
             // Arrange
             var service = MockService();
             var problemsAccountSetting = fixture.Create<ProblemsAccountSetting>();
-            var custCategory = fixture.Create<IEnumerable<CustCategoryInfor>>();
-            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfor>();
+            var custCategory = fixture.Create<IEnumerable<CustCategoryInfo>>();
             var LastRuntimeEnv = DateTime.Now;
-            customerService.GetCustCategoryInfor(problemsAccountSetting, false).Returns(custCategory);
-            transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfor);
+            customerService.GetCustCategoryInfo(problemsAccountSetting, false).Returns(custCategory);
+            transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(new List<ProblemsAccountAutoFeedbackInfo>());
 
             // Act
             await service.Public_CreateFeedbackForProblemsAccountAsync(problemsAccountSetting, false, LastRuntimeEnv, "LastRuntimeNameEnv", "JobStatusNameEnv", "LIVE");
@@ -51,7 +50,7 @@
             logService.Received(1).LogInformation(Arg.Any<string>());
             service.DidNotReceive().Protected(
                 "CreateProblemsAccountFeedbackCreditAsync",
-                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfor>>(),
+                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfo>>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
         }
@@ -62,10 +61,10 @@
             // Arrange
             var service = MockService();
             var problemsAccountSetting = fixture.Create<ProblemsAccountSetting>();
-            var custCategory = fixture.Create<IEnumerable<CustCategoryInfor>>();
-            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfor>
+            var custCategory = fixture.Create<IEnumerable<CustCategoryInfo>>();
+            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfo>
             {
-                new ProblemsAccountAutoFeedbackInfor
+                new()
                 {
                     LogID = 1,
                     CustID = 1,
@@ -78,7 +77,7 @@
                 }
             };
             var LastRuntimeEnv = DateTime.Now;
-            customerService.GetCustCategoryInfor(problemsAccountSetting, false).Returns(custCategory);
+            customerService.GetCustCategoryInfo(problemsAccountSetting, false).Returns(custCategory);
             transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfor);
 
             // Act
@@ -88,7 +87,7 @@
             await commonFeedback.EditSystemSettingUpdateLastLogIdAsyncByEnv(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<string>());
             service.Received().Protected(
                 "CreateProblemsAccountFeedbackCreditAsync",
-                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfor>>(),
+                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfo>>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
         }
@@ -99,13 +98,13 @@
             // Arrange
             var service = MockService();
             var problemsAccountSetting = fixture.Create<ProblemsAccountSetting>();
-            var custCategory = fixture.Create<IEnumerable<CustCategoryInfor>>();
-            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfor>();
+            var custCategory = fixture.Create<IEnumerable<CustCategoryInfo>>();
+            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfo>();
 
             for (int i = 0; i < 255; i++)
             {
                 var userName = i;
-                var problem = new ProblemsAccountAutoFeedbackInfor
+                var problem = new ProblemsAccountAutoFeedbackInfo
                 {
                     LogID = 1,
                     CustID = 1,
@@ -118,7 +117,7 @@
                 };
                 problemsAccountInfor.Add(problem);
             }
-            var cateProblems = new ProblemsAccountAutoFeedbackInfor
+            var cateProblems = new ProblemsAccountAutoFeedbackInfo
             {
                 LogID = 1,
                 CustID = 1,
@@ -132,7 +131,7 @@
             problemsAccountInfor.Add(cateProblems);
 
             var LastRuntimeEnv = DateTime.Now;
-            customerService.GetCustCategoryInfor(problemsAccountSetting, true).Returns(custCategory);
+            customerService.GetCustCategoryInfo(problemsAccountSetting, true).Returns(custCategory);
             transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfor);
 
             // Act
@@ -141,8 +140,8 @@
             // Assert
             service.Received().Protected(
                 "CreateProblemsAccountFeedbackByBatchAsync",
-                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfor>>(),
-                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfor>>(),
+                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfo>>(),
+                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfo>>(),
                 Arg.Any<string>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
@@ -157,11 +156,11 @@
         {
             // Arrange
             var service = MockService();
-            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfor>();
+            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfo>();
             for (int i = 0; i < 560; i++)
             {
                 var userName = i;
-                var problem = new ProblemsAccountAutoFeedbackInfor
+                var problem = new ProblemsAccountAutoFeedbackInfo
                 {
                     LogID = 1,
                     CustID = 1,
@@ -182,7 +181,7 @@
             // Assert
             service.Received(2).Protected(
                 "CreateProblemsAccountFeedbackCreditAsync",
-                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfor>>(),
+                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfo>>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
         }
@@ -192,11 +191,11 @@
         {
             // Arrange
             var service = MockService();
-            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfor>();
+            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfo>();
             for (int i = 0; i < 560; i++)
             {
                 var userName = i;
-                var problem = new ProblemsAccountAutoFeedbackInfor
+                var problem = new ProblemsAccountAutoFeedbackInfo
                 {
                     LogID = 1,
                     CustID = 1,
@@ -217,7 +216,7 @@
             // Assert
             service.Received(1).Protected(
                 "CreateProblemsAccountFeedbackCreditAsync",
-                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfor>>(),
+                Arg.Any<IEnumerable<ProblemsAccountAutoFeedbackInfo>>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
         }
@@ -231,9 +230,9 @@
         {
             // Arrange
             var service = MockService();
-            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfor>
+            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfo>
             {
-                new ProblemsAccountAutoFeedbackInfor
+                new()
                 {
                     LogID = 1,
                     CustID = 1,
@@ -247,9 +246,9 @@
             };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
-                new SettingItem { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
-                new SettingItem { SettingId = 2022, SettingName = "Station" }
+                new() { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
+                new() { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
+                new() { SettingId = 2022, SettingName = "Station" }
             };
 
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
@@ -265,7 +264,7 @@
 
             // Assert
             service.Received().Protected("CheckValidParamsAndInsertFeedbackAsync", problemsAccounts
-                , Arg.Any<CreateMutipleFeedbackCommand>());
+                , Arg.Any<CreateMultipleFeedbackCommand>());
         }
 
         #endregion CreateProblemsAccountFeedbackCreditAsync
@@ -276,8 +275,8 @@
         public async Task CheckValidParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
         {
             // Arrange
-            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfor>>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfo>>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -298,8 +297,8 @@
         public async Task CheckValidParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
-            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfor>>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfo>>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -322,8 +321,8 @@
         public async Task CheckValidParamsAndInsertFeedbackAsync_InvalidParams_ExpectedReturnAndUpdateStatus()
         {
             // Arrange
-            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfor>>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfo>>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(false, ""));
 
@@ -344,9 +343,9 @@
         public async Task CheckValidParamsAndInsertFeedbackAsync_Exception_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
-            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfor>>();
+            var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfo>>();
             var exception = fixture.Create<Exception>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -398,9 +397,9 @@
         {
             // Arrange
             var service = MockService();
-            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfor>
+            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfo>
             {
-                new ProblemsAccountAutoFeedbackInfor
+                new()
                 {
                     LogID = 1,
                     CustID = 1,
@@ -434,9 +433,9 @@
         {
             // Arrange
             var service = MockService();
-            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfor>
+            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfo>
             {
-                new ProblemsAccountAutoFeedbackInfor
+                new()
                 {
                     LogID = 1,
                     CustID = 1,
@@ -470,7 +469,7 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "Product", SettingValue = "sportbook1" }
+                    new() { SettingName = "Product", SettingValue = "sportbook1" }
                 };
 
             var service = MockService();
@@ -488,7 +487,7 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem
+                    new()
                     {
                         SettingName = "Product",
                         SettingValue = "Sportsbook",
@@ -538,9 +537,9 @@
         {
             // Arrange
             var service = MockService();
-            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfor>
+            var problemsAccounts = new List<ProblemsAccountAutoFeedbackInfo>
             {
-                new ProblemsAccountAutoFeedbackInfor
+                new()
                 {
                     LogID = 1,
                     CustID = 1,
@@ -558,8 +557,8 @@
                 SolutionENYN = "SolutionYN"
             };
             commonFeedback.GetFeedbackTemplates<SolutionTemplate>(Arg.Any<string>()).Returns(solution);
-            commonFeedback.GetCategogyName(Arg.Any<string>(), Language.en_US).Returns("CategogyEN");
-            commonFeedback.GetCategogyName(Arg.Any<string>(), Language.vi_VN).Returns("CategogyYN");
+            commonFeedback.GetCategoryName(Arg.Any<string>(), Language.en_US).Returns("CategogyEN");
+            commonFeedback.GetCategoryName(Arg.Any<string>(), Language.vi_VN).Returns("CategogyYN");
 
             // Act
             var actual = service.Public_GetSolution(problemsAccounts);

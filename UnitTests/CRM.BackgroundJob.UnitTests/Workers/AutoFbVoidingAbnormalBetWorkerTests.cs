@@ -1,15 +1,14 @@
-﻿
-namespace CRM.BackgroundJob.UnitTests.Workers
+﻿namespace CRM.BackgroundJob.UnitTests.Workers
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Workers;
     using CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Workers;
+    using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AutoFbVoidingAbnormalBetWorkerTest
@@ -29,20 +28,21 @@ namespace CRM.BackgroundJob.UnitTests.Workers
             await service.ExecuteJobAsync();
 
             // Assert
-            await autoFeedbackService.Received().AbnormalbetExecuteJobAsync();
+            await autoFeedbackService.Received().AbnormalBetExecuteJobAsync();
         }
+
         private AutoFbVoidingAbnormalBetWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "CreateFeedbackForVoidingAbnormalBet",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   TimeInterval = 60
+                    JobName = "CreateFeedbackForVoidingAbnormalBet",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             autoFeedbackService = Substitute.For<IAutoFeedbackService>();

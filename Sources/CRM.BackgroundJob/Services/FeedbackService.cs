@@ -1,10 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.AbnormalBet;
@@ -12,6 +7,11 @@ using CRM.BackgroundJob.Models.MixParlay;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 public interface IFeedbackService
 {
@@ -34,7 +34,7 @@ public class FeedbackService : IFeedbackService
     private const int abnormalAccount = 13;
     private const int mixParlayIssueTypeId = 11;
     private const int duplicatedTicketIssueTypeId = 20;
-    private readonly int[] parlayBetTypeIds = { 9, 29, 2799 };
+    private readonly int[] parlayBetTypeIds = [9, 29, 2799];
     private const string templateXml = "MixParlayTemplate.xml";
     private const string templateDuplicateXml = "FeedbackDuplicateTemplate.xml";
 
@@ -70,103 +70,94 @@ public class FeedbackService : IFeedbackService
         string JobStatusNameEnv, string Environment)
 #pragma warning restore S138
     {
-        try
+        logService.LogInformation("CreateFeedbackForVoidingAbnormalBetAsync start!!!");
+
+        await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_AutoFB);
+        var MaxVoidingHistoryCollectionId = isUAT ? setting.MaxVoidingHistoryCollectionIdUAT : setting.MaxVoidingHistoryCollectionId;
+        var voidingMessages = await messageService.GetVoidingMessageAsync(MaxVoidingHistoryCollectionId);
+
+        var messageImportCheck = await messageService.ImportVoidingMessageHistoryCheckAsync(voidingMessages.Item2);
+        var voidingMessageUserName = Enumerable.Empty<VoidingMessageUserName>();
+        if (messageImportCheck.Any())
         {
-            logService.LogInformation("CreateFeedbackForVoidingAbnormalBetAsync start!!!");
-
-            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_AutoFB);
-            var MaxVoidingHistoryCollectionId = isUAT ? setting.MaxVoidingHistoryCollectionIdUAT : setting.MaxVoidingHistoryCollectionId;
-            var voidingMessages = await messageService.GetVoidingMessageAsync(MaxVoidingHistoryCollectionId);
-
-            var messageImportCheck = await messageService.ImportVoidingMessageHistoryCheckAsync(voidingMessages.Item2);
-            var voidingMessageUserName = Enumerable.Empty<VoidingMessageUserName>();
-            if (messageImportCheck.Any())
-            {
-                voidingMessageUserName = await messageService.VoidingHisMessageUserNameList(messageImportCheck);
-            }
-
-            var messagesImport = await messageService.ImportVoidingMessageAsync(voidingMessageUserName,
-                voidingMessages.Item1,
-                setting.BatchSize,
-                Environment,
-                LastRuntimeEnv);
-
-            logService.LogInformation("after ImportVoidingMessageAsync!!!");
-
-            var failMessages = await messageService.GetFailMessageAsync();
-            var messagesImportCombineDistinct = messagesImport.Concat(failMessages).Distinct().ToList();
-            if (!messagesImportCombineDistinct.Any())
-            {
-                logService.LogInformation("Abnormal Bet - import do not have any data");
-                await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
-                return;
-            }
-            IEnumerable<int> messageIds = messagesImportCombineDistinct.Where(x => x.MessageId != 0).Select(y => y.MessageId).Distinct().ToList();
-            var messages = await messageService.GetMessageInfoAsync(messageIds);
-
-            var (matchInfo, transInfo, duplicateTicketDetails, checkTrans) = await ticketVoidingService.GetTicketVoidingInfoAsync(messagesImportCombineDistinct, setting);
-
-            var transactionTickets = Enumerable.Empty<TransactionInfo>();
-            if (!string.IsNullOrEmpty(checkTrans))
-            {
-                transactionTickets = await ticketVoidingService.GetAbnormalTicketsByTransAsync(setting, checkTrans);
-            }
-            var castTransactions = new List<TransactionInfo>();
-            foreach (var ticket in duplicateTicketDetails)
-            {
-                var castTransaction = new TransactionInfo
-                {
-                    CustId = ticket.CustId,
-                    MessageId = ticket.MessageId,
-                    RequestId = ticket.RequestID,
-                    Username = ticket.Username,
-                    IsDeposit = ticket.IsDeposit,
-                    Site = ticket.Site,
-                    VoidingHistoryCollectionId = ticket.VoidingHistoryCollectionId,
-                    ProductId = ticket.ProductId,
-                    BetTypeId = ticket.BetTypeId,
-                    SportTypeId = ticket.SportTypeId,
-                    Bettype = ticket.Bettype
-                };
-                castTransactions.Add(castTransaction);
-            }
-            var transactionTicketsCombine = transactionTickets.Concat(transInfo).Concat(castTransactions);
-
-            IEnumerable<MatchInfo> matchInfos = matchInfo.Where(x => transactionTicketsCombine.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId)).ToList();
-            IEnumerable<MatchInfo> matchInfosDuplicate = matchInfo.Where(x => duplicateTicketDetails.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId)).ToList();
-            var matchInfosCombine = matchInfos.Concat(matchInfosDuplicate);
-
-            if (!matchInfosCombine.Any())
-            {
-                logService.LogInformation("Abnormal Bet - import do not have any ticket");
-                await messageService.EditStatusVoidingMessageAsync(messagesImportCombineDistinct, Environment);
-                await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
-                return;
-            }
-
-            logService.LogInformation(
-                $"Abnormal Bet - Create feedback for voidingHistoryCollectionId: {string.Join(",", matchInfo.Select(x => x.VoidingHistoryCollectionId))}"
-            );
-
-            var ticketDuplicate = matchInfo.Where(x => x.IssueTypeId == duplicatedTicketIssueTypeId);
-            var ticketDuplicateDetail = duplicateTicketDetails.Where(x => ticketDuplicate.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId));
-
-            await CreateFeedbackForCreditDepositSiteAsync(
-                messages,
-                matchInfosCombine,
-                transactionTicketsCombine,
-                messagesImportCombineDistinct,
-                isUAT,
-                setting,
-                ticketDuplicateDetail
-            );
+            voidingMessageUserName = await messageService.VoidingHisMessageUserNameList(messageImportCheck);
         }
-        catch (Exception ex)
+
+        var messagesImport = await messageService.ImportVoidingMessageAsync(voidingMessageUserName,
+            voidingMessages.Item1,
+            setting.BatchSize,
+            Environment,
+            LastRuntimeEnv);
+
+        logService.LogInformation("after ImportVoidingMessageAsync!!!");
+
+        var failMessages = await messageService.GetFailMessageAsync();
+        var messagesImportCombineDistinct = messagesImport.Concat(failMessages).Distinct().ToList();
+        if (!messagesImportCombineDistinct.Any())
         {
-#pragma warning disable S3445
-            throw ex;
-#pragma warning restore S3445
+            logService.LogInformation("Abnormal Bet - import do not have any data");
+            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
+            return;
         }
+        IEnumerable<int> messageIds = messagesImportCombineDistinct.Where(x => x.MessageId != 0).Select(y => y.MessageId).Distinct().ToList();
+        var messages = await messageService.GetMessageInfoAsync(messageIds);
+
+        var (matchInfo, transInfo, duplicateTicketDetails, checkTrans) = await ticketVoidingService.GetTicketVoidingInfoAsync(messagesImportCombineDistinct, setting);
+
+        var transactionTickets = Enumerable.Empty<TransactionInfo>();
+        if (!string.IsNullOrEmpty(checkTrans))
+        {
+            transactionTickets = await ticketVoidingService.GetAbnormalTicketsByTransAsync(setting, checkTrans);
+        }
+        var castTransactions = new List<TransactionInfo>();
+        foreach (var ticket in duplicateTicketDetails)
+        {
+            var castTransaction = new TransactionInfo
+            {
+                CustId = ticket.CustId,
+                MessageId = ticket.MessageId,
+                RequestId = ticket.RequestID,
+                Username = ticket.Username,
+                IsDeposit = ticket.IsDeposit,
+                Site = ticket.Site,
+                VoidingHistoryCollectionId = ticket.VoidingHistoryCollectionId,
+                ProductId = ticket.ProductId,
+                BetTypeId = ticket.BetTypeId,
+                SportTypeId = ticket.SportTypeId,
+                Bettype = ticket.Bettype
+            };
+            castTransactions.Add(castTransaction);
+        }
+        var transactionTicketsCombine = transactionTickets.Concat(transInfo).Concat(castTransactions);
+
+        IEnumerable<MatchInfo> matchInfos = matchInfo.Where(x => transactionTicketsCombine.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId)).ToList();
+        IEnumerable<MatchInfo> matchInfosDuplicate = matchInfo.Where(x => duplicateTicketDetails.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId)).ToList();
+        var matchInfosCombine = matchInfos.Concat(matchInfosDuplicate);
+
+        if (!matchInfosCombine.Any())
+        {
+            logService.LogInformation("Abnormal Bet - import do not have any ticket");
+            await messageService.EditStatusVoidingMessageAsync(messagesImportCombineDistinct, Environment);
+            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
+            return;
+        }
+
+        logService.LogInformation(
+            $"Abnormal Bet - Create feedback for voidingHistoryCollectionId: {string.Join(",", matchInfo.Select(x => x.VoidingHistoryCollectionId))}"
+        );
+
+        var ticketDuplicate = matchInfo.Where(x => x.IssueTypeId == duplicatedTicketIssueTypeId);
+        var ticketDuplicateDetail = duplicateTicketDetails.Where(x => ticketDuplicate.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId));
+
+        await CreateFeedbackForCreditDepositSiteAsync(
+            messages,
+            matchInfosCombine,
+            transactionTicketsCombine,
+            messagesImportCombineDistinct,
+            isUAT,
+            setting,
+            ticketDuplicateDetail
+        );
     }
 
 #pragma warning disable S1541
@@ -265,10 +256,10 @@ public class FeedbackService : IFeedbackService
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals("Neutral", StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var category = GetCategorySubCategory(settings, matchInfo.IssueTypeId);
 
-        var criteria = new CreateMutipleFeedbackCommand
+        var criteria = new CreateMultipleFeedbackCommand
         {
             CreatorId = appSettings.CreatorId,
             UserId = appSettings.CreatorId,
@@ -277,15 +268,15 @@ public class FeedbackService : IFeedbackService
             ResolutionDate = feedbackDate.AddMinutes(1).Subtract(timeSpan),
             IsCheckedDefaultComm = true,
             StationId = station != null ? station.SettingId.ToString() : string.Empty,
-            StatusId = status != null ? status.SettingId : 0,
-            ResponseId = response != null ? response.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
+            ResponseId = response?.SettingId ?? 0,
             CategoryXml = category.Item3,
             CategoryIds = category.Item1.ToString(),
             SubCategoryIds = category.Item2.ToString(),
             Subject = "Special Notification",
             AutoField = string.Empty,
             AutoField1 = string.Empty,
-            AutoField2 = $"Date Time & Tool: {feedbackDate.ToString("yyyyMMdd")}/{feedbackDate.ToString("hh:mmtt")}/",
+            AutoField2 = $"Date Time & Tool: {feedbackDate:yyyyMMdd}/{feedbackDate:hh:mmtt}/",
             AutoField3 = $"{Environment.NewLine}System ID: ",
             VoidingHistoryCollectionId = matchInfo.VoidingHistoryCollectionId
         };
@@ -321,7 +312,7 @@ public class FeedbackService : IFeedbackService
         IEnumerable<TransactionInfo> transactionInfos,
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings,
-        CreateMutipleFeedbackCommand criteria)
+        CreateMultipleFeedbackCommand criteria)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         var itemEachBatch = appSettings.NoOfRelatedCustomerPerFeedback;
@@ -402,7 +393,7 @@ public class FeedbackService : IFeedbackService
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals("Neutral", StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var category = GetCategorySubCategory(settings, matchInfo.IssueTypeId);
         var isMixParlay = matchInfo.IssueTypeId == mixParlayIssueTypeId && matchInfo.FilterBy == 1;
 
@@ -419,9 +410,9 @@ public class FeedbackService : IFeedbackService
             CategoryXml = category != null ? category.Item3 : string.Empty,
             ProductXml = matchInfo.IssueTypeId == duplicatedTicketIssueTypeId ? GetDuplicatedTicketProductXml(transactionInfos, settings, settingMappings)
                 : GetProductXml(isMixParlay, matchInfo, transactionInfos, settings, settingMappings),
-            StatusId = status != null ? status.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
             LanguageId = licenseeInfo.LanguageId,
-            ResponseId = response != null ? response.SettingId : 0,
+            ResponseId = response?.SettingId ?? 0,
             RoleId = licenseeInfo.RoleId,
             CountryId = licenseeInfo.CountryId,
             Subject = "Special Notification",
@@ -479,7 +470,7 @@ public class FeedbackService : IFeedbackService
             var duplicateTickets = duplicateTicketDetails.Where(x => transactionInfos.Any(y => y.VoidingHistoryCollectionId == x.VoidingHistoryCollectionId) && x.IsDeposit);
 
             criteria.Description = duplicateTickets.Any() ?
-                GetDescriptionDuplicateForDepositeSite(duplicateTickets.Where(i => i.IsDeposit), messages, joinMessageString, string.Join(",", requestIds)) :
+                GetDescriptionDuplicateForDepositSite(duplicateTickets.Where(duplicateTicket => duplicateTicket.IsDeposit), messages, joinMessageString, string.Join(",", requestIds)) :
                 GetDescriptionForDepositSite(joinMessageString, criteria.RequestIds);
             try
             {
@@ -526,7 +517,7 @@ public class FeedbackService : IFeedbackService
         }
     }
 
-    protected internal virtual string GetDescriptionDuplicateForDepositeSite(IEnumerable<DuplicateTicketDetail> duplicateTicketDetails,
+    protected internal virtual string GetDescriptionDuplicateForDepositSite(IEnumerable<DuplicateTicketDetail> duplicateTicketDetails,
         IEnumerable<Message> messages, string messageIds, string requestIds)
     {
         var templateDuplicate = commonFeedback.GetFeedbackTemplates<DuplicateTemplateFeedback>(templateDuplicateXml);
@@ -623,14 +614,13 @@ public class FeedbackService : IFeedbackService
                                                          && productNames.Exists(productName => p.SettingSource.Equals(productName, StringComparison.OrdinalIgnoreCase))).ToList();
 
         var products = settings.Where(x => x.SettingName.Equals(SettingName.Product, StringComparison.OrdinalIgnoreCase)
-                                           && productMappings != null
                                            && productMappings.Exists(mapping => x.SettingId == mapping.SettingId)).ToList();
 
-        logService.LogInformation("End mapping amenment product.");
+        logService.LogInformation("End mapping amendment product.");
 
         return products.Any()
             ? products.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem> { new() { SettingId = BackgroundJobConstants.ProductNA } };
+            : [new SettingItem { SettingId = BackgroundJobConstants.ProductNA }];
     }
 
     private IList<SettingItem> GetSubProducts(
@@ -654,17 +644,20 @@ public class FeedbackService : IFeedbackService
         var subProducts = isMixParlay ? settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                             && x.SettingValue.Equals("Multiple Sports", StringComparison.OrdinalIgnoreCase)).ToList() :
             settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
-                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent))
-                                  && mappings != null && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
+                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent)) && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
         logService.LogInformation("End mapping sub-product.");
 
         return subProducts.Any()
             ? subProducts.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.SubProductNA, ParentIds = new List<int> { BackgroundJobConstants.ProductNA } }
-            };
+            :
+            [
+                new()
+                {
+                    SettingId = BackgroundJobConstants.SubProductNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.ProductNA }
+                }
+            ];
     }
 
     private List<SystemSettingMapping> GetBetTypes(
@@ -688,12 +681,9 @@ public class FeedbackService : IFeedbackService
                                              && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
         logService.LogInformation("End mapping betType.");
-        return betTypes != null && betTypes.Any()
+        return betTypes.Any()
             ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SystemSettingMapping>
-            {
-                new() { SettingId = BackgroundJobConstants.BettypeNA }
-            };
+            : [new SystemSettingMapping { SettingId = BackgroundJobConstants.BettypeNA }];
     }
 
     private static string GetProductSubXml(
@@ -792,20 +782,23 @@ public class FeedbackService : IFeedbackService
             && mapping.SettingSource.Equals(sport, StringComparison.OrdinalIgnoreCase)).ToList();
         IList<SettingItem> subProduct = settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                               && sub.ParentIds.Any(parent => parent == productId)
-                                                              && mappings != null
                                                               && mappings.Any(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
-        var subProductMixparlay = settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
+        var subProductMixParlay = settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                       && x.SettingValue.Equals("Multiple Sports", StringComparison.OrdinalIgnoreCase));
 
-        var subProducts = isMixParlay ? subProductMixparlay : subProduct;
+        var subProducts = isMixParlay ? subProductMixParlay : subProduct;
 
-        return subProducts != null && subProducts.Any()
+        return subProducts.Any()
             ? subProducts.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.SubProductNA, ParentIds = new List<int> { BackgroundJobConstants.ProductNA } }
-            };
+            :
+            [
+                new SettingItem
+                {
+                    SettingId = BackgroundJobConstants.SubProductNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.ProductNA }
+                }
+            ];
     }
 
     protected internal virtual IList<SettingItem> GetBetType(
@@ -829,16 +822,19 @@ public class FeedbackService : IFeedbackService
 
             betTypes = settings.Where(betType => betType.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
                                                  && subProducts.Any(sub => betType.ParentIds.Any(parent => parent == sub))
-                                                 && mappings != null
                                                  && mappings.Any(mapping => mapping.SettingId == betType.SettingId)).ToList();
         }
 
         return betTypes != null && betTypes.Any()
             ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.BettypeNA, ParentIds = new List<int> { BackgroundJobConstants.SubProductNA } }
-            };
+            :
+            [
+                new()
+                {
+                    SettingId = BackgroundJobConstants.BettypeNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.SubProductNA }
+                }
+            ];
     }
 
     protected internal virtual List<SettingItem> GetBetTypeParlay(
@@ -852,7 +848,6 @@ public class FeedbackService : IFeedbackService
 
         var betTypes = settings.Where(betType => betType.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
                                                  && subProducts.Any(sub => betType.ParentIds.Any(parent => parent == sub))
-                                                 && mappingsParlay != null
                                                  && mappingsParlay.Any(mapping => mapping.SettingId == betType.SettingId)).ToList();
 
         return betTypes;
@@ -884,13 +879,13 @@ public class FeedbackService : IFeedbackService
             var subCategory = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
                                                            && x.ParentIds.Any(y => y == category.SettingId)
                                                            && x.SettingValue.Equals(GetSubCategorySettingValue(IssueTypeId), StringComparison.OrdinalIgnoreCase));
-            subCategoryId = subCategory != null ? subCategory.SettingId : 0;
+            subCategoryId = subCategory?.SettingId ?? 0;
         }
 
         return new Tuple<int, int, string>(
-            category != null ? category.SettingId : 0,
+            category?.SettingId ?? 0,
             subCategoryId,
-            $"<ROOT><Category MainCategoryID='{(category != null ? category.SettingId : 0)}' SubCategoryID='{subCategoryId}' /></ROOT>");
+            $"<ROOT><Category MainCategoryID='{category?.SettingId ?? 0}' SubCategoryID='{subCategoryId}' /></ROOT>");
     }
 
     protected internal virtual string GetRelatedCustomerXml(int headlineId, IEnumerable<TransactionInfo> transactionInfos, int IssueTypeId)
@@ -901,7 +896,7 @@ public class FeedbackService : IFeedbackService
         var transactions = IssueTypeId == abnormalAccount ? transactionInfos.GroupBy(x => x.RelatedCustID).Select(x => x.First()) : transactionInfos.GroupBy(x => x.CustId).Select(x => x.First());
         foreach (var transaction in transactions)
         {
-            var customerId= IssueTypeId == abnormalAccount ? transaction.RelatedCustID : transaction.CustId;
+            var customerId = IssueTypeId == abnormalAccount ? transaction.RelatedCustID : transaction.CustId;
             var userName = IssueTypeId == abnormalAccount ? transaction.RelatedUserName : transaction.Username;
             stringBuilder.AppendFormat(XmlTemplate, headlineId, customerId, userName);
         }
@@ -915,9 +910,9 @@ public class FeedbackService : IFeedbackService
         IEnumerable<string> licenseeManagers)
     {
         var stringBuilder = new StringBuilder("Date Time & Tool: ");
-        stringBuilder.AppendFormat("{0:yyyyMMdd}/{1}/{2}", feedbackDate, feedbackDate.ToString("hh:mmtt"), communicationTool);
+        stringBuilder.Append($"{feedbackDate:yyyyMMdd}/{feedbackDate.ToString("hh:mmtt")}/{communicationTool}");
         stringBuilder.Append(Environment.NewLine);
-        stringBuilder.AppendFormat("System ID: {0}", string.Join(", ", licenseeManagers));
+        stringBuilder.Append($"System ID: {string.Join(", ", licenseeManagers)}");
 
         return stringBuilder.ToString();
     }
@@ -937,11 +932,11 @@ public class FeedbackService : IFeedbackService
         {
             var stringBuilder = new StringBuilder(DefaultValue.autoGenerated);
             stringBuilder.AppendFormat(DefaultValue.messageDescription, messageId, requestIds);
-            stringBuilder.AppendFormat("<br />Date: {0:dd-MMM-yyyy}", matchInfo.EventDate);
-            stringBuilder.AppendFormat("<br />Sport: {0}", matchInfo.SportName);
-            stringBuilder.AppendFormat("<br />Event Start Time: {0}", matchInfo.KickOffTime);
-            stringBuilder.AppendFormat("<br />League: {0}", matchInfo.LeagueName);
-            stringBuilder.AppendFormat("<br />Match: {0} - vs - {1}", matchInfo.HomeName, matchInfo.AwayName);
+            stringBuilder.Append($"<br />Date: {matchInfo.EventDate:dd-MMM-yyyy}");
+            stringBuilder.Append($"<br />Sport: {matchInfo.SportName}");
+            stringBuilder.Append($"<br />Event Start Time: {matchInfo.KickOffTime}");
+            stringBuilder.Append($"<br />League: {matchInfo.LeagueName}");
+            stringBuilder.Append($"<br />Match: {matchInfo.HomeName} - vs - {matchInfo.AwayName}");
             return stringBuilder.ToString();
         }
         else
@@ -950,11 +945,12 @@ public class FeedbackService : IFeedbackService
             var affectedAccount = string.Join(", ", transactions.Select(x => x.RelatedUserName));
             var stringBuilderAbnormalAccount = new StringBuilder(DefaultValue.autoGenerated);
             stringBuilderAbnormalAccount.AppendFormat(DefaultValue.messageDescription, messageId, requestIds);
-            stringBuilderAbnormalAccount.AppendFormat("<br />Event Date: {0} - {1:dd-MMM-yyyy}", matchInfo.MinWinlostdate.ToString("dd-MMM-yyyy"), matchInfo.MaxWinlostdate);
-            stringBuilderAbnormalAccount.AppendFormat("<br />Affected accounts: {0}", affectedAccount);
-            stringBuilderAbnormalAccount.AppendFormat("<br />Decided By: {0}", matchInfo.DecidedBy);
-            stringBuilderAbnormalAccount.AppendFormat("<br />Requested by: {0}", matchInfo.Requestby);
-            stringBuilderAbnormalAccount.AppendFormat("<br />Voided by: {0}", matchInfo.VoidBy);
+            stringBuilderAbnormalAccount.Append(
+                $"<br />Event Date: {matchInfo.MinWinLostDate:dd-MMM-yyyy} - {matchInfo.MaxWinLostDate:dd-MMM-yyyy}");
+            stringBuilderAbnormalAccount.Append($"<br />Affected accounts: {affectedAccount}");
+            stringBuilderAbnormalAccount.Append($"<br />Decided By: {matchInfo.DecidedBy}");
+            stringBuilderAbnormalAccount.Append($"<br />Requested by: {matchInfo.RequestBy}");
+            stringBuilderAbnormalAccount.Append($"<br />Voided by: {matchInfo.VoidBy}");
             return stringBuilderAbnormalAccount.ToString();
         }
     }
@@ -965,7 +961,7 @@ public class FeedbackService : IFeedbackService
         var stringBuilder = new StringBuilder(DefaultValue.autoGenerated);
         stringBuilder.AppendFormat(DefaultValue.messageDescription, messageId, requestIds);
         stringBuilder.Append(BackgroundJobConstants.LineBreak);
-        stringBuilder.AppendFormat(template.DescriptionCredit, matchInfo.DecidedBy, matchInfo.Requestby, matchInfo.VoidBy, BackgroundJobConstants.Break);
+        stringBuilder.AppendFormat(template.DescriptionCredit, matchInfo.DecidedBy, matchInfo.RequestBy, matchInfo.VoidBy, BackgroundJobConstants.Break);
         return stringBuilder.ToString();
     }
 
@@ -985,7 +981,7 @@ public class FeedbackService : IFeedbackService
         {
             foreach (var transaction in transactionInfos)
             {
-                stringBuilder.AppendFormat("<br />{0} {1}", transaction.Username, transaction.TransId);
+                stringBuilder.Append($"<br />{transaction.Username} {transaction.TransId}");
             }
         }
         return stringBuilder.ToString();
@@ -996,18 +992,18 @@ public class FeedbackService : IFeedbackService
         var stringBuilder = new StringBuilder();
         var stringBuilderAffected = new StringBuilder();
         const string templateAffected = "- {0} {1} {2}";
-        var solutionTempate = commonFeedback.GetFeedbackTemplates<MixParlayTemplate>(templateXml);
+        var solutionTemplate = commonFeedback.GetFeedbackTemplates<MixParlayTemplate>(templateXml);
         foreach (var tran in transactionInfos)
         {
             stringBuilderAffected.AppendFormat(templateAffected, tran.Username, tran.TransId, BackgroundJobConstants.Break);
         }
         if (isVip)
         {
-            stringBuilder.AppendFormat(solutionTempate.SolutionCreditENYN, message.Content_en, stringBuilderAffected, BackgroundJobConstants.LineBreak, BackgroundJobConstants.Break);
+            stringBuilder.AppendFormat(solutionTemplate.SolutionCreditENYN, message.Content_en, stringBuilderAffected, BackgroundJobConstants.LineBreak, BackgroundJobConstants.Break);
         }
         else
         {
-            stringBuilder.AppendFormat(solutionTempate.SolutionCreditENSC, message.Content_en, message.Content_cs, stringBuilderAffected,
+            stringBuilder.AppendFormat(solutionTemplate.SolutionCreditENSC, message.Content_en, message.Content_cs, stringBuilderAffected,
                 BackgroundJobConstants.LineBreak, BackgroundJobConstants.Break
             );
         }

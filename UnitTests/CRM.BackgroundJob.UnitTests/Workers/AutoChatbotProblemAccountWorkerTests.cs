@@ -33,16 +33,16 @@ namespace CRM.BackgroundJob.UnitTests.Workers
         }
         private AutoChatbotProblemAccountWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "PullMessageProblemAccountForChatBot",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   TimeInterval = 60
+                    JobName = "PullMessageProblemAccountForChatBot",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             chatBotJobService = Substitute.For<IChatBotJobService>();

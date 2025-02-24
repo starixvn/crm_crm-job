@@ -15,7 +15,7 @@ public class AmendmentResultTransaction
     public string WrongResult { get; set; }
     public string Status { get; set; }
     public int MessageId { get; set; }
-    public int Sporttype { get; set; }
+    public int SportType { get; set; }
     public int HomeId { get; set; }
     public int AwayId { get; set; }
     public int LeagueId { get; set; }

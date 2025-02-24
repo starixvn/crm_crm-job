@@ -9,7 +9,7 @@
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
         {
             // Arrange
-            var criteria = new GetMesssagesVoidingSettledCriteria();
+            var criteria = new GetMessagesVoidingSettledCriteria();
             var expected = "Acc_CRM_VoidingMsg_GetMessage";
 
             // Act
@@ -23,7 +23,7 @@
         public void IsValid_WhenCalled_ReturnTrue()
         {
             // Arrange
-            var criteria = new GetMesssagesVoidingSettledCriteria();
+            var criteria = new GetMessagesVoidingSettledCriteria();
 
             // Act
             var actual = criteria.IsValid();

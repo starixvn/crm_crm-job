@@ -1,8 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria;
@@ -11,6 +8,9 @@
     using CRM.BackgroundJob.Services;
     using CRM.Services;
     using NSubstitute;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class SettingServiceTests
@@ -22,9 +22,8 @@
         public async Task GetAllSettingAsync_SettingIsNotExist_ReturnEmpty()
         {
             // Arrange
-            var settings = new List<SettingItem>();
             var service = GetSettingService();
-            baseService.GetDataAsync<SettingItem>(Arg.Any<GetAllSettingCriteria>()).Returns(settings);
+            baseService.GetDataAsync<SettingItem>(Arg.Any<GetAllSettingCriteria>()).Returns(new List<SettingItem>());
 
             // Act
             var actual = await service.GetAllSettingAsync();
@@ -39,11 +38,11 @@
             // Arrange
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, IsActive = true }
+                new() { SettingId = 1, IsActive = true }
             };
             var relations = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, ParentId = 2 }
+                new() { SettingId = 1, ParentId = 2 }
             };
             var service = GetSettingService();
             baseService.GetDataAsync<SettingItem>(Arg.Any<GetAllSettingCriteria>()).Returns(settings);

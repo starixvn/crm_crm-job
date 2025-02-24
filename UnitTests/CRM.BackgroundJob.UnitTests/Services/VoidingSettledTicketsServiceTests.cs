@@ -1,19 +1,19 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Extensions.Xml;
-    using CRM.Models;
-    using CRM.Services;
     using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
     using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
     using CRM.BackgroundJob.Models.AmendmentNotiFB;
     using CRM.BackgroundJob.Models.ChatBotResulAmendment;
     using CRM.BackgroundJob.Models.VoidingSettledTickets;
     using CRM.BackgroundJob.Services;
+    using CRM.Extensions.Xml;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class VoidingSettledTicketsServiceTests
@@ -28,7 +28,7 @@
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var service = GetVoidingSettledService();
-            baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<GetMesssagesVoidingSettledCriteria>()).Returns(expected);
+            baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<GetMessagesVoidingSettledCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetMessageVoidSettledAsync();
@@ -132,7 +132,7 @@
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<GetChatbotVoidingMessageCheck>()).Returns(expected);
 
             // Act
-            var actual = await service.GetVoidingMessasgeCheckAsync(messageVoidSettleds, "LIVE");
+            var actual = await service.GetVoidingMessageCheckAsync(messageVoidSettleds, "LIVE");
 
             // Assert
             Assert.Equal(expected, actual);
@@ -184,9 +184,8 @@
             // Arrange
             var fixture = new Fixture();
             var expected = fixture.Create<CommandResult>();
-            var criteria = new VoidingAutoFeedbackInfoBatchUpdCommand();
             var service = GetVoidingSettledService();
-            baseService.ExecuteNonQueryAsync(Arg.Do<VoidingAutoFeedbackInfoBatchUpdCommand>(x => criteria = x)).Returns(expected);
+            baseService.ExecuteNonQueryAsync(Arg.Do<VoidingAutoFeedbackInfoBatchUpdCommand>(x => _ = x)).Returns(expected);
 
             // Act
             var actual = await service.UpdateVoidingAutoFeedbackInfoBatchAsync(1, "status", "desctiption", "LIVE");

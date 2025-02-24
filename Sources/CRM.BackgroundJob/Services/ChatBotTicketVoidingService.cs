@@ -1,11 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Constants;
 using Criteria.ChatBot;
 using CRM.Extensions.Xml;
@@ -13,6 +7,12 @@ using CRM.Models;
 using CRM.Services;
 using Models;
 using Models.ChatBot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 public interface IChatBotTicketVoidingService
 {
@@ -156,8 +156,8 @@ public class ChatBotTicketVoidingService(IBaseService baseService) : IChatBotTic
             Environment = Environment
         };
         var commandResult = await baseService.ExecuteNonQueryAsync(criteria);
-        var valueTupe = new ValueTuple<CommandResult, ImportChatBotTicketVoidingInfoCommand>(commandResult, criteria);
-        return valueTupe;
+        var valueTuple = new ValueTuple<CommandResult, ImportChatBotTicketVoidingInfoCommand>(commandResult, criteria);
+        return valueTuple;
     }
 
     public async Task<IEnumerable<ChatBotVoidingBetIdHistory>> GetVoidingBetIdMessageAsync(int lastMsgTargetId, int batchSize)

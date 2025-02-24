@@ -31,26 +31,26 @@
             await autoFeedbackService.Received().MessageNotificationCenterExecuteJobAsync();
         }
 
-        private AutoFbMessageNotificationCenterWoker GetService()
+        private AutoFbMessageNotificationCenterWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "Test",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   IsDisableAtWeekend = false,
-                   TimeInterval = 60
+                    JobName = "Test",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    IsDisableAtWeekend = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             autoFeedbackService = Substitute.For<IAutoFeedbackService>();
             maintenanceService = Substitute.For<IMaintenanceService>();
             logService = Substitute.For<ICrmLogService>();
 
-            return new AutoFbMessageNotificationCenterWoker(autoFeedbackService, maintenanceService, appJobSettings, logService);
+            return new AutoFbMessageNotificationCenterWorker(autoFeedbackService, maintenanceService, appJobSettings, logService);
         }
     }
 }

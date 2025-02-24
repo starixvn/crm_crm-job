@@ -1,10 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
@@ -18,6 +13,11 @@
     using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class VoidingSettledTicketsFeedbackServiceTests
@@ -44,14 +44,13 @@
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var messageVoidSettled = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var voidingMessages = fixture.Create<IEnumerable<MessageVoidSettled>>();
-            var failVoidingMessages = new List<MessageVoidSettled>();
             var voidingTickets = fixture.Create<ValueTuple<IEnumerable<VoidingTicketEventInfo>, IEnumerable<MsgTarget>>>();
             var feedbackInfos = fixture.Create<ValueTuple<IEnumerable<VoidingAutoFeedbackInfo>, IEnumerable<AutoVoidingEventDetails>>>();
             settingService.GetAllSettingAsync().Returns(settings);
             settingService.GetSystemSettingMappingAsync(settingNames).Returns(settingMappings);
             voidingSettledTicketsService.GetMessageVoidSettledAsync().Returns(messageVoidSettled);
             voidingSettledTicketsService.GetAutoVoidingMessageAsync(voidingSettledTicketSetting, "LIVE").Returns(voidingMessages);
-            voidingSettledTicketsService.GetFailVoidingMessageAsync().Returns(failVoidingMessages);
+            voidingSettledTicketsService.GetFailVoidingMessageAsync().Returns(new List<MessageVoidSettled>());
             voidingSettledTicketsService.GetAutoVoidingTicketAsync(voidingSettledTicketSetting, Arg.Any<List<MessageVoidSettled>>(), "LIVE").Returns(voidingTickets);
             voidingSettledTicketsService.GetVoidingAutoFeedbackInfoAsync(voidingSettledTicketSetting.BatchSize).Returns(feedbackInfos);
 
@@ -86,7 +85,7 @@
             settingService.GetAllSettingAsync().Returns(settings);
             settingService.GetSystemSettingMappingAsync(settingNames).Returns(settingMappings);
             voidingSettledTicketsService.GetMessageVoidSettledAsync().Returns(messageVoidSettled);
-            voidingSettledTicketsService.GetVoidingMessasgeCheckAsync(messageVoidSettled, "LIVE").Returns(voidingMessageCheck);
+            voidingSettledTicketsService.GetVoidingMessageCheckAsync(messageVoidSettled, "LIVE").Returns(voidingMessageCheck);
             voidingSettledTicketsService.VoidingMessageGetSettledTicketAsync(voidingMessageCheck).Returns(settledTicket);
             voidingSettledTicketsService.ImportMessageVoidSettledAsync(settledTicket).Returns(commandResult);
 
@@ -121,7 +120,7 @@
             service.Received().Protected(
                 "CheckValidVoidingSettledParamsAndInsertFeedbackAsync",
                 Arg.Any<VoidingAutoFeedbackInfo>(),
-                Arg.Any<CreateMutipleFeedbackCommand>(),
+                Arg.Any<CreateMultipleFeedbackCommand>(),
                 Arg.Any<string>());
         }
 
@@ -134,7 +133,7 @@
         {
             // Arrange
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -152,7 +151,7 @@
         public async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
         {
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -172,7 +171,7 @@
         public async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync_InvalidParams_ExpectedWriteLogAndUpdateStatus()
         {
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(false, "invalid"));
 
@@ -193,7 +192,7 @@
             // Arrange
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
             var exception = fixture.Create<Exception>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -221,15 +220,15 @@
             var isMixParlay = fixture.Create<bool>();
             var products = new List<SettingItem>
             {
-                new SettingItem{ SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var subProducts = new List<SettingItem>
             {
-                new SettingItem{ SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var betTypesMapping = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping
+                new()
                 {
                     SettingId = 1
                 }
@@ -260,11 +259,11 @@
             var isMixParlay = fixture.Create<bool>();
             var subProducts = new List<SettingItem>
             {
-                new SettingItem{ SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var betTypesMapping = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping
+                new()
                 {
                     SettingId = 1
                 }
@@ -309,7 +308,7 @@
             var service = MockService();
             var settingMappings = fixture.Create<IList<SystemSettingMapping>>();
             var products = fixture.Create<SettingItem>();
-            var subProducts = new List<SettingItem> { new SettingItem { SettingId = 1 } };
+            var subProducts = new List<SettingItem> { new() { SettingId = 1 } };
             service.Protected("GetBettpeXml", Arg.Any<SettingItem>(), Arg.Any<SettingItem>(), Arg.Any<IList<SystemSettingMapping>>()).Returns("test");
 
             // Act
@@ -329,12 +328,12 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "1", SettingValue = "1" }
+                    new() { SettingName = "1", SettingValue = "1" }
                 };
 
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "2", SettingValue = "1" , SettingSource = "1"}
+                    new() { SettingName = "2", SettingValue = "1" , SettingSource = "1"}
                 };
             var productIds = new List<int> { 1 };
             var service = MockService();
@@ -353,12 +352,12 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "2", SettingValue = "2" }
+                    new() { SettingName = "2", SettingValue = "2" }
                 };
 
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "1", SettingValue = "1" , SettingSource = "1"}
+                    new() { SettingName = "1", SettingValue = "1" , SettingSource = "1"}
                 };
             var productIds = new List<int> { 1 };
 
@@ -378,12 +377,12 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = SettingName.Product, SettingValue = "1" }
+                    new() { SettingId = 1, SettingName = SettingName.Product, SettingValue = "1" }
                 };
 
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingId = 1, SettingName = SettingName.Product, SettingValue = "1" , SettingSource = "1"}
+                    new() { SettingId = 1, SettingName = SettingName.Product, SettingValue = "1" , SettingSource = "1"}
                 };
             var productIds = new List<int> { 1 };
             var service = MockService();
@@ -406,7 +405,7 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "1", SettingValue = "1" }
+                    new() { SettingName = "1", SettingValue = "1" }
                 };
 
             var sportTypeIds = new List<short> { 1 };
@@ -414,7 +413,7 @@
 
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "2", SettingValue = "1" , SettingSource = "1"}
+                    new() { SettingName = "2", SettingValue = "1" , SettingSource = "1"}
                 };
             var service = MockService();
             commonFeedback.GetSportName("1", Language.en_US).Returns("1");
@@ -433,14 +432,14 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 2, ParentIds = new List<int>{ 1,2} }
+                    new() { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 2, ParentIds = new List<int>{ 1,2} }
                 };
 
             var sportTypeIds = new List<short> { 1 };
             var productIds = new List<int> { 1 };
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "1", SettingValue = "1" , SettingSource = "1", SettingId = 1}
+                    new() { SettingName = "1", SettingValue = "1" , SettingSource = "1", SettingId = 1}
                 };
             var service = MockService();
             commonFeedback.GetProductName("1", Language.en_US).Returns("1");
@@ -458,14 +457,14 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 2, ParentIds = new List<int>{ 1,2} }
+                    new() { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 2, ParentIds = new List<int>{ 1,2} }
                 };
 
             var sportTypeIds = new List<short> { 1 };
             var productIds = new List<int> { 1 };
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "1", SettingValue = "1" , SettingSource = "1", SettingId = 1}
+                    new() { SettingName = "1", SettingValue = "1" , SettingSource = "1", SettingId = 1}
                 };
             var service = MockService();
             commonFeedback.GetProductName("2", Language.en_US).Returns("1");
@@ -483,7 +482,7 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 1, ParentIds = new List<int>{ 1,2} }
+                    new() { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 1, ParentIds = new List<int>{ 1,2} }
                 };
 
             var sportTypeIds = new List<short> { 1 };
@@ -491,7 +490,7 @@
 
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingSource = "1", SettingId = 1}
+                    new() { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingSource = "1", SettingId = 1}
                 };
 
             var service = MockService();
@@ -510,7 +509,7 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 1, ParentIds = new List<int>{ 1,2} }
+                    new() { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingId = 1, ParentIds = new List<int>{ 1,2} }
                 };
 
             var sportTypeIds = new List<short> { 1 };
@@ -518,7 +517,7 @@
 
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingSource = "1", SettingId = 1}
+                    new() { SettingName = SettingName.SubProduct, SettingValue = "1" , SettingSource = "1", SettingId = 1}
                 };
 
             var service = MockService();
@@ -541,10 +540,10 @@
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1" , SettingSource = "1"}
+                    new() { SettingName = "BetType", SettingValue = "1" , SettingSource = "1"}
                 };
 
-            var betTypeMappings = new string[] { "2", "3" };
+            var betTypeMappings = new[] { "2", "3" };
             var service = MockService();
 
             // Act
@@ -561,10 +560,10 @@
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1"}
+                    new() { SettingName = "BetType", SettingValue = "1"}
                 };
 
-            var betTypeMappings = new string[] { "2", "3" };
+            var betTypeMappings = new[] { "2", "3" };
             var service = MockService();
 
             // Act
@@ -581,10 +580,10 @@
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Bettype1", SettingValue = "1", SettingSource = "2"}
+                    new() { SettingName = "Bettype1", SettingValue = "1", SettingSource = "2"}
                 };
 
-            var betTypeMappings = new string[] { "2", "3" };
+            var betTypeMappings = new[] { "2", "3" };
             var service = MockService();
 
             // Act
@@ -601,10 +600,10 @@
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1", SettingSource = "BetTypeName", SettingId = 1}
+                    new() { SettingName = "BetType", SettingValue = "1", SettingSource = "BetTypeName", SettingId = 1}
                 };
 
-            var listBetTypes = new string[] { "2", "3" };
+            var listBetTypes = new[] { "2", "3" };
             var service = MockService();
             commonFeedback.GetBetTypeName(Arg.Any<string>(), Language.en_US).Returns("BetTypeName");
 
@@ -622,10 +621,10 @@
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "BetType", SettingValue = "1", SettingSource = "BetTypeName", SettingId = 1}
+                    new() { SettingName = "BetType", SettingValue = "1", SettingSource = "BetTypeName", SettingId = 1}
                 };
 
-            var listBetTypes = new string[] { "2", "3" };
+            var listBetTypes = new[] { "2", "3" };
             var service = MockService();
             commonFeedback.GetBetTypeName(Arg.Any<string>(), Language.en_US).Returns("BetTypeName");
 
@@ -647,7 +646,7 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "MainCategory1", SettingValue = DefaultValue.ResultAmended }
+                    new() { SettingName = "MainCategory1", SettingValue = DefaultValue.ResultAmended }
                 };
             var service = MockService();
 
@@ -666,7 +665,7 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended }
+                    new() { SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended }
                 };
             var service = MockService();
 
@@ -685,8 +684,8 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended },
-                    new SettingItem { SettingName = "SubCategory", SettingId =  1}
+                    new() { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended },
+                    new() { SettingName = "SubCategory", SettingId =  1}
                 };
             var service = MockService();
 
@@ -705,8 +704,8 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended },
-                    new SettingItem { SettingName = "SubCategory", SettingId =  4029}
+                    new() { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended },
+                    new() { SettingName = "SubCategory", SettingId =  4029}
                 };
 
             var service = MockService();
@@ -726,8 +725,8 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended },
-                    new SettingItem { SettingName = "SubCategory", SettingId =  2}
+                    new() { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.ResultAmended },
+                    new() { SettingName = "SubCategory", SettingId =  2}
                 };
 
             var service = MockService();
@@ -840,7 +839,7 @@
             // Arrange
             var service = MockService();
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
-            var eventDetails = new List<AutoVoidingEventDetails> { new AutoVoidingEventDetails { MatchId = 9, MatchCode = "MatchCode" } };
+            var eventDetails = new List<AutoVoidingEventDetails> { new() { MatchId = 9, MatchCode = "MatchCode" } };
             var ticketDescTemplate = fixture.Create<VoidingSettledTicketDescriptionTemplate>();
             commonFeedback.GetFeedbackTemplates<VoidingSettledTicketDescriptionTemplate>("VoidingSettledTicketDescriptionTemplate.xml").Returns(ticketDescTemplate);
             const string messageTemplate = "<span style=\"color: rgb(255, 0, 0);\">Msg ID: {0} {1}</span>";
@@ -868,7 +867,7 @@
             var service = MockService();
             fixture.Customize<VoidingAutoFeedbackInfo>(x => x.With(b => b.ProductId, "1"));
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
-            var eventDetails = new List<AutoVoidingEventDetails> { new AutoVoidingEventDetails { MatchCode = "MatchCode", MatchId = 7 } };
+            var eventDetails = new List<AutoVoidingEventDetails> { new() { MatchCode = "MatchCode", MatchId = 7 } };
             var ticketDescTemplate = fixture.Create<VoidingSettledTicketDescriptionTemplate>();
             commonFeedback.GetFeedbackTemplates<VoidingSettledTicketDescriptionTemplate>("VoidingSettledTicketDescriptionTemplate.xml").Returns(ticketDescTemplate);
             const string messageTemplate = "<span style=\"color: rgb(255, 0, 0);\">Msg ID: {0} {1}</span>";
@@ -900,7 +899,7 @@
             var stringBuilder = new StringBuilder();
             var eventDetail = new AutoVoidingEventDetails
             {
-                Sporttype = 180,
+                SportType = 180,
                 LeagueId = 1,
                 HomeId = 1,
                 AwayId = 1,
@@ -909,7 +908,7 @@
             };
             var ticketDescTemplate = fixture.Create<VoidingSettledTicketDescriptionTemplate>();
             const string line = "-------------------------------------------------------- {0}";
-            commonFeedback.GetSportName(eventDetail.Sporttype.ToString(), Language.en_US).Returns("sportName");
+            commonFeedback.GetSportName(eventDetail.SportType.ToString(), Language.en_US).Returns("sportName");
             commonFeedback.GetLeagueName(eventDetail.LeagueId.ToString(), Language.en_US).Returns("leagueName");
             commonFeedback.GetTeamName(eventDetail.HomeId.ToString(), Language.en_US).Returns("homeName");
             commonFeedback.GetTeamName(eventDetail.AwayId.ToString(), Language.en_US).Returns("awayName");
@@ -934,7 +933,7 @@
             var stringBuilder = new StringBuilder();
             var eventDetail = new AutoVoidingEventDetails
             {
-                Sporttype = 181,
+                SportType = 181,
                 LeagueId = 1,
                 HomeId = 1,
                 AwayId = 1,
@@ -943,7 +942,7 @@
             };
             var ticketDescTemplate = fixture.Create<VoidingSettledTicketDescriptionTemplate>();
             const string line = "-------------------------------------------------------- {0}";
-            commonFeedback.GetSportName(eventDetail.Sporttype.ToString(), Language.en_US).Returns("sportName");
+            commonFeedback.GetSportName(eventDetail.SportType.ToString(), Language.en_US).Returns("sportName");
             commonFeedback.GetLeagueName(eventDetail.LeagueId.ToString(), Language.en_US).Returns("leagueName");
             commonFeedback.GetTeamName(eventDetail.HomeId.ToString(), Language.en_US).Returns("homeName");
             commonFeedback.GetTeamName(eventDetail.AwayId.ToString(), Language.en_US).Returns("awayName");
@@ -968,7 +967,7 @@
             var stringBuilder = new StringBuilder();
             var eventDetail = new AutoVoidingEventDetails
             {
-                Sporttype = 181,
+                SportType = 181,
                 LeagueId = 1,
                 HomeId = 1,
                 AwayId = 1,
@@ -977,7 +976,7 @@
             };
             var ticketDescTemplate = fixture.Create<VoidingSettledTicketDescriptionTemplate>();
             const string line = "-------------------------------------------------------- {0}";
-            commonFeedback.GetSportName(eventDetail.Sporttype.ToString(), Language.en_US).Returns("sportName");
+            commonFeedback.GetSportName(eventDetail.SportType.ToString(), Language.en_US).Returns("sportName");
             commonFeedback.GetLeagueName(eventDetail.LeagueId.ToString(), Language.en_US).Returns("leagueName");
             commonFeedback.GetTeamName(eventDetail.HomeId.ToString(), Language.en_US).Returns("homeName");
             commonFeedback.GetTeamName(eventDetail.AwayId.ToString(), Language.en_US).Returns("awayName");

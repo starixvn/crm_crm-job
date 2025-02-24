@@ -33,16 +33,16 @@
 
         private AutoChatbotRebateRetentionWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "PullMessageRebateRetentionForChatBot",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   TimeInterval = 60
+                    JobName = "PullMessageRebateRetentionForChatBot",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             chatBotJobService = Substitute.For<IChatBotJobService>();

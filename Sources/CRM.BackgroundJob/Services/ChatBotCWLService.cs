@@ -1,22 +1,22 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using Constants;
 using CRM.BackgroundJob.Criteria.ChatBotCWL;
 using CRM.BackgroundJob.Models.ChatBotCWL;
 using CRM.Models;
 using CRM.Services;
 using Fanex.RemotingRef;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 public interface IChatBotCWLService
 {
     Task<IEnumerable<ChatBotCWLInfo>> GetChatbotCWLLogInfoAsync(long LastLogId, int BatchSize);
 
     Task<ValueTuple<CommandResult, ImportCWLLogInfoCommand>> ImportCWLLogInfoAsync(
-        IEnumerable<ChatBotCWLInfo> cwlInfors,
+        IEnumerable<ChatBotCWLInfo> cwlInfo,
         string Environment = BackgroundJobConstants.DefaultEnvironment);
 }
 

@@ -1,14 +1,13 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Models.MessageNotificationCenter;
     using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.UnitTests.Testable;
+    using CRM.Models;
+    using CRM.Services;
     using Fanex.BotService.Client.Core.Services.Interfaces;
-    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using System;
@@ -38,24 +37,23 @@
             // Arrange
             var service = GetService();
 
-            var serviceFlag = true;
             var initSiteDbConfigs = new List<SiteDbConfig>
             {
                 new() {SiteDBGroupID = 1, LinkedServerName = "LinkedServerName", ClientAccessName = "ClientAccessName", AGIP = "1", Environment = "dev", FDTime = new DateTime()}
             };
-            var sessionResultHistorys = new List<SettlResultHistory>
+            var sessionResultHistories = new List<SettleResultHistory>
             {
-                new () { Environment = "dev", JSSettlResultHist = "JSSettlResultHist"}
+                new () { Environment = "dev", JSSettleResultHist = "JSSettleResultHist"}
             };
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             captureSettlementDataService.GetInitialSiteDbConfigsAsync(Arg.Any<string>()).Returns(initSiteDbConfigs);
-            captureSettlementDataService.GetSessionByDateAsync(initSiteDbConfigs[0]).Returns(sessionResultHistorys);
+            captureSettlementDataService.GetSessionByDateAsync(initSiteDbConfigs[0]).Returns(sessionResultHistories);
 
             // Act
             await service.CaptureSettlementDataAsync();
 
             // Assert
-            await captureSettlementDataService.Received(1).InsertDataLoadAsync("dev", "JSSettlResultHist");
+            await captureSettlementDataService.Received(1).InsertDataLoadAsync("dev", "JSSettleResultHist");
         }
 
         [Fact]
@@ -64,8 +62,7 @@
             // Arrange
             var service = GetService();
 
-            var serviceFlag = false;
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(false);
 
             // Act
             await service.CaptureSettlementDataAsync();
@@ -119,7 +116,6 @@
         {
             // Arrange
             var service = GetService();
-            var serviceFlag = true;
             var settlementRemotingRefInfo = fixture.Create<IEnumerable<SettlementRemotingRefInfo>>();
             var refLanguage = "MNC";
             foreach (var item in settlementRemotingRefInfo)
@@ -132,7 +128,7 @@
                 item.RefValueZHCN = refLanguage;
             }
             generateResultAmendmentService.GetPrepareGenNotificationAsync(Arg.Any<string>()).Returns(settlementRemotingRefInfo);
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             service.Public_GetResourceRemotingRef("LeagueID", "1", Arg.Any<string>()).Returns(refLanguage);
 
             // Act
@@ -148,8 +144,7 @@
             // Arrange
             var service = GetService();
 
-            var serviceFlag = false;
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(false);
 
             // Act
             await service.GenerateResultAmendmentAsync();
@@ -179,7 +174,6 @@
         {
             // Arrange
             var service = GetService();
-            var serviceFlag = true;
             var mncMessageTarget = new List<MncMessageTarget>
             {
                 new () { NotificationID = 1, JSNotification = "MNC" }
@@ -187,7 +181,7 @@
             var approveTest = fixture.Create<(bool, byte)>();
             var adminMessageSite = fixture.Create<AdminMessageSite>();
 
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             pushNotificationResultAmendmentService.GetPrepareNotificationAsync(Arg.Any<string>()).Returns(mncMessageTarget);
             pushNotificationResultAmendmentService.EditPushNotificationResultAmendmentAsync(1, Arg.Any<int>(), Arg.Any<string>(), "AfterInsMsg").Returns(approveTest);
             pushNotificationResultAmendmentService.EditPushMessageResultAmendmentAsync(Arg.Any<int>(), "AfterUpdNoti", approveTest.Item1, approveTest.Item2).Returns(adminMessageSite);
@@ -206,8 +200,7 @@
             // Arrange
             var service = GetService();
 
-            var serviceFlag = false;
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(false);
 
             // Act
             await service.PushNotificationResultAmendmentAsync();
@@ -237,10 +230,9 @@
         {
             // Arrange
             var service = GetService();
-            var serviceFlag = true;
             var settlementGenLap = fixture.Create<IEnumerable<SettlementRemotingRefInfo>>();
 
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             generateLapNotificationService.GetPrepareGenLapNotificationAsync(Arg.Any<string>()).Returns(settlementGenLap);
 
             // Act
@@ -256,8 +248,7 @@
             // Arrange
             var service = GetService();
 
-            var serviceFlag = false;
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(false);
 
             // Act
             await service.GenerateLapNotificationAsync();
@@ -287,10 +278,9 @@
         {
             // Arrange
             var service = GetService();
-            var serviceFlag = true;
             var messages = fixture.Create<IEnumerable<MessageBotInfo>>();
 
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             sendNotificationCenterService.GetNotificationAlertAsync(Arg.Any<string>()).Returns(messages);
 
             // Act
@@ -307,8 +297,7 @@
             // Arrange
             var service = GetService();
 
-            var serviceFlag = false;
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(false);
 
             // Act
             await service.SendNotificationCenterAsync();
@@ -322,10 +311,9 @@
         {
             // Arrange
             var service = GetService();
-            var serviceFlag = true;
             var exception = fixture.Create<Exception>();
 
-            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(serviceFlag);
+            systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             sendNotificationCenterService.When(x => x.GetNotificationAlertAsync(Arg.Any<string>())).Throw(exception);
 
             // Act
@@ -449,11 +437,11 @@
             {
                 AppId = 1,
                 ServiceUrl = "/test",
-                ConversationConfigs = new List<ConversationConfig>
-                {
-                    new() { DisplayName = "MNC", ConversationId = "1", IsOnlySendTest = true},
-                    new() { DisplayName = "MMM", ConversationId = "2", IsOnlySendTest = false}
-                }
+                ConversationConfigs =
+                [
+                    new() { DisplayName = "MNC", ConversationId = "1", IsOnlySendTest = true },
+                    new() { DisplayName = "MMM", ConversationId = "2", IsOnlySendTest = false }
+                ]
             };
             logService = Substitute.For<ICrmLogService>();
             configuration = Substitute.For<IConfiguration>();

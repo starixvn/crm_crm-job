@@ -1,38 +1,33 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Testable
 {
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.AbnormalBet;
+    using CRM.BackgroundJob.Services;
+    using CRM.Services;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.Services;
-    using CRM.BackgroundJob.Models.AbnormalBet;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Options;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
-    public class FeedbackServiceTestable : FeedbackService
+    public class FeedbackServiceTestable(
+        IOptionsSnapshot<AppJobSettings> appSettings,
+        IBaseService baseService,
+        ISettingService settingService,
+        IMessageService messageService,
+        ICustomerService customerService,
+        ICrmLogService logService,
+        IFeedbackTicketVoidingService ticketVoidingService,
+        ICommonFeedback commonFeedback)
+        : FeedbackService(appSettings,
+            baseService,
+            settingService,
+            messageService,
+            customerService,
+            logService,
+            ticketVoidingService,
+            commonFeedback)
     {
-        public FeedbackServiceTestable(IOptionsSnapshot<AppJobSettings> appSettings,
-            IBaseService baseService,
-            ISettingService settingService,
-            IMessageService messageService,
-            ICustomerService customerService,
-            ICrmLogService logService,
-            IFeedbackTicketVoidingService ticketVoidingService,
-            ICommonFeedback commonFeedback)
-            : base(appSettings,
-                baseService,
-                settingService,
-                messageService,
-                customerService,
-                logService,
-                ticketVoidingService,
-                commonFeedback)
-        {
-        }
-
         public async Task Public_CreateFeedbackForCreditDepositSiteAsync(
             IEnumerable<Message> messages,
             IEnumerable<MatchInfo> matchInfos,
@@ -64,7 +59,7 @@
             IEnumerable<TransactionInfo> transactionInfos,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings,
-            CreateMutipleFeedbackCommand criteria)
+            CreateMultipleFeedbackCommand criteria)
         {
             await base.CreateFeedbackForCreditSiteByBatchAsync(
                 headline,

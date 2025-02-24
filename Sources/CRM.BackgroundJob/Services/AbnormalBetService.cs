@@ -13,9 +13,9 @@ using CRM.Services;
 public interface IAbnormalBetService
 {
     Task<ValueTuple<IEnumerable<VoidedInfo>, IEnumerable<VoidingMessage>, int>> GetVoidedInfoAsync(int lastVoidingHistoryCollectionId, int batchSize);
-    Task<IEnumerable<MessageAbnormelBet>> GetMessageAbnormalBetAsync(IEnumerable<VoidingMessage> messages);
+    Task<IEnumerable<MessageAbnormalBet>> GetMessageAbnormalBetAsync(IEnumerable<VoidingMessage> messages);
     Task<ValueTuple<CommandResult, ImportAbnormalBetCommand>> ImportAbnormalBetsAsync(
-        IEnumerable<MessageAbnormelBet> messages, 
+        IEnumerable<MessageAbnormalBet> messages, 
         IEnumerable<VoidedInfo> voidedCollectionInfo, 
         string environment, int maxVoidingHistoryCollectionId);
 }
@@ -33,17 +33,17 @@ public class AbnormalBetService(IBaseService baseService) : IAbnormalBetService
         return new ValueTuple<IEnumerable<VoidedInfo>, IEnumerable<VoidingMessage>, int>(data.Item1, data.Item2, criteria.MaxVoidingHistoryCollectionId);
     }
 
-    public async Task<IEnumerable<MessageAbnormelBet>> GetMessageAbnormalBetAsync(IEnumerable<VoidingMessage> messages)
+    public async Task<IEnumerable<MessageAbnormalBet>> GetMessageAbnormalBetAsync(IEnumerable<VoidingMessage> messages)
     {
         var criteria = new GetAbnormalBetMessageCriteria
         {
             Message = messages.ToXML("root").ToString()
         };
-        return await baseService.GetDataAsync<MessageAbnormelBet>(criteria);
+        return await baseService.GetDataAsync<MessageAbnormalBet>(criteria);
     }
 
     public async Task<ValueTuple<CommandResult, ImportAbnormalBetCommand>> ImportAbnormalBetsAsync(
-        IEnumerable<MessageAbnormelBet> messages, 
+        IEnumerable<MessageAbnormalBet> messages, 
         IEnumerable<VoidedInfo> voidedCollectionInfo, 
         string environment, int maxVoidingHistoryCollectionId)
     {

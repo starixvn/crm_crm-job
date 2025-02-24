@@ -1,8 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Constants;
 using CRM.BackgroundJob.Models.AbnormalBet;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
@@ -12,16 +9,19 @@ using CRM.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public interface IAutoFeedbackService
 {
-    Task AbnormalbetExecuteJobAsync();
+    Task AbnormalBetExecuteJobAsync();
 
     Task WinLossExecuteJobAsync();
 
     Task TurnoverControlExecuteJobAsync();
 
-    Task ProblemsAcccountExecuteJobAsync();
+    Task ProblemsAccountExecuteJobAsync();
 
     Task AmendmentNotiFbExecuteJobAsync();
 
@@ -112,7 +112,7 @@ public class AutoFeedbackService : IAutoFeedbackService
         Environment = string.IsNullOrEmpty(configuration.GetValue<string>("SiteEnvironment")) ? DefaultEnvironment : configuration.GetValue<string>("SiteEnvironment");
     }
 
-    public async Task AbnormalbetExecuteJobAsync()
+    public async Task AbnormalBetExecuteJobAsync()
     {
         try
         {
@@ -129,11 +129,11 @@ public class AutoFeedbackService : IAutoFeedbackService
 
             if (Environment == DefaultEnvironment)
             {
-                await AbnormalbetRunJobByEnviromentAsync(false, isRunningUAT, isRunningLive, setting, Environment);
+                await AbnormalBetRunJobByEnvironmentAsync(false, isRunningUAT, isRunningLive, setting, Environment);
             }
             else
             {
-                await AbnormalbetRunJobByEnviromentAsync(true, isRunningUAT, isRunningLive, setting, Environment);
+                await AbnormalBetRunJobByEnvironmentAsync(true, isRunningUAT, isRunningLive, setting, Environment);
             }
         }
         catch (Exception ex)
@@ -143,10 +143,10 @@ public class AutoFeedbackService : IAutoFeedbackService
         }
     }
 
-    protected internal virtual async Task AbnormalbetRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
-        bool isRunningLive, AbnormalBetSystemSetting setting, string Environment)
+    protected internal virtual async Task AbnormalBetRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
+        bool isRunningLive, AbnormalBetSystemSetting setting, string environment)
     {
-        logService.LogInformation("AbnormalbetRunJobByEnviromentAsync");
+        logService.LogInformation("AbnormalBetRunJobByEnvironmentAsync");
         var LastRuntimeEnv = isUAT ? setting.LastRuntimeUAT : setting.LastRuntime;
         var LastRuntimeNameEnv = isUAT ? SystemSettingName.LastRuntimeUAT : SystemSettingName.LastRuntime;
         var JobStatusNameEnv = isUAT ? SystemSettingName.JobStatusUAT : SystemSettingName.JobStatus;
@@ -157,7 +157,7 @@ public class AutoFeedbackService : IAutoFeedbackService
             await Task.WhenAll(
                 jobRunningChecker.MarkRunning(JobName.CreateFeedbackForVoidingAbnormalBet),
                 feedbackService.CreateFeedbackForVoidingAbnormalBetAsync(setting, isUAT, LastRuntimeEnv, LastRuntimeNameEnv,
-                    JobStatusNameEnv, Environment)
+                    JobStatusNameEnv, environment)
             );
             await jobRunningChecker.ClearRunning(JobName.CreateFeedbackForVoidingAbnormalBet);
         }
@@ -226,7 +226,7 @@ public class AutoFeedbackService : IAutoFeedbackService
             var turnOverSetting = await systemSettingService.GetTurnoverSettingAsync();
             if (!turnOverSetting.ServiceFlag)
             {
-                logService.LogInformation("Service Turnover Controll is shutdown.");
+                logService.LogInformation("Service Turnover Control is shutdown.");
                 return;
             }
 
@@ -245,7 +245,7 @@ public class AutoFeedbackService : IAutoFeedbackService
                 isRunning = await jobRunningChecker.IsRunning(JobName.CreateFeedbackForTurnoverControl);
                 if (!isRunning && turnOverSetting.LastRuntime.AddMinutes(appSettings.RetryRuntime) < DateTimeOffset.Now.DateTime)
                 {
-                    logService.LogInformation("Rerun Turnover Controll service.");
+                    logService.LogInformation("Rerun Turnover Control service.");
                     var settingJobStatus = new List<SystemSettingItem>
                     {
                         new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Completed },
@@ -278,11 +278,11 @@ public class AutoFeedbackService : IAutoFeedbackService
 
             if (Environment == DefaultEnvironment)
             {
-                await ResultAmendmentRunJobByEnviromentAsync(false, isRunningUAT, isRunningLive, resultAmendmentSetting, Environment);
+                await ResultAmendmentRunJobByEnvironmentAsync(false, isRunningUAT, isRunningLive, resultAmendmentSetting, Environment);
             }
             else
             {
-                await ResultAmendmentRunJobByEnviromentAsync(true, isRunningUAT, isRunningLive, resultAmendmentSetting, Environment);
+                await ResultAmendmentRunJobByEnvironmentAsync(true, isRunningUAT, isRunningLive, resultAmendmentSetting, Environment);
             }
         }
         catch (Exception ex)
@@ -292,8 +292,8 @@ public class AutoFeedbackService : IAutoFeedbackService
         }
     }
 
-    protected internal virtual async Task ResultAmendmentRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
-        bool isRunningLive, AmendmentNotiFbSetting resultAmendmentSetting, string Environment)
+    protected internal virtual async Task ResultAmendmentRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
+        bool isRunningLive, AmendmentNotiFbSetting resultAmendmentSetting, string environment)
     {
         var LastRuntimeEnv = isUAT ? resultAmendmentSetting.LastRuntimeUAT : resultAmendmentSetting.LastRuntime;
         var LastRuntimeNameEnv = isUAT ? SystemSettingName.LastRuntimeUAT : SystemSettingName.LastRuntime;
@@ -305,7 +305,7 @@ public class AutoFeedbackService : IAutoFeedbackService
             await Task.WhenAll(
                 jobRunningChecker.MarkRunning(JobName.CreateFeedbackAmendmentNotiFB),
                 amendmentNotiFbService.CreateFeedbackForAmendmentNotiFbAsync(resultAmendmentSetting, isUAT, LastRuntimeEnv, LastRuntimeNameEnv,
-                    JobStatusNameEnv, Environment)
+                    JobStatusNameEnv, environment)
             );
             await jobRunningChecker.ClearRunning(JobName.CreateFeedbackAmendmentNotiFB);
         }
@@ -315,7 +315,7 @@ public class AutoFeedbackService : IAutoFeedbackService
             isRunning = await jobRunningChecker.IsRunning(JobName.CreateFeedbackAmendmentNotiFB);
             if (!isRunning && LastRuntimeEnv.AddMinutes(appSettings.RetryRuntime) < DateTimeOffset.Now.DateTime)
             {
-                logService.LogInformation("Update  status and return serive result amendment.");
+                logService.LogInformation("Update  status and return service result amendment.");
                 var settingJobStatus = new List<SystemSettingItem>
                 {
                     new() { SettingName = JobStatusNameEnv, Value = JobStatus.Completed },
@@ -326,7 +326,7 @@ public class AutoFeedbackService : IAutoFeedbackService
         }
     }
 
-    public async Task ProblemsAcccountExecuteJobAsync()
+    public async Task ProblemsAccountExecuteJobAsync()
     {
         try
         {
@@ -342,11 +342,11 @@ public class AutoFeedbackService : IAutoFeedbackService
 
             if (Environment == DefaultEnvironment)
             {
-                await ProblemsAcccountRunJobByEnviromentAsync(false, isRunningUAT, isRunningLive, problemsAccountSetting, Environment);
+                await ProblemsAccountRunJobByEnvironmentAsync(false, isRunningUAT, isRunningLive, problemsAccountSetting, Environment);
             }
             else
             {
-                await ProblemsAcccountRunJobByEnviromentAsync(true, isRunningUAT, isRunningLive, problemsAccountSetting, Environment);
+                await ProblemsAccountRunJobByEnvironmentAsync(true, isRunningUAT, isRunningLive, problemsAccountSetting, Environment);
             }
         }
         catch (Exception ex)
@@ -356,8 +356,8 @@ public class AutoFeedbackService : IAutoFeedbackService
         }
     }
 
-    protected internal virtual async Task ProblemsAcccountRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
-        bool isRunningLive, ProblemsAccountSetting problemsAccountSetting, string Environment)
+    protected internal virtual async Task ProblemsAccountRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
+        bool isRunningLive, ProblemsAccountSetting problemsAccountSetting, string environment)
     {
         var LastRuntimeEnv = isUAT ? problemsAccountSetting.LastRuntimeUAT : problemsAccountSetting.LastRuntime;
         var LastRuntimeNameEnv = isUAT ? SystemSettingName.LastRuntimeUAT : SystemSettingName.LastRuntime;
@@ -370,7 +370,7 @@ public class AutoFeedbackService : IAutoFeedbackService
                 jobRunningChecker.MarkRunning(JobName.CreateFeedbackForProblemsAccount),
                 problemsAccountFeedbackService.CreateFeedbackForProblemsAccountAsync(
                     problemsAccountSetting, isUAT, LastRuntimeEnv, LastRuntimeNameEnv,
-                    JobStatusNameEnv, Environment
+                    JobStatusNameEnv, environment
                 )
             );
             await jobRunningChecker.ClearRunning(JobName.CreateFeedbackForProblemsAccount);
@@ -381,7 +381,7 @@ public class AutoFeedbackService : IAutoFeedbackService
             isRunning = await jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount);
             if (!isRunning && LastRuntimeEnv.AddMinutes(appSettings.RetryRuntime) < DateTimeOffset.Now.DateTime)
             {
-                logService.LogInformation("Update  status and return serive problems account.");
+                logService.LogInformation("Update  status and return service problems account.");
                 var settingJobStatus = new List<SystemSettingItem>
                 {
                     new() { SettingName = JobStatusNameEnv, Value = JobStatus.Completed },
@@ -427,11 +427,11 @@ public class AutoFeedbackService : IAutoFeedbackService
 
             if (Environment == DefaultEnvironment)
             {
-                await VoidingSettledTicketsRunJobByEnviromentAsync(false, isRunningUAT, isRunningLive, voidingSettledTicketSetting, Environment);
+                await VoidingSettledTicketsRunJobByEnvironmentAsync(false, isRunningUAT, isRunningLive, voidingSettledTicketSetting, Environment);
             }
             else
             {
-                await VoidingSettledTicketsRunJobByEnviromentAsync(true, isRunningUAT, isRunningLive, voidingSettledTicketSetting, Environment);
+                await VoidingSettledTicketsRunJobByEnvironmentAsync(true, isRunningUAT, isRunningLive, voidingSettledTicketSetting, Environment);
             }
         }
         catch (Exception ex)
@@ -441,8 +441,8 @@ public class AutoFeedbackService : IAutoFeedbackService
         }
     }
 
-    protected internal virtual async Task VoidingSettledTicketsRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
-        bool isRunningLive, AmendmentNotiFbSetting voidingSettledTicketSetting, string Environment)
+    protected internal virtual async Task VoidingSettledTicketsRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
+        bool isRunningLive, AmendmentNotiFbSetting voidingSettledTicketSetting, string environment)
     {
         var LastRuntimeEnv = isUAT ? voidingSettledTicketSetting.LastRuntimeUAT : voidingSettledTicketSetting.LastRuntime;
         var LastRuntimeNameEnv = isUAT ? SystemSettingName.LastRuntimeUAT : SystemSettingName.LastRuntime;
@@ -454,17 +454,17 @@ public class AutoFeedbackService : IAutoFeedbackService
             await Task.WhenAll(
                 jobRunningChecker.MarkRunning(JobName.CreateFeedbackForVoidingSettledTickets),
                 voidingSettledTicketsService.CreateFeedbackForVoidingSettledTickets(voidingSettledTicketSetting, isUAT, LastRuntimeEnv, LastRuntimeNameEnv,
-                    JobStatusNameEnv, Environment)
+                    JobStatusNameEnv, environment)
             );
             await jobRunningChecker.ClearRunning(JobName.CreateFeedbackForVoidingSettledTickets);
         }
         else
         {
-            logService.LogInformation("Voidding settled tickets service is running.");
+            logService.LogInformation("Voiding settled tickets service is running.");
             isRunning = await jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingSettledTickets);
             if (!isRunning && LastRuntimeEnv.AddMinutes(appSettings.RetryRuntime) < DateTimeOffset.Now.DateTime)
             {
-                logService.LogInformation("Update  status and return serive voidding settled tickets.");
+                logService.LogInformation("Update  status and return service voiding settled tickets.");
                 var settingJobStatus = new List<SystemSettingItem>
                 {
                     new() { SettingName = JobStatusNameEnv, Value = JobStatus.Completed },
@@ -491,11 +491,11 @@ public class AutoFeedbackService : IAutoFeedbackService
 
             if (Environment == DefaultEnvironment)
             {
-                await ArchivingDARunJobByEnviromentAsync(false, isRunningUAT, isRunningLive, setting, Environment);
+                await ArchivingDARunJobByEnvironmentAsync(false, isRunningUAT, isRunningLive, setting, Environment);
             }
             else
             {
-                await ArchivingDARunJobByEnviromentAsync(true, isRunningUAT, isRunningLive, setting, Environment);
+                await ArchivingDARunJobByEnvironmentAsync(true, isRunningUAT, isRunningLive, setting, Environment);
             }
         }
         catch (Exception ex)
@@ -505,8 +505,8 @@ public class AutoFeedbackService : IAutoFeedbackService
         }
     }
 
-    protected internal virtual async Task ArchivingDARunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
-        bool isRunningLive, ArchivingDASetting setting, string Environment)
+    protected internal virtual async Task ArchivingDARunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
+        bool isRunningLive, ArchivingDASetting setting, string environment)
     {
         var LastRuntimeEnv = isUAT ? setting.LastRuntimeUAT : setting.LastRuntime;
         var LastRuntimeNameEnv = isUAT ? SystemSettingName.LastRuntimeUAT : SystemSettingName.LastRuntime;
@@ -519,7 +519,7 @@ public class AutoFeedbackService : IAutoFeedbackService
                 jobRunningChecker.MarkRunning(JobName.CreateFeedbackForArchivingDA),
                 archivingDAService.CreateFeedbackForArchivingDAAsync(
                     setting, isUAT, LastRuntimeEnv, LastRuntimeNameEnv,
-                    JobStatusNameEnv, Environment
+                    JobStatusNameEnv, environment
                 )
             );
             await jobRunningChecker.ClearRunning(JobName.CreateFeedbackForArchivingDA);
@@ -530,7 +530,7 @@ public class AutoFeedbackService : IAutoFeedbackService
             isRunning = await jobRunningChecker.IsRunning(JobName.CreateFeedbackForArchivingDA);
             if (!isRunning && LastRuntimeEnv.AddMinutes(appSettings.RetryRuntime) < DateTimeOffset.Now.DateTime)
             {
-                logService.LogInformation("Update  status and return serive archiving DA.");
+                logService.LogInformation("Update  status and return service archiving DA.");
                 var settingJobStatus = new List<SystemSettingItem>
                 {
                     new() { SettingName = JobStatusNameEnv, Value = JobStatus.Completed },
@@ -608,9 +608,9 @@ public class AutoFeedbackService : IAutoFeedbackService
                 logService.LogInformation("Service AutoFeedback AbnormalBets is shutdown.");
                 return;
             }
-            var (voidedCollectionInfo, messageAbnormals, maxVoidingHistoryCollectionId) =
+            var (voidedCollectionInfo, abnormalMessages, maxVoidingHistoryCollectionId) =
                 await abnormalBetService.GetVoidedInfoAsync(systemSettingInfo.LastVoidingHistoryCollectionId, systemSettingInfo.BatchSize);
-            var messages = await abnormalBetService.GetMessageAbnormalBetAsync(messageAbnormals);
+            var messages = await abnormalBetService.GetMessageAbnormalBetAsync(abnormalMessages);
             var (commandResult, command) = await abnormalBetService.ImportAbnormalBetsAsync(messages, voidedCollectionInfo, Environment, maxVoidingHistoryCollectionId);
             if (commandResult.IsSuccessful)
             {

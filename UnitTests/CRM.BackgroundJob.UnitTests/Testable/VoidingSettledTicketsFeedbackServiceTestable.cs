@@ -1,38 +1,31 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Testable
 {
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.VoidingSettledTickets;
+    using CRM.BackgroundJob.Services;
+    using CRM.Services;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.Services;
-    using CRM.BackgroundJob.Models.VoidingSettledTickets;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Options;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
-    public class VoidingSettledTicketsFeedbackServiceTestable : VoidingSettledTicketsFeedbackService
+    public class VoidingSettledTicketsFeedbackServiceTestable(
+        IOptionsSnapshot<AppJobSettings> appSettings,
+        IBaseService baseService,
+        ISettingService settingService,
+        ICrmLogService logService,
+        ICommonFeedback commonFeedback,
+        IVoidingSettledTicketsService voidingSettledTicketsService,
+        IFeedbackTransactionService feedbackTransaction)
+        : VoidingSettledTicketsFeedbackService(appSettings,
+            baseService,
+            settingService,
+            logService,
+            commonFeedback,
+            voidingSettledTicketsService,
+            feedbackTransaction)
     {
-        public VoidingSettledTicketsFeedbackServiceTestable(
-            IOptionsSnapshot<AppJobSettings> appSettings,
-            IBaseService baseService,
-            ISettingService settingService,
-            ICrmLogService logService,
-            ICommonFeedback commonFeedback,
-            IVoidingSettledTicketsService voidingSettledTicketsService,
-            IFeedbackTransactionService feedbackTransaction)
-        : base(appSettings,
-                baseService,
-                settingService,
-                logService,
-                commonFeedback,
-                voidingSettledTicketsService,
-                feedbackTransaction
-              )
-        {
-        }
-
         public async Task Public_CreateVoidingSettledTicketsAsync(
            VoidingAutoFeedbackInfo feedbackInfo,
            IEnumerable<AutoVoidingEventDetails> eventDetails,
@@ -47,7 +40,7 @@
 
         public async Task Public_CheckValidVoidingSettledParamsAndInsertFeedbackAsync(
             VoidingAutoFeedbackInfo feedbackInfo,
-            CreateMutipleFeedbackCommand criteria,
+            CreateMultipleFeedbackCommand criteria,
             string environment)
         {
             await base.CheckValidVoidingSettledParamsAndInsertFeedbackAsync(feedbackInfo, criteria, environment);

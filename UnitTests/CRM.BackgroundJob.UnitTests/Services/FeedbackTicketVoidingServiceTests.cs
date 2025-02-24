@@ -1,21 +1,19 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
+    using AutoFixture;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.AbnormalBet;
+    using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
+    using Microsoft.Extensions.Configuration;
+    using NSubstitute;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.AbnormalBet;
-    using CRM.BackgroundJob.Constants;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Configuration;
-    using NSubstitute;
     using Xunit;
 
     public class FeedbackTicketVoidingServiceTests
@@ -36,7 +34,7 @@
             var setting = fixture.Create<AbnormalBetSystemSetting>();
             var voidingMessageUserNames = new List<VoidingMessageUserName>
             {
-                new VoidingMessageUserName
+                new()
                 {
                     VoidingHistoryCollectionId = 1,
                     MessageId = 1,
@@ -50,9 +48,8 @@
             stringBuilder.Append(XmlTemplate);
             stringBuilder.Append(BackgroundJobConstants.EndRootTag);
             var matchInfos = fixture.Create<IEnumerable<MatchInfo>>();
-            var transactionInfos = new List<TransactionInfo>();
             var duplicateTicketDetail = fixture.Create<IEnumerable<DuplicateTicketDetail>>();
-            var ticketInfo = new ValueTuple<IEnumerable<MatchInfo>, IEnumerable<TransactionInfo>, IEnumerable<DuplicateTicketDetail>> (matchInfos, transactionInfos, duplicateTicketDetail);
+            var ticketInfo = new ValueTuple<IEnumerable<MatchInfo>, IEnumerable<TransactionInfo>, IEnumerable<DuplicateTicketDetail>>(matchInfos, new List<TransactionInfo>(), duplicateTicketDetail);
             var criteria = new GetAbnormalTicketInfoCriteria();
             var service = GetService();
             baseService.FetchMultipleAsync<MatchInfo, TransactionInfo, DuplicateTicketDetail>(Arg.Do<GetAbnormalTicketInfoCriteria>(x => criteria = x)).Returns(ticketInfo);
@@ -65,7 +62,7 @@
             await messageService.Received().EditStatusVoidingMessageAsync(Arg.Any<IEnumerable<VoidingMessageUserName>>(), Arg.Any<string>());
 
             Assert.Equal(matchInfos, actual.Item1);
-            Assert.Equal(transactionInfos, actual.Item2);
+            Assert.Empty(actual.Item2);
             Assert.Equal(stringBuilder.ToString(), criteria.MessageIds);
             Assert.Equal(setting.ConfigUAT, criteria.ConfigUAT);
             Assert.Equal(setting.ConfigPRO, criteria.ConfigPRO);
@@ -81,7 +78,7 @@
             var setting = fixture.Create<AbnormalBetSystemSetting>();
             var voidingMessageUserNames = new List<VoidingMessageUserName>
             {
-                new VoidingMessageUserName
+                new()
                 {
                     VoidingHistoryCollectionId = 1,
                     MessageId = 1,
@@ -124,20 +121,18 @@
             fixture.Customize<MatchInfo>(x => x.With(b => b.MessageId, "1"));
             var voidingMessageUserNames = fixture.Create<IEnumerable<VoidingMessageUserName>>();
             var matchInfos = fixture.Create<IEnumerable<MatchInfo>>();
-            var transactionInfos = new List<TransactionInfo>();
             var siteSettingMappings = fixture.Create<IEnumerable<SiteSettingMapping>>();
             var headlines = fixture.Create<IEnumerable<GroupHeadline>>();
             var licenseeInfo = fixture.Create<CustomerInfo>();
-            var feedbackInfos = new List<AutoFeedbackInfo>();
             var criteria = new ImportFeedbackInfoCriteria();
             var service = GetService();
-            baseService.GetDataAsync<AutoFeedbackInfo>(Arg.Do<ImportFeedbackInfoCriteria>(x => criteria = x)).Returns(feedbackInfos);
+            baseService.GetDataAsync<AutoFeedbackInfo>(Arg.Do<ImportFeedbackInfoCriteria>(x => criteria = x)).Returns(new List<AutoFeedbackInfo>());
 
             // Act
             var actual = await service.ImportTicketVoidingInfoAsync(
                 voidingMessageUserNames,
                 matchInfos,
-                transactionInfos,
+                new List<TransactionInfo>(),
                 siteSettingMappings,
                 headlines,
                 licenseeInfo);
@@ -157,21 +152,21 @@
             var voidingMessageUserNames = fixture.Create<IEnumerable<VoidingMessageUserName>>();
             var matchInfos = new List<MatchInfo>
             {
-                new MatchInfo { MessageId = "1", HomeName = "home", AwayName = "away", IssueTypeId = 7, VoidingHistoryCollectionId = 1 }
+                new() { MessageId = "1", HomeName = "home", AwayName = "away", IssueTypeId = 7, VoidingHistoryCollectionId = 1 }
             };
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { MessageId = 1, RequestId = 1, CustId = 1, VoidingHistoryCollectionId = 1 }
+                new() { MessageId = 1, RequestId = 1, CustId = 1, VoidingHistoryCollectionId = 1 }
             };
             var siteSettingMappings = fixture.Create<IEnumerable<SiteSettingMapping>>();
             var headlines = new List<GroupHeadline>
             {
-                new GroupHeadline { CustId = 1, HeadlineId = 1 }
+                new() { CustId = 1, HeadlineId = 1 }
             };
             var licenseeInfo = fixture.Create<CustomerInfo>();
             var feedbackInfos = new List<AutoFeedbackInfo>
             {
-                new AutoFeedbackInfo { VoidingHistoryCollectionId = 1 ,MessageId = 1, CustId = 1 }
+                new() { VoidingHistoryCollectionId = 1 ,MessageId = 1, CustId = 1 }
             };
             var xml = "<ROOT><r msgid='1' reqid='1' custid='1' hl='1' related='1' event='home -vs- away' IssueTypeId='7' /></ROOT>";
             var criteria = new ImportFeedbackInfoCriteria();
@@ -203,21 +198,21 @@
             var voidingMessageUserNames = fixture.Create<IEnumerable<VoidingMessageUserName>>();
             var matchInfos = new List<MatchInfo>
             {
-                new MatchInfo { MessageId = "1", HomeName = "home", AwayName = "away", IssueTypeId = 7, VoidingHistoryCollectionId = 1 }
+                new() { MessageId = "1", HomeName = "home", AwayName = "away", IssueTypeId = 7, VoidingHistoryCollectionId = 1 }
             };
             var transactionInfos = new List<TransactionInfo>
             {
-                new TransactionInfo { MessageId = 1, RequestId = 1, CustId = 1, Site = "Site", IsDeposit = true , VoidingHistoryCollectionId = 1}
+                new() { MessageId = 1, RequestId = 1, CustId = 1, Site = "Site", IsDeposit = true , VoidingHistoryCollectionId = 1}
             };
             var siteSettingMappings = new List<SiteSettingMapping>
             {
-                new SiteSettingMapping { SettingSource = "Site", LicenseeManagerId = 1 }
+                new() { SettingSource = "Site", LicenseeManagerId = 1 }
             };
             var headlines = fixture.Create<IEnumerable<GroupHeadline>>();
             var licenseeInfo = new CustomerInfo { CustId = 1 };
             var feedbackInfos = new List<AutoFeedbackInfo>
             {
-                new AutoFeedbackInfo { VoidingHistoryCollectionId = 1, MessageId = 1, CustId = 1 }
+                new() { VoidingHistoryCollectionId = 1, MessageId = 1, CustId = 1 }
             };
             var xml = "<ROOT><r msgid='1' reqid='1' custid='1' hl='1' related='1' event='home -vs- away' IssueTypeId='7' /></ROOT>";
             var criteria = new ImportFeedbackInfoCriteria();
@@ -274,11 +269,11 @@
         {
             // Arrange
             var expected = fixture.Create<IEnumerable<TransactionInfo>>();
-            var criteria = fixture.Create<GetAbnormalTicketsCheckCriteria>();
+            fixture.Create<GetAbnormalTicketsCheckCriteria>();
             var setting = fixture.Create<AbnormalBetSystemSetting>();
             var checkTrans = fixture.Create<string>();
             var service = GetService();
-            baseService.GetDataFromSiteDbAsync<TransactionInfo>(Arg.Do<GetAbnormalTicketsCheckCriteria>(x => criteria = x)).Returns(expected);
+            baseService.GetDataFromSiteDbAsync<TransactionInfo>(Arg.Do<GetAbnormalTicketsCheckCriteria>(x => _ = x)).Returns(expected);
 
             // Act
             var actual = await service.GetAbnormalTicketsByTransAsync(setting, checkTrans);

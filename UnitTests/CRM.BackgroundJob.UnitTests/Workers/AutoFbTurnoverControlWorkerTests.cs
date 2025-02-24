@@ -33,16 +33,16 @@ namespace CRM.BackgroundJob.UnitTests.Workers
         }
         private AutoFbTurnoverControlWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "CreateFeedbackForTurnoverControl",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   TimeInterval = 60
+                    JobName = "CreateFeedbackForTurnoverControl",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             autoFeedbackService = Substitute.For<IAutoFeedbackService>();

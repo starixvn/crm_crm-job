@@ -1,19 +1,19 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
+    using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.ChatBotCWL;
     using CRM.BackgroundJob.Models.ChatBotCWL;
     using CRM.BackgroundJob.Services;
     using CRM.Models;
     using CRM.Services;
-    using CRM.BackgroundJob.Constants;
     using Fanex.RemotingRef;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class ChatBotCWLServiceTests
@@ -54,7 +54,7 @@
                 "ProductNameVN='{11}' LevelId='{12}' GroupId='{13}'/>";
             var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
 
-            service.GetProductName(Arg.Any<string>(),"en-US").Returns("a");
+            service.GetProductName(Arg.Any<string>(), "en-US").Returns("a");
             service.GetProductName(Arg.Any<string>(), "zh-CN").Returns("b");
             service.GetProductName(Arg.Any<string>(), "th-TH").Returns("c");
             service.GetProductName(Arg.Any<string>(), "vi-VN").Returns("d");
@@ -81,7 +81,7 @@
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportCWLLogInfoCommand>(x => criteria = x)).Returns(commandResult);
             var valueTupe = new ValueTuple<CommandResult, ImportCWLLogInfoCommand>(commandResult, criteria);
             // Act
-            var actual = await service.ImportCWLLogInfoAsync(cWLInfos, BackgroundJobConstants.DefaultEnvironment);
+            var actual = await service.ImportCWLLogInfoAsync(cWLInfos);
 
             // Assert
             Assert.Equal(valueTupe.Item1, actual.Item1);
@@ -89,7 +89,6 @@
             Assert.Equal(BackgroundJobConstants.DefaultEnvironment, criteria.Environment);
             Assert.Equal(0, criteria.ErrCode);
             Assert.Null(criteria.ErrMsg);
-
         }
 
         #region Helpers

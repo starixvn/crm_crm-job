@@ -1,18 +1,18 @@
-﻿namespace CRM.BackgroundJob.Services;
+﻿using CRM.BackgroundJob.Models.TurnoverControl;
 
+namespace CRM.BackgroundJob.Services;
+
+using Constants;
+using Criteria.AutoFeedback;
+using CRM.BackgroundJob.Models.WinLossLimit;
+using CRM.Services;
+using Microsoft.Extensions.Options;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Constants;
-using Criteria.AutoFeedback;
-using CRM.BackgroundJob.Models.TurnoverControll;
-using CRM.BackgroundJob.Models.WinLossLimit;
-using CRM.Models;
-using CRM.Services;
-using Microsoft.Extensions.Options;
-using Models;
 
 public interface ITOControlFeedbackService
 {
@@ -74,7 +74,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         var custOutStandings = await customerService.GetListCustOutStandingAsync(custNotificationsDistinct);
         var custIds = custOutStandings.Select(x => x.CustID);
         var headlines = await customerService.GetGroupHeadlineAsync(custIds);
-        var importTOFeedbacks = await transactionService.ImportTOControllFeedbackInfoAsync(
+        var importTOFeedbacks = await transactionService.ImportTOControlFeedbackInfoAsync(
             headlines,
             custOutStandings,
             custNotifications);
@@ -93,10 +93,10 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         var settings = await settingService.GetAllSettingAsync();
         var settingMappings = await settingService.GetSystemSettingMappingAsync(settingNames);
 
-        foreach (var ToInfor in importTOFeedbacks)
+        foreach (var ToInfo in importTOFeedbacks)
         {
             await CreateTOControlFeedbackAsync(
-                ToInfor,
+                ToInfo,
                 settings,
                 settingMappings);
         }
@@ -105,7 +105,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
     }
 
     protected internal virtual async Task CreateTOControlFeedbackAsync(
-        TOControlFeedbackInfor ToInfor,
+        TOControlFeedbackInfo ToInfo,
         IEnumerable<SettingItem> settings,
         IEnumerable<SystemSettingMapping> settingMappings)
     {
@@ -116,11 +116,11 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals(DefaultValue.Neutral, StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var category = commonFeedback.GetCategorySubCategoryCWL(settings, DefaultValue.MANotification);
 
-        var sportTypeName = commonFeedback.GetSportName(ToInfor.SportType.ToString(), Language.en_US);
-        var betTypeSplits = ToInfor.BettypeList.Split(",");
+        var sportTypeName = commonFeedback.GetSportName(ToInfo.SportType.ToString(), Language.en_US);
+        var betTypeSplits = ToInfo.BettypeList.Split(",");
         var betTypeMappings = new List<string>();
 
         foreach (var betType in betTypeSplits.Distinct().ToList())
@@ -130,7 +130,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         }
 
         var sportsbook = GetTOSportsbookProduct(settings);
-        var criteria = new CreateMutipleFeedbackCommand
+        var criteria = new CreateMultipleFeedbackCommand
         {
             FeedbackDate = feedbackDate.Subtract(timeSpan),
             ResolutionDate = feedbackDate.AddMinutes(1).Subtract(timeSpan),
@@ -138,31 +138,31 @@ public class TOControlFeedbackService : ITOControlFeedbackService
             UserId = appSettings.CreatorId,
             IsCheckedDefaultComm = true,
             StationId = station != null ? station.SettingId.ToString() : string.Empty,
-            StatusId = status != null ? status.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
             CategoryXml = category.Item3,
             CategoryIds = category.Item1.ToString(),
             SubCategoryIds = category.Item2.ToString(),
-            ResponseId = response != null ? response.SettingId : 0,
+            ResponseId = response?.SettingId ?? 0,
             UserRole = BackgroundJobConstants.UserRole,
             Subject = DefaultValue.Special_Notification,
             AutoField2 = string.Format(DefaultValue.DateTimeTool, feedbackDate.ToString("yyyyMMdd"), feedbackDate.ToString("hh:mmtt")),
             AutoField = string.Empty,
             AutoField1 = string.Empty,
             AutoField3 = $"{Environment.NewLine}System ID: ",
-            CustomerXml = string.Format(DefaultValue.CustomerXml, ToInfor.HeadlineID, ToInfor.HeadlineName),
+            CustomerXml = string.Format(DefaultValue.CustomerXml, ToInfo.HeadlineID, ToInfo.HeadlineName),
             ProductXml = GetTOProductXml(sportTypeName, sportsbook.SettingId, betTypeMappings, settings, settingMappings),
-            Solution = GetTOSolution(ToInfor),
-            RelatedCustomerXml = GetTORelatedCustomerXml(ToInfor),
-            ListOrigCustIds = string.Join(",", ToInfor.CustID),
-            TOControlLogID = ToInfor.LogID.ToString(),
-            Description = GetTODescription(ToInfor)
+            Solution = GetTOSolution(ToInfo),
+            RelatedCustomerXml = GetTORelatedCustomerXml(ToInfo),
+            ListOrigCustIds = string.Join(",", ToInfo.CustID),
+            TOControlLogID = ToInfo.LogID.ToString(),
+            Description = GetTODescription(ToInfo)
         };
-        await CheckValidTOParamsAndInsertFeedbackAsync(ToInfor, criteria);
+        await CheckValidTOParamsAndInsertFeedbackAsync(ToInfo, criteria);
     }
 
     protected internal virtual async Task CheckValidTOParamsAndInsertFeedbackAsync(
-        TOControlFeedbackInfor ToInfor,
-        CreateMutipleFeedbackCommand criteria)
+        TOControlFeedbackInfo ToInfo,
+        CreateMultipleFeedbackCommand criteria)
     {
         var checkValidParamBeforeInsert = commonFeedback.CheckFeedbackValidParams(criteria);
         if (!checkValidParamBeforeInsert.Item1)
@@ -170,7 +170,7 @@ public class TOControlFeedbackService : ITOControlFeedbackService
             var messageInvalid = "Invalid Params: " + checkValidParamBeforeInsert.Item2;
             logService.LogInformation(
                 $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
-            await transactionService.EditTOControlFeedbackInfoAsync(ToInfor.LogID.ToString(), CreateFeedbackJobStatus.Fail, messageInvalid);
+            await transactionService.EditTOControlFeedbackInfoAsync(ToInfo.LogID.ToString(), CreateFeedbackJobStatus.Fail, messageInvalid);
             return;
         }
         try
@@ -179,20 +179,20 @@ public class TOControlFeedbackService : ITOControlFeedbackService
             if (commandResult.IsSuccessful)
             {
                 logService.LogInformation(
-                    $"Create TO feedback successfully HeadlineId {ToInfor.HeadlineID} HeadlineName:{ToInfor.HeadlineName} ProfileName: {ToInfor.ProfileName} custName: {ToInfor.UserName}");
+                    $"Create TO feedback successfully HeadlineId {ToInfo.HeadlineID} HeadlineName:{ToInfo.HeadlineName} ProfileName: {ToInfo.ProfileName} custName: {ToInfo.UserName}");
             }
             else
             {
                 logService.LogInformation(
-                    $"Create TO feedback Faild HeadlineId {ToInfor.HeadlineID} HeadlineName:{ToInfor.HeadlineName} ProfileName: {ToInfor.ProfileName} custName: {ToInfor.UserName}");
+                    $"Create TO feedback Failed HeadlineId {ToInfo.HeadlineID} HeadlineName:{ToInfo.HeadlineName} ProfileName: {ToInfo.ProfileName} custName: {ToInfo.UserName}");
 
-                await transactionService.EditTOControlFeedbackInfoAsync(ToInfor.LogID.ToString(), CreateFeedbackJobStatus.Fail, commandResult.Message);
+                await transactionService.EditTOControlFeedbackInfoAsync(ToInfo.LogID.ToString(), CreateFeedbackJobStatus.Fail, commandResult.Message);
                 await logService.ErrorAsync(commandResult, criteria);
             }
         }
         catch (Exception ex)
         {
-            await transactionService.EditTOControlFeedbackInfoAsync(ToInfor.LogID.ToString(), CreateFeedbackJobStatus.Fail, ex.Message);
+            await transactionService.EditTOControlFeedbackInfoAsync(ToInfo.LogID.ToString(), CreateFeedbackJobStatus.Fail, ex.Message);
             await logService.ErrorAsync(ex);
         }
     }
@@ -245,15 +245,18 @@ public class TOControlFeedbackService : ITOControlFeedbackService
                                                         && mapping.SettingSource.Equals(sportName, StringComparison.OrdinalIgnoreCase)).ToList();
         var subProducts = settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                 && sub.ParentIds.Any(parent => parent == productId)
-                                                && mappings != null
                                                 && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
         return subProducts.Any()
             ? subProducts.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.SubProductNA, ParentIds = new List<int> { BackgroundJobConstants.ProductNA } }
-            };
+            :
+            [
+                new()
+                {
+                    SettingId = BackgroundJobConstants.SubProductNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.ProductNA }
+                }
+            ];
     }
 
     protected internal virtual IList<SystemSettingMapping> GetTOBetType(
@@ -264,23 +267,20 @@ public class TOControlFeedbackService : ITOControlFeedbackService
             && !string.IsNullOrWhiteSpace(mapping.SettingSource)
             && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
-        return betTypes != null && betTypes.Any()
+        return betTypes.Any()
             ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SystemSettingMapping>
-            {
-                new() { SettingId = BackgroundJobConstants.BettypeNA }
-            };
+            : [new() { SettingId = BackgroundJobConstants.BettypeNA }];
     }
 
-    protected internal virtual string GetTORelatedCustomerXml(TOControlFeedbackInfor ToInfor)
+    protected internal virtual string GetTORelatedCustomerXml(TOControlFeedbackInfo toInfo)
     {
         const string XmlTemplate = DefaultValue.RelatedCustomerXml;
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
-        stringBuilder.AppendFormat(XmlTemplate, ToInfor.HeadlineID, ToInfor.RelatedCustID, ToInfor.UserName);
+        stringBuilder.AppendFormat(XmlTemplate, toInfo.HeadlineID, toInfo.RelatedCustID, toInfo.UserName);
         return stringBuilder.Append(BackgroundJobConstants.EndRootTag).ToString();
     }
 
-    protected internal virtual string GetTODescription(TOControlFeedbackInfor ToInfor)
+    protected internal virtual string GetTODescription(TOControlFeedbackInfo toInfo)
     {
         var stringBuilder = new StringBuilder(DefaultValue.autoGenerated);
         stringBuilder.Append(BackgroundJobConstants.Break);
@@ -288,29 +288,29 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         const byte SuperID = 4;
         const byte MasterID = 3;
 
-        var isMaster = ToInfor.RoleID == MasterID ? SMALevel.Master : SMALevel.Agent;
-        var smaLevel = ToInfor.RoleID == SuperID ? SMALevel.Super : isMaster;
+        var isMaster = toInfo.RoleID == MasterID ? SMALevel.Master : SMALevel.Agent;
+        var smaLevel = toInfo.RoleID == SuperID ? SMALevel.Super : isMaster;
 
-        var sportName = commonFeedback.GetSportName(ToInfor.SportType.ToString(), Language.en_US);
-        var leagueName = commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), Language.en_US);
-        var homeName = commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), Language.en_US);
-        var awayName = commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), Language.en_US);
+        var sportName = commonFeedback.GetSportName(toInfo.SportType.ToString(), Language.en_US);
+        var leagueName = commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), Language.en_US);
+        var homeName = commonFeedback.GetTeamName(toInfo.HomeID.ToString(), Language.en_US);
+        var awayName = commonFeedback.GetTeamName(toInfo.AwayID.ToString(), Language.en_US);
 
         stringBuilder.AppendFormat(TODescTemplate.Desc,
             smaLevel,
-            ToInfor.Level,
+            toInfo.Level,
             sportName,
             leagueName,
             homeName,
             awayName,
-            ToInfor.UserName,
-            ToInfor.Currency,
-            ToInfor.TotalTurnover.ToString(BackgroundJobConstants.ThousanPaseMoney),
-            ToInfor.ProfileName,
-            ToInfor.HouseTurnover.ToString(BackgroundJobConstants.ThousanPaseMoney),
-            ToInfor.MaxTurnover.ToString(BackgroundJobConstants.ThousanPaseMoney),
-            ToInfor.Usage.ToString(BackgroundJobConstants.ThousanPaseMoney),
-            ToInfor.Outstanding.ToString(BackgroundJobConstants.ThousanPaseMoney),
+            toInfo.UserName,
+            toInfo.Currency,
+            toInfo.TotalTurnover.ToString(BackgroundJobConstants.ThousandParseMoney),
+            toInfo.ProfileName,
+            toInfo.HouseTurnover.ToString(BackgroundJobConstants.ThousandParseMoney),
+            toInfo.MaxTurnover.ToString(BackgroundJobConstants.ThousandParseMoney),
+            toInfo.Usage.ToString(BackgroundJobConstants.ThousandParseMoney),
+            toInfo.Outstanding.ToString(BackgroundJobConstants.ThousandParseMoney),
             BackgroundJobConstants.Break
         );
 
@@ -318,29 +318,29 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         return stringBuilder.ToString();
     }
 
-    protected internal virtual string GetTOSolution(TOControlFeedbackInfor ToInfor)
+    protected internal virtual string GetTOSolution(TOControlFeedbackInfo toInfo)
     {
-        var isVipCust = ToInfor.SiteLabel == "789y" && ToInfor.IsVip;
+        var isVipCust = toInfo.SiteLabel == "789y" && toInfo.IsVip;
 
         var TOSolTemplate = commonFeedback.GetFeedbackTemplates<TOSolutionTemplate>(solTemplateXml);
-        var smaLevelEN = "";
-        var smaLevelSC = "";
+        string smaLevelEN;
+        string smaLevelSC;
         const byte SuperID = 4;
         const byte MasterID = 3;
-        if (ToInfor.RoleID == SuperID)
+        if (toInfo.RoleID == SuperID)
         {
             smaLevelEN = SMALevel.Super;
             smaLevelSC = SMALevel.SuperSC;
         }
         else
         {
-            smaLevelEN = ToInfor.RoleID == MasterID ? SMALevel.Master : SMALevel.Agent;
-            smaLevelSC = ToInfor.RoleID == MasterID ? SMALevel.MasterSC : SMALevel.AgentSC;
+            smaLevelEN = toInfo.RoleID == MasterID ? SMALevel.Master : SMALevel.Agent;
+            smaLevelSC = toInfo.RoleID == MasterID ? SMALevel.MasterSC : SMALevel.AgentSC;
         }
 
         var stringBuilder = new StringBuilder();
-        var solutionTemplateEN = GetTOSolutionTemplateEN(ToInfor, TOSolTemplate, smaLevelEN);
-        var solutionTemplateSC = GetTOSolutionTemplateYNSC(ToInfor, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
+        var solutionTemplateEN = GetTOSolutionTemplateEN(toInfo, TOSolTemplate, smaLevelEN);
+        var solutionTemplateSC = GetTOSolutionTemplateYnSc(toInfo, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
 
         stringBuilder.Append(solutionTemplateEN);
         stringBuilder.Append(BackgroundJobConstants.Break);
@@ -350,23 +350,23 @@ public class TOControlFeedbackService : ITOControlFeedbackService
     }
 
     protected internal virtual StringBuilder GetTOSolutionTemplateEN(
-        TOControlFeedbackInfor ToInfor,
+        TOControlFeedbackInfo toInfo,
         TOSolutionTemplate TOSolTemplate,
         string smaLevelEN)
     {
         var stringBuilder = new StringBuilder();
-        var outstanding = ToInfor.Outstanding.ToString(BackgroundJobConstants.ThousanPaseMoney);
-        var sportNameEN = commonFeedback.GetSportName(ToInfor.SportType.ToString(), Language.en_US);
-        var leagueNameEN = commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), Language.en_US);
-        var homeNameEN = commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), Language.en_US);
-        var awayNameEN = commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), Language.en_US);
+        var outstanding = toInfo.Outstanding.ToString(BackgroundJobConstants.ThousandParseMoney);
+        var sportNameEN = commonFeedback.GetSportName(toInfo.SportType.ToString(), Language.en_US);
+        var leagueNameEN = commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), Language.en_US);
+        var homeNameEN = commonFeedback.GetTeamName(toInfo.HomeID.ToString(), Language.en_US);
+        var awayNameEN = commonFeedback.GetTeamName(toInfo.AwayID.ToString(), Language.en_US);
 
         stringBuilder.AppendFormat(
             TOSolTemplate.SolutionEN,
             smaLevelEN,
-            ToInfor.UserName,
+            toInfo.UserName,
             outstanding,
-            ToInfor.Currency,
+            toInfo.Currency,
             sportNameEN,
             leagueNameEN,
             homeNameEN,
@@ -375,47 +375,47 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         return stringBuilder;
     }
 
-    protected internal virtual StringBuilder GetTOSolutionTemplateYNSC(
-        TOControlFeedbackInfor ToInfor,
+    protected internal virtual StringBuilder GetTOSolutionTemplateYnSc(
+        TOControlFeedbackInfo toInfo,
         bool isVipCust,
         string smaLevelEN,
         string smaLevelSC,
         TOSolutionTemplate TOSolTemplate)
     {
         var stringBuilder = new StringBuilder();
-        var outstanding = ToInfor.Outstanding.ToString(BackgroundJobConstants.ThousanPaseMoney);
-        var smaLevel = "";
-        var solutionTemplate = "";
-        var sportName = "";
-        var leagueName = "";
-        var homeName = "";
-        var awayName = "";
+        var outstanding = toInfo.Outstanding.ToString(BackgroundJobConstants.ThousandParseMoney);
+        string smaLevel;
+        string solutionTemplate;
+        string sportName;
+        string leagueName;
+        string homeName;
+        string awayName;
 
         if (isVipCust)
         {
             smaLevel = smaLevelEN;
             solutionTemplate = TOSolTemplate.SolutionYN;
-            sportName = commonFeedback.GetSportName(ToInfor.SportType.ToString(), Language.vi_VN);
-            leagueName = commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), Language.vi_VN);
-            homeName = commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), Language.vi_VN);
-            awayName = commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), Language.vi_VN);
+            sportName = commonFeedback.GetSportName(toInfo.SportType.ToString(), Language.vi_VN);
+            leagueName = commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), Language.vi_VN);
+            homeName = commonFeedback.GetTeamName(toInfo.HomeID.ToString(), Language.vi_VN);
+            awayName = commonFeedback.GetTeamName(toInfo.AwayID.ToString(), Language.vi_VN);
         }
         else
         {
             smaLevel = smaLevelSC;
             solutionTemplate = TOSolTemplate.SolutionSC;
-            sportName = commonFeedback.GetSportName(ToInfor.SportType.ToString(), Language.zh_CN);
-            leagueName = commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), Language.zh_CN);
-            homeName = commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), Language.zh_CN);
-            awayName = commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), Language.zh_CN);
+            sportName = commonFeedback.GetSportName(toInfo.SportType.ToString(), Language.zh_CN);
+            leagueName = commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), Language.zh_CN);
+            homeName = commonFeedback.GetTeamName(toInfo.HomeID.ToString(), Language.zh_CN);
+            awayName = commonFeedback.GetTeamName(toInfo.AwayID.ToString(), Language.zh_CN);
         }
 
         stringBuilder.AppendFormat(
             solutionTemplate,
             smaLevel,
-            ToInfor.UserName,
+            toInfo.UserName,
             outstanding,
-            ToInfor.Currency,
+            toInfo.Currency,
             sportName,
             leagueName,
             homeName,

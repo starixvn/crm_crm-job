@@ -1,15 +1,11 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Services
+﻿using CRM.BackgroundJob.Models.TurnoverControl;
+
+namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.TurnoverControll;
     using CRM.BackgroundJob.Models.WinLossLimit;
     using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.UnitTests.Testable;
@@ -17,6 +13,11 @@
     using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class TOControlFeedbackServiceTests
@@ -34,22 +35,21 @@
         #region CreateFeedbackForTurnoverControlAsync
 
         [Fact]
-        public async Task CreateFeedbackForTurnoverControlAsync_NotExistedTOFeedbacksInfor_ExpectedUpdateSystemSetting()
+        public async Task CreateFeedbackForTurnoverControlAsync_NotExistedTOFeedbacksInfo_ExpectedUpdateSystemSetting()
         {
             // Arrange
             var service = MockService();
             var turnOverSetting = fixture.Create<WinLossSystemSetting>();
             var custNotifications = fixture.Create<IEnumerable<TONotification>>();
             var custOutStandings = fixture.Create<IEnumerable<CustOutStanding>>();
-            var importTOFeedbacks = new List<TOControlFeedbackInfor>();
             customerService.GetListSMANotificationAsync(turnOverSetting).Returns(custNotifications);
             customerService.GetListCustOutStandingAsync(custNotifications).Returns(custOutStandings);
 
-            transactionService.ImportTOControllFeedbackInfoAsync(
+            transactionService.ImportTOControlFeedbackInfoAsync(
                 Arg.Any<IEnumerable<GroupHeadline>>(),
                 Arg.Any<IEnumerable<CustOutStanding>>(),
                 Arg.Any<IEnumerable<TONotification>>())
-                .Returns(importTOFeedbacks);
+                .Returns(new List<TOControlFeedbackInfo>());
             // Act
             await service.CreateFeedbackForTurnoverControlAsync(turnOverSetting);
 
@@ -57,24 +57,24 @@
             await commonFeedback.Received().EditFeedbackSystemSettingAsync(Arg.Any<long>(), Arg.Any<string>());
             service.DidNotReceive().Protected(
                 "CreateTOControlFeedbackAsync",
-                Arg.Any<TOControlFeedbackInfor>(),
+                Arg.Any<TOControlFeedbackInfo>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
         }
 
         [Fact]
-        public async Task CreateFeedbackForTurnoverControlAsync_ExistedTOFeedbacksInfor_ExpectedEditTOSystemSettingAsyncAndCallCreateTOControlFeedbackAsync()
+        public async Task CreateFeedbackForTurnoverControlAsync_ExistedTOFeedbacksInfo_ExpectedEditTOSystemSettingAsyncAndCallCreateTOControlFeedbackAsync()
         {
             // Arrange
             var service = MockService();
             var turnOverSetting = fixture.Create<WinLossSystemSetting>();
             var custNotifications = fixture.Create<IEnumerable<TONotification>>();
             var custOutStandings = fixture.Create<IEnumerable<CustOutStanding>>();
-            var importTOFeedbacks = fixture.Create<IEnumerable<TOControlFeedbackInfor>>();
+            var importTOFeedbacks = fixture.Create<IEnumerable<TOControlFeedbackInfo>>();
             customerService.GetListSMANotificationAsync(turnOverSetting).Returns(custNotifications);
             customerService.GetListCustOutStandingAsync(custNotifications).Returns(custOutStandings);
 
-            transactionService.ImportTOControllFeedbackInfoAsync(
+            transactionService.ImportTOControlFeedbackInfoAsync(
                 Arg.Any<IEnumerable<GroupHeadline>>(),
                 Arg.Any<IEnumerable<CustOutStanding>>(),
                 Arg.Any<IEnumerable<TONotification>>())
@@ -86,7 +86,7 @@
             await commonFeedback.Received().EditFeedbackSystemSettingAsync(Arg.Any<long>(), Arg.Any<string>());
             service.Received().Protected(
                 "CreateTOControlFeedbackAsync",
-                Arg.Any<TOControlFeedbackInfor>(),
+                Arg.Any<TOControlFeedbackInfo>(),
                 Arg.Any<IEnumerable<SettingItem>>(),
                 Arg.Any<IEnumerable<SystemSettingMapping>>());
         }
@@ -99,7 +99,7 @@
         public async Task CreateTOControlFeedbackAsync_CreateNewCriteria_ExpectedToCallFunction()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 SportType = 2,
                 BettypeList = "1,20",
@@ -113,9 +113,9 @@
 
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
-                new SettingItem { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
-                new SettingItem { SettingId = 2022, SettingName = "Station" }
+                new() { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
+                new() { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
+                new() { SettingId = 2022, SettingName = "Station" }
             };
             var setting = new SettingItem
             {
@@ -140,8 +140,8 @@
                 );
 
             // Assert
-            service.Received().Protected("CheckValidTOParamsAndInsertFeedbackAsync", Arg.Any<TOControlFeedbackInfor>()
-                , Arg.Any<CreateMutipleFeedbackCommand>());
+            service.Received().Protected("CheckValidTOParamsAndInsertFeedbackAsync", Arg.Any<TOControlFeedbackInfo>()
+                , Arg.Any<CreateMultipleFeedbackCommand>());
         }
 
         #endregion CreateTOControlFeedbackAsync
@@ -152,7 +152,7 @@
         public async Task CheckValidTOParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -161,7 +161,7 @@
                 ProfileName = "1",
                 CustID = 1
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -182,7 +182,7 @@
         public async Task CheckValidTOParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -191,7 +191,7 @@
                 ProfileName = "1",
                 CustID = 1
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -214,7 +214,7 @@
         public async Task CheckValidTOParamsAndInsertFeedbackAsync_InvalidParams_ExpectedReturnAndUpdateStatus()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -223,7 +223,7 @@
                 ProfileName = "1",
                 CustID = 1
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(false, ""));
 
@@ -245,7 +245,7 @@
         public async Task CheckValidTOParamsAndInsertFeedbackAsync_Exception_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -255,7 +255,7 @@
                 CustID = 1
             };
             var exception = fixture.Create<Exception>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -286,7 +286,7 @@
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var subProduct = new List<SettingItem>
             {
-                new SettingItem{ SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var product = new SettingItem
             {
@@ -316,7 +316,7 @@
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var subProduct = new List<SettingItem>
             {
-                new SettingItem{ SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var product = new SettingItem
             {
@@ -325,7 +325,7 @@
             };
             var tempBettypes = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping{ SettingId = 1 }
+                new() { SettingId = 1 }
             };
             var service = MockService();
             service.Protected("GetTOSportsbookProduct", settings).Returns(product);
@@ -349,7 +349,7 @@
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "Product", SettingValue = "sportbook1" }
+                    new() { SettingName = "Product", SettingValue = "sportbook1" }
                 };
 
             var service = MockService();
@@ -367,7 +367,7 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem
+                    new()
                     {
                         SettingName = "Product",
                         SettingValue = "Sportsbook",
@@ -413,7 +413,7 @@
             var sportName = "1";
             var settings = new List<SettingItem>
             {
-                new SettingItem
+                new()
                 {
                     SettingName = "SubProduct",
                     ParentIds = new List<int>{1} ,
@@ -422,7 +422,7 @@
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping
+                new()
                 {
                     SettingName = "SubProduct",
                     SettingId = 1,
@@ -471,7 +471,7 @@
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                new SystemSettingMapping
+                new()
                 {
                     SettingName = "BetType",
                     SettingSource = "1",
@@ -496,7 +496,7 @@
         public void GetTORelatedCustomerXml_CallFunction_ReturnExpectTemplate()
         {
             // Arrange
-            var Toinfor = new TOControlFeedbackInfor
+            var Toinfor = new TOControlFeedbackInfo
             {
                 HeadlineID = 1,
                 RelatedCustID = 1,
@@ -523,7 +523,7 @@
         public void GetTODescription_BaseOnSmaLevel_ReturnExpectedTemplate(byte RoleID)
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 RoleID = RoleID,
                 ProfileID = 1,
@@ -581,7 +581,7 @@
             string smslevelSc)
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 RoleID = RoleID,
                 ProfileID = 1,
@@ -631,7 +631,7 @@
         public void GetTOSolutionTemplateEN_CallFunction_ReturnExpectedTemplate()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 ProfileID = 1,
                 SportType = 1,
@@ -674,7 +674,7 @@
         public void GetTOSolutionTemplateYNSC_CallFunction_ReturnExpectedTemplate(bool isVipCust, string language)
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfor
+            var ToInfor = new TOControlFeedbackInfo
             {
                 ProfileID = 1,
                 SportType = 1,

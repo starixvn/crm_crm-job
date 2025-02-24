@@ -1,17 +1,16 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
+using Constants;
+using Criteria.AutoFeedback;
+using CRM.BackgroundJob.Models;
+using CRM.BackgroundJob.Models.WinLossLimit;
+using CRM.Services;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Constants;
-using Criteria.AutoFeedback;
-using CRM.BackgroundJob.Models;
-using CRM.BackgroundJob.Models.WinLossLimit;
-using CRM.Models;
-using CRM.Services;
-using Microsoft.Extensions.Options;
 
 public interface IWinLossFeedbackService
 {
@@ -62,7 +61,7 @@ public class WinLossFeedbackService : IWinLossFeedbackService
             new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Running },
             new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString("yyyy-MM-dd hh:mm:ss.fff tt") }
         };
-        logService.LogInformation($"Start run WL serivce with last log ID: {setting.LastLogId}!");
+        logService.LogInformation($"Start run WL service with last log ID: {setting.LastLogId}!");
         await systemSettingService.EditSystemSettingAsync(settingJobStatus, BackgroundJobConstants.ServiceName_WinLimitFB);
         var cusWinLimit = await customerService.GetListCustReachLimitAsync(setting);
         var custIds = cusWinLimit.Select(x => x.CustId).Distinct();
@@ -114,13 +113,13 @@ public class WinLossFeedbackService : IWinLossFeedbackService
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals(DefaultValue.Neutral, StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var category = commonFeedback.GetCategorySubCategoryCWL(settings, DefaultValue.CompanyWLLimit);
         var betTypeLists = winLimit.BettypeIDList.Split(",");
         var betTypeMappings = (from bet in betType
                                where betTypeLists.Contains(bet.Bettype)
-            select bet).ToList();
-        var criteria = new CreateMutipleFeedbackCommand
+                               select bet).ToList();
+        var criteria = new CreateMultipleFeedbackCommand
         {
             CreatorId = appSettings.CreatorId,
             UserId = appSettings.CreatorId,
@@ -128,8 +127,8 @@ public class WinLossFeedbackService : IWinLossFeedbackService
             ResolutionDate = feedbackDate.AddMinutes(1).Subtract(timeSpan),
             IsCheckedDefaultComm = true,
             StationId = station != null ? station.SettingId.ToString() : string.Empty,
-            StatusId = status != null ? status.SettingId : 0,
-            ResponseId = response != null ? response.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
+            ResponseId = response?.SettingId ?? 0,
             UserRole = BackgroundJobConstants.UserRole,
             CategoryXml = category.Item3,
             CategoryIds = category.Item1.ToString(),
@@ -154,7 +153,7 @@ public class WinLossFeedbackService : IWinLossFeedbackService
 
     protected internal virtual async Task CheckValidParamsAndInsertFeedbackAsync(
         WinLimitFeedBackInfo winLimit,
-        CreateMutipleFeedbackCommand criteria)
+        CreateMultipleFeedbackCommand criteria)
     {
         var checkValidParamBeforeInsert = commonFeedback.CheckFeedbackValidParams(criteria);
         if (!checkValidParamBeforeInsert.Item1)
@@ -253,15 +252,18 @@ public class WinLossFeedbackService : IWinLossFeedbackService
 
         IList<SettingItem> subProducts = settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                                && sub.ParentIds.Any(parent => parent == productId)
-                                                               && subProductsMapping != null
                                                                && subProductsMapping.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
         return subProducts.Any()
             ? subProducts.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.SubProductNA, ParentIds = new List<int> { BackgroundJobConstants.ProductNA } }
-            };
+            :
+            [
+                new()
+                {
+                    SettingId = BackgroundJobConstants.SubProductNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.ProductNA }
+                }
+            ];
     }
 
     protected internal virtual IList<SettingItem> GetBetType(
@@ -276,15 +278,18 @@ public class WinLossFeedbackService : IWinLossFeedbackService
 
         IList<SettingItem> betTypes = settings.Where(betType => betType.SettingName.Equals(SettingName.Bettype, StringComparison.OrdinalIgnoreCase)
                                                                 && subProducts.Any(sub => betType.ParentIds.Any(parent => parent == sub))
-                                                                && betTypeMapping != null
                                                                 && betTypeMapping.Any(mapping => mapping.SettingId == betType.SettingId)).ToList();
 
-        return betTypes != null && betTypes.Any()
+        return betTypes.Any()
             ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.BettypeNA, ParentIds = new List<int> { BackgroundJobConstants.SubProductNA } }
-            };
+            :
+            [
+                new SettingItem
+                {
+                    SettingId = BackgroundJobConstants.BettypeNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.SubProductNA }
+                }
+            ];
     }
 
 #pragma warning disable S1541 // Methods and properties should not be too complex
@@ -296,15 +301,15 @@ public class WinLossFeedbackService : IWinLossFeedbackService
         var productSC = GetTransformedProductName(winLimit, Language.zh_CN);
         var productYN = GetTransformedProductName(winLimit, Language.vi_VN);
 
-        var productFormat = "";
-        var templateYellow = "";
-        var templateRed = "";
-        var templateBlack = "";
-        var templateGrey = "";
-        var templateRng = "";
-        var templateJackpotPrize = "";
+        string productFormat;
+        string templateYellow;
+        string templateRed;
+        string templateBlack;
+        string templateGrey;
+        string templateRng;
+        string templateJackpotPrize;
 
-        var totalWinAmt = Math.Truncate(winLimit.TotalWinAmt).ToString(BackgroundJobConstants.ThousanPase);
+        var totalWinAmt = Math.Truncate(winLimit.TotalWinAmt).ToString(BackgroundJobConstants.ThousandParse);
         var templates = commonFeedback.GetFeedbackTemplates<FeedbackTemplate>(templateXml);
         var formatTemplates = templates.Templates;
         if (isVipHeadline)
@@ -370,20 +375,21 @@ public class WinLossFeedbackService : IWinLossFeedbackService
         const int numGames = 3;
         var numGamesDisplay = betType.Count > 3 ? betType.Take(numGames).ToList() : betType;
         var numGamesFormat = numGamesDisplay.Any() ? string.Join(", ", numGamesDisplay.Select(x => x.Name)) : "";
-        var MaxWinLimitSetting = Math.Truncate(Convert.ToDouble(winLimit.MaxWinLimitSetting)).ToString(BackgroundJobConstants.ThousanPase);
-        var TotalWinAmt_RM = Math.Truncate(winLimit.TotalWinAmt_RM).ToString(BackgroundJobConstants.ThousanPase);
-        var TotalWinAmt = Math.Truncate(winLimit.TotalWinAmt).ToString(BackgroundJobConstants.ThousanPase);
-        var productName = TransfromSABAxDToTaraPlaysxD(winLimit.Site, winLimit.ProductName);
+        var MaxWinLimitSetting = Math.Truncate(Convert.ToDouble(winLimit.MaxWinLimitSetting)).ToString(BackgroundJobConstants.ThousandParse);
+        var TotalWinAmt_RM = Math.Truncate(winLimit.TotalWinAmt_RM).ToString(BackgroundJobConstants.ThousandParse);
+        var TotalWinAmt = Math.Truncate(winLimit.TotalWinAmt).ToString(BackgroundJobConstants.ThousandParse);
+        var productName = TransformSABAxDToTaraPlaysXD(winLimit.Site, winLimit.ProductName);
 
         var stringBuilder = new StringBuilder(DefaultValue.autoGenerated);
         stringBuilder.Append("<br />Informed Headline Win/Loss Alert for below member:");
-        stringBuilder.AppendFormat("<br />Product: {0}", productName);
+        stringBuilder.Append($"<br />Product: {productName}");
         stringBuilder.Append("<br />Game Type: ");
         stringBuilder.AppendFormat(betType.Count > numGames ? "{0} ..." : "{0}", numGamesFormat);
-        stringBuilder.AppendFormat("<br /> UserName: {0}, Site: {1} ({2})", winLimit.UserName, winLimit.Site, winLimit.SiteLabel);
-        stringBuilder.AppendFormat("<br /> Winning/Losing Limit Amount: {0} (RM), Winning/Losing Amount in RM: {1} (RM), Winloss Amount in player currency: {2} ({3})"
-            , MaxWinLimitSetting, TotalWinAmt_RM, TotalWinAmt, winLimit.Currency);
-        stringBuilder.AppendFormat("<br />Reached Limit Time: {0}, Reached Limit Level: {1}", winLimit.ReachedTime, winLimit.Level);
+        stringBuilder.Append($"<br /> UserName: {winLimit.UserName}, Site: {winLimit.Site} ({winLimit.SiteLabel})");
+        stringBuilder.Append(
+            $"<br /> Winning/Losing Limit Amount: {MaxWinLimitSetting} (RM), Winning/Losing Amount in RM: {TotalWinAmt_RM} (RM), Winloss Amount in player currency: {TotalWinAmt} ({winLimit.Currency})");
+        stringBuilder.Append(
+            $"<br />Reached Limit Time: {winLimit.ReachedTime}, Reached Limit Level: {winLimit.Level}");
         stringBuilder.Append(BackgroundJobConstants.LineBreak);
 
         return stringBuilder.ToString();
@@ -401,10 +407,10 @@ public class WinLossFeedbackService : IWinLossFeedbackService
     protected internal virtual string GetTransformedProductName(WinLimitFeedBackInfo winLimit, string language)
     {
         var productName = commonFeedback.GetProductName(winLimit.ProductID.ToString(), language);
-        return TransfromSABAxDToTaraPlaysxD(winLimit.Site, productName);
+        return TransformSABAxDToTaraPlaysXD(winLimit.Site, productName);
     }
 
-    protected internal virtual string TransfromSABAxDToTaraPlaysxD(string site, string productName)
+    protected internal virtual string TransformSABAxDToTaraPlaysXD(string site, string productName)
     {
         const string sourceProduct = "SABA xD";
         const string transformedProduct = "TaraPlays xD";

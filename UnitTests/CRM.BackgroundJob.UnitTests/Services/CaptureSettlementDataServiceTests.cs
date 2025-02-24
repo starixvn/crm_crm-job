@@ -22,7 +22,7 @@
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<SiteDbConfig>>();
             var service = GetService();
-            baseService.GetDataAsync<SiteDbConfig>(Arg.Any<GetInitalSiteDBConfigCriteria>()).Returns(expected);
+            baseService.GetDataAsync<SiteDbConfig>(Arg.Any<GetInitialSiteDBConfigCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetInitialSiteDbConfigsAsync("dev");
@@ -37,9 +37,9 @@
             // Arrange
             var fixture = new Fixture();
             var siteDbConfig = fixture.Create<SiteDbConfig>();
-            var expected = fixture.Create<IEnumerable<SettlResultHistory>>();
+            var expected = fixture.Create<IEnumerable<SettleResultHistory>>();
             var service = GetService();
-            baseService.GetDataByIpConfigAsync<SettlResultHistory>(siteDbConfig.AGIP, siteDbConfig.LinkedServerName, Arg.Any<GetSessionByDateCriteria>()).Returns(expected);
+            baseService.GetDataByIpConfigAsync<SettleResultHistory>(siteDbConfig.AGIP, siteDbConfig.LinkedServerName, Arg.Any<GetSessionByDateCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetSessionByDateAsync(siteDbConfig);

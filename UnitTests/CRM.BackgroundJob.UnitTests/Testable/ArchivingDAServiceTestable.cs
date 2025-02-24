@@ -1,47 +1,41 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Testable
 {
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.ArchivingDA;
+    using CRM.BackgroundJob.Services;
+    using CRM.Services;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.Services;
-    using CRM.BackgroundJob.Models.ArchivingDA;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Options;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
-    public class ArchivingDAServiceTestable : ArchivingDAService
+    public class ArchivingDAServiceTestable(
+        IOptionsSnapshot<AppJobSettings> appSettings,
+        IBaseService baseService,
+        ISettingService settingService,
+        ICrmLogService logService,
+        IFeedbackTransactionService transactionService,
+        ICommonFeedback commonFeedback)
+        : ArchivingDAService(appSettings,
+            baseService,
+            settingService,
+            logService,
+            commonFeedback,
+            transactionService)
     {
-        public ArchivingDAServiceTestable(IOptionsSnapshot<AppJobSettings> appSettings,
-            IBaseService baseService,
-            ISettingService settingService,
-            ICrmLogService logService,
-            IFeedbackTransactionService transactionService,
-            ICommonFeedback commonFeedback)
-        : base(appSettings,
-                baseService,
-                settingService,
-                logService,
-                commonFeedback,
-                transactionService
-              )
-        {
-        }
-
         public async Task Public_CreateFeedbackForArchivingDAAsync(
             ArchivingDASetting archivingDASetting, bool isUAT,
             DateTime LastRuntimeEnv, string LastRuntimeNameEnv,
             string JobStatusNameEnv, string Environment)
         {
-            await base.CreateFeedbackForArchivingDAAsync(archivingDASetting, isUAT,
+            await CreateFeedbackForArchivingDAAsync(archivingDASetting, isUAT,
             LastRuntimeEnv, LastRuntimeNameEnv,
             JobStatusNameEnv, Environment);
         }
 
         public async Task Public_CheckExistAnyArchivingFb(
-           IEnumerable<ArchivingAutoFbInfo> archivingAutoFbInfos, 
+           IEnumerable<ArchivingAutoFbInfo> archivingAutoFbInfos,
            IEnumerable<SettingItem> settings,
            IEnumerable<SystemSettingMapping> settingMappings,
            string jobStatusNameEnv, string lastRuntimeNameEnv)
@@ -74,7 +68,7 @@
         }
 
         public async Task Public_CheckValidArchivingParamsAndInsertFeedbackAsync(
-            ArchivingAutoFbInfo archivingAutoFbInfo, CreateMutipleFeedbackCommand criteria
+            ArchivingAutoFbInfo archivingAutoFbInfo, CreateMultipleFeedbackCommand criteria
         )
         {
             await base.CheckValidArchivingParamsAndInsertFeedbackAsync(archivingAutoFbInfo, criteria);

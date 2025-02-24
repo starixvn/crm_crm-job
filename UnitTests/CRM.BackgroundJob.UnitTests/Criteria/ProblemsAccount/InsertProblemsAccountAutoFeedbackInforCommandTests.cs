@@ -9,7 +9,7 @@
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
         {
             // Arrange
-            var criteria = new InsertProblemsAccountAutoFeedbackInforCommand();
+            var criteria = new InsertProblemsAccountAutoFeedbackInfoCommand();
             var expected = "Acc_CRM_ProblemAccount_AutoFeedbackInfoIns";
 
             // Act
@@ -23,7 +23,7 @@
         public void IsValid_ParamIsInvalid_ReturnTrue()
         {
             // Arrange
-            var criteria = new InsertProblemsAccountAutoFeedbackInforCommand
+            var criteria = new InsertProblemsAccountAutoFeedbackInfoCommand
             {
                 xml = "1"
             };
@@ -43,7 +43,7 @@
         public void IsValid_ParamIsInvalid_ReturnFalse(string xml)
         {
             // Arrange
-            var criteria = new InsertProblemsAccountAutoFeedbackInforCommand
+            var criteria = new InsertProblemsAccountAutoFeedbackInfoCommand
             {
                 xml = xml
             };

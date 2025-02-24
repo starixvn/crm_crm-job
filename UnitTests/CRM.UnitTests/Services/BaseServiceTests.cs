@@ -1,9 +1,5 @@
 ﻿namespace CRM.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.Criteria;
     using CRM.Models;
@@ -12,6 +8,10 @@
     using Fanex.Caching;
     using Fanex.Data.Repository;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class BaseServiceTests
@@ -122,6 +122,7 @@
         #endregion GetDataEntityAsync
 
         #region GetSiteDbConfigAsync
+
         [Fact]
         public async Task GetSiteDbConfigAsync_CacheIsNull_ReturnExactValue()
         {
@@ -154,9 +155,11 @@
             // Assert
             Assert.Equal(siteConfigs, actual);
         }
+
         #endregion GetSiteDbConfigAsync
 
         #region GetDataFromSiteDbAsync
+
         [Fact]
         public async Task GetDataFromSiteDbAsync_ReturnExactValue()
         {
@@ -164,7 +167,7 @@
             var siteConfigs = fixture.Create<IEnumerable<SiteDbConfig>>();
             var result = fixture.Create<IEnumerable<int>>();
             var expected = new List<int>();
-            foreach (var site in siteConfigs)
+            foreach (var _ in siteConfigs)
             {
                 expected.AddRange(result);
             }
@@ -181,6 +184,7 @@
             // Assert
             Assert.Equal(expected, actual);
         }
+
         #endregion GetDataFromSiteDbAsync
 
         #region FetchMultipleAsync
@@ -280,6 +284,7 @@
             // Assert
             Assert.Equal(expected, actual);
         }
+
         #endregion FetchMultipleAsync
 
         #region ExecuteNonQueryAsync

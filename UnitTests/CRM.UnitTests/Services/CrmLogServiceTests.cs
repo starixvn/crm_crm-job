@@ -1,13 +1,13 @@
 ﻿namespace CRM.UnitTests.Services
 {
-    using System;
-    using System.Threading.Tasks;
     using CRM.Models;
     using CRM.Services;
     using Fanex.Data.Repository;
     using Fanex.Logging.Extensions;
     using Newtonsoft.Json;
     using NSubstitute;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class CrmLogServiceTests
@@ -34,7 +34,7 @@
             // Arrange
             var command = new CommandResult { Code = 1, Message = "This is error messgae" };
             var criteria = Substitute.For<ICriteria>();
-            var logMessage = new LogMessage(string.Format("{0}: {1}", command.Code, command.Message))
+            var logMessage = new LogMessage($"{command.Code}: {command.Message}")
                        .AddMessage(JsonConvert.SerializeObject(criteria, Formatting.Indented))
                        .ToString();
             var service = GetService();
@@ -45,7 +45,6 @@
             // Assert
             await logger.Received().ErrorAsync(logMessage);
         }
-
 
         private CrmLogService GetService()
         {

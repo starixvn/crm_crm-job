@@ -1,20 +1,19 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
+    using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
     using CRM.BackgroundJob.Models.AbnormalBet;
     using CRM.BackgroundJob.Models.ChatBotResulAmendment;
     using CRM.BackgroundJob.Services;
     using CRM.Extensions.Xml;
-    using CRM.BackgroundJob.Constants;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class ChatBotResultAmendmentServiceTests
@@ -29,10 +28,10 @@
             var fixture = new Fixture();
             var expected = fixture.Create<(IEnumerable<MessageVoidSettled>, IEnumerable<MessageVoidSettled>)>();
             var service = GetService();
-            baseService.FetchMultipleAsync<MessageVoidSettled, MessageVoidSettled>(Arg.Any<GetMesssagesVoidSettledCriteria>()).Returns(expected);
+            baseService.FetchMultipleAsync<MessageVoidSettled, MessageVoidSettled>(Arg.Any<GetMessagesVoidSettledCriteria>()).Returns(expected);
 
             // Act
-            var actual = await service.GetChatBotMessageVoidSettledAsync(1,1);
+            var actual = await service.GetChatBotMessageVoidSettledAsync(1, 1);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -49,7 +48,7 @@
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<VoidingMessageGetSettledTicket>()).Returns(expected);
 
             // Act
-            var actual = await service.VoidingMessageGetSettledTicketAsync(messageVoidSettleds,1);
+            var actual = await service.VoidingMessageGetSettledTicketAsync(messageVoidSettleds, 1);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -66,7 +65,7 @@
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<GetChatbotVoidingMessageCheck>()).Returns(expected);
 
             // Act
-            var actual = await service.GetVoidingMessasgeCheckAsync(messageVoidSettleds, "LIVE");
+            var actual = await service.GetVoidingMessageCheckAsync(messageVoidSettleds, "LIVE");
 
             // Assert
             Assert.Equal(expected, actual);
@@ -96,7 +95,7 @@
         {
             // Arrange
             var fixture = new Fixture();
-            var settingResultAmendment = fixture.Create<AbnormalBetSystemSetting>();
+            fixture.Create<AbnormalBetSystemSetting>();
             var targetMessages = fixture.Create<IEnumerable<TargetMessage>>();
             var targetMessageInfos = fixture.Create<IEnumerable<TargetMessageInfo>>();
             var messageVoidSettleds = fixture.Create<IEnumerable<MessageVoidSettled>>();
@@ -121,11 +120,11 @@
             var ticketEvents = fixture.Create<IEnumerable<AmendmentResultTicketEvent>>();
             var ticketTransactions = fixture.Create<IEnumerable<AmendmentResultTransaction>>();
             var messageIds = fixture.Create<IEnumerable<int>>();
-            var criteria = fixture.Create<GetChatBotResultAmendmentCriteria>();
+            fixture.Create<GetChatBotResultAmendmentCriteria>();
             var expected = new ValueTuple<IEnumerable<AmendmentResultTicketEvent>, IEnumerable<AmendmentResultTransaction>, IEnumerable<int>>(ticketEvents, ticketTransactions, messageIds);
             var service = GetService();
-            baseService.FetchMultipleAsync<AmendmentResultTicketEvent, AmendmentResultTransaction, int>(Arg.Do<GetChatBotResultAmendmentCriteria>(x => criteria = x)).Returns(expected);
-            
+            baseService.FetchMultipleAsync<AmendmentResultTicketEvent, AmendmentResultTransaction, int>(Arg.Do<GetChatBotResultAmendmentCriteria>(x => _ = x)).Returns(expected);
+
             // Act
             var actual = await service.GetChatBotResultAmendmentInfoAsync(settingResultAmendment);
 
@@ -143,7 +142,7 @@
             var expected = fixture.Create<IEnumerable<MessageContent>>();
             baseService.GetDataAsync<MessageContent>(Arg.Do<GetChatBotMsgCriteria>(x => criteria = x)).Returns(expected);
             const string Xml = "<root><r MessageId='1'/></root>";
-            var messages = new List<int> {1};
+            var messages = new List<int> { 1 };
 
             // Act
             var actual = await service.GetChatBotMessageInfoAsync(messages);
@@ -160,33 +159,31 @@
             var fixture = new Fixture();
             var service = GetService();
             var ticketEvents = fixture.Create<IEnumerable<AmendmentResultTicketEvent>>();
-            var transactions = new List<AmendmentResultTransaction> {
-                new AmendmentResultTransaction
-                {
-                    TicketEventId = 1,
-                    ProductId = 1,
-                    EventDate = new DateTime(),
-                    SubmitDate = new DateTime(),
-                    EventType = 2,
-                    ActualResult = "WrongResult",
-                    WrongResult = "WrongResult",
-                    MessageId = 1,
-                    Sporttype = 1,
-                    HomeId = 1,
-                    AwayId = 2,
-                    LeagueId = 1,
-                    MatchCode = "1",
-                    MatchId = 1,
-                    Type = 1,
-                    LeagueGroupID = 1
-                }
+            var transaction = new AmendmentResultTransaction
+            {
+                TicketEventId = 1,
+                ProductId = 1,
+                EventDate = new DateTime(),
+                SubmitDate = new DateTime(),
+                EventType = 2,
+                ActualResult = "WrongResult",
+                WrongResult = "WrongResult",
+                MessageId = 1,
+                SportType = 1,
+                HomeId = 1,
+                AwayId = 2,
+                LeagueId = 1,
+                MatchCode = "1",
+                MatchId = 1,
+                Type = 1,
+                LeagueGroupID = 1
             };
+            var transactions = new List<AmendmentResultTransaction> { transaction };
 
-            var messages = new List<MessageContent> { new MessageContent {
+            var messages = new List<MessageContent> { new()
+            {
                 MessageId = 1, RequestId = 1, Content_en = "Content_en", Content_cs ="Content_cs", Content_th = "Content_th", Content_vn = "Content_vn"
             } };
-
-            var transaction = transactions.FirstOrDefault();
 
             const string XmlTemplate = "<r TicketEventId='{0}' ProductId='{1}' EventDate='{2}' " +
                "SubmitDate='{3}' EventType='{4}' ActualResult='{5}' WrongResult='{6}' MessageId='{7}' " +
@@ -198,10 +195,10 @@
 
             var stringBuilderEventData = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
 
-            commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.en_US).Returns("sportNameEN");
-            commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.zh_CN).Returns("sportNameSC");
-            commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.th_TH).Returns("sportNameTH");
-            commonFeedback.GetSportName(transaction.Sporttype.ToString(), Language.vi_VN).Returns("sportNameYN");
+            commonFeedback.GetSportName(transaction.SportType.ToString(), Language.en_US).Returns("sportNameEN");
+            commonFeedback.GetSportName(transaction.SportType.ToString(), Language.zh_CN).Returns("sportNameSC");
+            commonFeedback.GetSportName(transaction.SportType.ToString(), Language.th_TH).Returns("sportNameTH");
+            commonFeedback.GetSportName(transaction.SportType.ToString(), Language.vi_VN).Returns("sportNameYN");
 
             commonFeedback.GetLeagueName(transaction.LeagueId.ToString(), Language.en_US).Returns("leagueNameEN");
             commonFeedback.GetLeagueName(transaction.LeagueId.ToString(), Language.zh_CN).Returns("leagueNameSC");
@@ -244,29 +241,30 @@
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotResultAmendmentCommand>(x => criteria = x)).Returns(valueTupe.Item1);
 
             // Act
-            var actual = await service.ImportChatBotAmendmentResultAsync(ticketEvents, transactions, messages, targetMessages, targetMessagesInfo, BackgroundJobConstants.DefaultEnvironment, "Servername");
-            var t = stringBuilderEventData.ToString();
+            var actual = await service.ImportChatBotAmendmentResultAsync(ticketEvents, transactions, messages, targetMessages, targetMessagesInfo, BackgroundJobConstants.DefaultEnvironment, "ServerName");
             // Assert
             Assert.Equal(valueTupe.Item1, actual.Item1);
             Assert.Equal(ticketEvents.ToXML("root").ToString(), criteria.TicketData);
             Assert.Equal(stringBuilderEventData.ToString(), criteria.EventData);
-            Assert.Equal(xmlTemplateMessage.ToString(), criteria.MessageData);
+            Assert.Equal(xmlTemplateMessage, criteria.MessageData);
             Assert.Equal(targetMessages.ToXML("root").ToString(), criteria.TargetMessage);
             Assert.Equal(targetMessagesInfo.ToXML("root").ToString(), criteria.InfoMessage);
             Assert.Equal(BackgroundJobConstants.DefaultEnvironment, criteria.Environment);
-            Assert.Equal("Servername", criteria.Servername);
+            Assert.Equal("ServerName", criteria.ServerName);
 
             Assert.Equal(0, criteria.ErrCode);
             Assert.Null(criteria.ErrMsg);
         }
 
         #region Helpers
+
         private ChatBotResultAmendmentService GetService()
         {
             baseService = Substitute.For<IBaseService>();
             commonFeedback = Substitute.For<ICommonFeedback>();
             return new ChatBotResultAmendmentService(baseService, commonFeedback);
         }
+
         #endregion Helpers
     }
 }

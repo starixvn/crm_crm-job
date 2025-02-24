@@ -1,19 +1,19 @@
 ﻿namespace CRM.UnitTests.Services
 {
+    using CRM.Enum;
+    using CRM.Models.BotServices;
+    using CRM.Services;
+    using CRM.UnitTests.Helpers;
+    using Fanex.Caching;
+    using Newtonsoft.Json;
+    using NSubstitute;
+    using NSubstitute.ReturnsExtensions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using CRM.UnitTests.Helpers;
-    using CRM.Enum;
-    using CRM.Models.BotServices;
-    using CRM.Services;
-    using Fanex.Caching;
-    using Newtonsoft.Json;
-    using NSubstitute;
-    using NSubstitute.ReturnsExtensions;
     using Xunit;
 
     public class ChatBotSendMessageTests
@@ -140,10 +140,10 @@
         {
             return new List<NotificationMessage>
             {
-                new NotificationMessage {NotificationId = 1, ConversationGroupId = 1, BotId = 1, ChannelId = BotChannel.Letstalk},
-                new NotificationMessage {NotificationId = 2, ConversationGroupId = 2, BotId = 1, ChannelId = BotChannel.Letstalk},
-                new NotificationMessage {NotificationId = 3, ConversationGroupId = 3, BotId = 2, ChannelId = BotChannel.Telegram},
-                new NotificationMessage {NotificationId = 4, ConversationGroupId = 4, BotId = 2, ChannelId = BotChannel.Telegram}
+                new() {NotificationId = 1, ConversationGroupId = 1, BotId = 1, ChannelId = BotChannel.Letstalk},
+                new() {NotificationId = 2, ConversationGroupId = 2, BotId = 1, ChannelId = BotChannel.Letstalk},
+                new() {NotificationId = 3, ConversationGroupId = 3, BotId = 2, ChannelId = BotChannel.Telegram},
+                new() {NotificationId = 4, ConversationGroupId = 4, BotId = 2, ChannelId = BotChannel.Telegram}
             };
         }
 
@@ -171,10 +171,10 @@
         {
             return new List<SendResult>
             {
-                new SendResult {NotificationId = 1, ConversationGroupId = 1, ErrorCode = 0, IsBlockedBot = false, IsIgnoreRetry = false},
-                new SendResult {NotificationId = 2, ConversationGroupId = 2, ErrorCode = 0, IsBlockedBot = true, IsIgnoreRetry = true},
-                new SendResult {NotificationId = 3, ConversationGroupId = 3, ErrorCode = 1, IsBlockedBot = false, IsIgnoreRetry = false},
-                new SendResult {NotificationId = 4, ConversationGroupId = 4, ErrorCode = 1, IsBlockedBot = true, IsIgnoreRetry = true}
+                new() {NotificationId = 1, ConversationGroupId = 1, ErrorCode = 0, IsBlockedBot = false, IsIgnoreRetry = false},
+                new() {NotificationId = 2, ConversationGroupId = 2, ErrorCode = 0, IsBlockedBot = true, IsIgnoreRetry = true},
+                new() {NotificationId = 3, ConversationGroupId = 3, ErrorCode = 1, IsBlockedBot = false, IsIgnoreRetry = false},
+                new() {NotificationId = 4, ConversationGroupId = 4, ErrorCode = 1, IsBlockedBot = true, IsIgnoreRetry = true}
             };
         }
 
@@ -186,11 +186,19 @@
                 AppId = "Id",
                 Token = "1234aa",
                 AuthenticatePath = "api/authenticate",
-                ApiConfigs = new List<ApiConfig>
-                {
-                    new ApiConfig {Channel = BotChannel.Letstalk, SendMultipleMessagePath = "api/multiple-notify", SendSingleMessagePath = "api/single-notify"},
-                    new ApiConfig {Channel = BotChannel.Telegram, SendMultipleMessagePath = "api/multiple-notify", SendSingleMessagePath = "api/single-notify"}
-                },
+                ApiConfigs =
+                [
+                    new ApiConfig
+                    {
+                        Channel = BotChannel.Letstalk, SendMultipleMessagePath = "api/multiple-notify",
+                        SendSingleMessagePath = "api/single-notify"
+                    },
+                    new ApiConfig
+                    {
+                        Channel = BotChannel.Telegram, SendMultipleMessagePath = "api/multiple-notify",
+                        SendSingleMessagePath = "api/single-notify"
+                    }
+                ],
             };
             httpClientFactory = Substitute.For<IHttpClientFactory>();
             cacheService = Substitute.For<ICacheService>();

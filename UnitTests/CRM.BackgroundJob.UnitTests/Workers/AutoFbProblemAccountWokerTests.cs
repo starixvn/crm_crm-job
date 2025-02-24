@@ -1,15 +1,14 @@
-﻿
-namespace CRM.BackgroundJob.UnitTests.Workers
+﻿namespace CRM.BackgroundJob.UnitTests.Workers
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Workers;
     using CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Workers;
+    using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AutoFbProblemAccountWokerTests
@@ -29,27 +28,28 @@ namespace CRM.BackgroundJob.UnitTests.Workers
             await service.ExecuteJobAsync();
 
             // Assert
-            await autoFeedbackService.Received().ProblemsAcccountExecuteJobAsync();
+            await autoFeedbackService.Received().ProblemsAccountExecuteJobAsync();
         }
-        private AutoFbProblemAccountWoker GetService()
+
+        private AutoFbProblemAccountWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "PullMessageCTOForChatBot",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   TimeInterval = 60
+                    JobName = "PullMessageCTOForChatBot",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             autoFeedbackService = Substitute.For<IAutoFeedbackService>();
             maintenanceService = Substitute.For<IMaintenanceService>();
             logService = Substitute.For<ICrmLogService>();
 
-            return new AutoFbProblemAccountWoker(autoFeedbackService, maintenanceService, appJobSettings, logService);
+            return new AutoFbProblemAccountWorker(autoFeedbackService, maintenanceService, appJobSettings, logService);
         }
     }
 }

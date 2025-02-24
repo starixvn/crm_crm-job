@@ -1,11 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
@@ -17,6 +11,12 @@
     using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class WinLossFeedbackServiceTests
@@ -41,20 +41,19 @@
             var setting = fixture.Create<WinLossSystemSetting>();
             var cusWinLimit = new List<CustomerWinLimit>
             {
-                new CustomerWinLimit{ LogID = 1, CustId = 1},
-                new CustomerWinLimit{ LogID = 2, CustId = 1}
+                new() { LogID = 1, CustId = 1},
+                new() { LogID = 2, CustId = 1}
             };
-            var winLimit = new List<WinLimitFeedBackInfo>();
             var betInfo = fixture.Create<IEnumerable<BettypeInfo>>();
             var headlines = new List<GroupHeadline>
             {
-                new GroupHeadline{CustId = 1, HeadlineId = 1, HeadlineName = "test"}
+                new() {CustId = 1, HeadlineId = 1, HeadlineName = "test"}
             };
             var sport = new List<SportInfo>
             {
-                new SportInfo{LogID = 1, SportType = 1, SportName = "test"}
+                new() {LogID = 1, SportType = 1, SportName = "test"}
             };
-            var winlossInfo = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(winLimit, betInfo, sport);
+            var winlossInfo = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(new List<WinLimitFeedBackInfo>(), betInfo, sport);
             customerService.GetListCustReachLimitAsync(setting).Returns(cusWinLimit);
             customerService.GetGroupHeadlineAsync(Arg.Any<IEnumerable<int>>()).Returns(headlines);
             transactionService.ImportWinLimitFeedbackInfoAsync(Arg.Any<IEnumerable<CustomerWinLimit>>(), headlines).Returns(winlossInfo);
@@ -83,15 +82,15 @@
             var cusWinLimit = fixture.Create<IEnumerable<CustomerWinLimit>>();
             var winLimit = new List<WinLimitFeedBackInfo>
             {
-                new WinLimitFeedBackInfo { LogID = 1, CustId = 1}
+                new() { LogID = 1, CustId = 1}
             };
             var betInfo = new List<BettypeInfo>
             {
-                new BettypeInfo {Name = "Gaming", Bettype = "1"}
+                new() {Name = "Gaming", Bettype = "1"}
             };
             var sport = new List<SportInfo>
             {
-                new SportInfo {LogID = 1, SportType =1, SportName = "test"}
+                new() {LogID = 1, SportType =1, SportName = "test"}
             };
             var winlossInfo = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(winLimit, betInfo, sport);
             customerService.GetListCustReachLimitAsync(setting).Returns(cusWinLimit);
@@ -132,19 +131,19 @@
             };
             var betInfo = new List<BettypeInfo>
             {
-                new BettypeInfo {Name = "Gaming", Bettype = "1"},
-                new BettypeInfo {Name = "Bet", Bettype = "2" }
+                new() {Name = "Gaming", Bettype = "1"},
+                new() {Name = "Bet", Bettype = "2" }
             };
             var sport = new List<SportInfo>
             {
-                new SportInfo{LogID = 1, SportType = 1, SportName = "test"}
+                new() {LogID = 1, SportType = 1, SportName = "test"}
             };
 
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
-                new SettingItem { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
-                new SettingItem { SettingId = 2022, SettingName = "Station" }
+                new() { SettingId = 1, SettingName = "Status", SettingValue = "Closed" },
+                new() { SettingId = 2, SettingName = "Response", SettingValue = "Neutral" },
+                new() { SettingId = 2022, SettingName = "Station" }
             };
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var category = fixture.Create<Tuple<int, int, string>>();
@@ -167,7 +166,7 @@
 
             // Assert
             service.Received().Protected("CheckValidParamsAndInsertFeedbackAsync", Arg.Any<WinLimitFeedBackInfo>()
-                , Arg.Any<CreateMutipleFeedbackCommand>());
+                , Arg.Any<CreateMultipleFeedbackCommand>());
         }
 
         #endregion CreateWinLossFeedbackCreditAsync
@@ -188,7 +187,7 @@
                 RelatedCustId = "1",
                 UserName = "test"
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -219,7 +218,7 @@
                 RelatedCustId = "1",
                 UserName = "test"
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -252,7 +251,7 @@
                 RelatedCustId = "1",
                 UserName = "test"
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(false, ""));
 
@@ -285,7 +284,7 @@
                 UserName = "test"
             };
             var exception = fixture.Create<Exception>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -317,7 +316,7 @@
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var subProducts = new List<SettingItem>
             {
-                new SettingItem
+                new()
                 {
                     SettingId = 1
                 }
@@ -329,7 +328,7 @@
 
             var sport = new List<SportInfo>
             {
-                new SportInfo{LogID = 1, SportType = 1, SportName = "test"}
+                new() {LogID = 1, SportType = 1, SportName = "test"}
             };
             var betTypes = new List<SettingItem>();
             var service = MockService();
@@ -352,12 +351,12 @@
             var betTypeMappings = fixture.Create<List<BettypeInfo>>();
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
             };
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var subProducts = new List<SettingItem>
             {
-                new SettingItem
+                new()
                 {
                     SettingId = 1
                 }
@@ -369,11 +368,11 @@
             };
             var betTypes = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, ParentIds = new List<int> { 1 } }
             };
             var sport = new List<SportInfo>
             {
-                new SportInfo{LogID = 1, SportType = 1, SportName = "test"}
+                new() {LogID = 1, SportType = 1, SportName = "test"}
             };
             var service = MockService();
             service.Protected("GetProduct", settings, settingMappings, winLimit.ProductName).Returns(product);
@@ -398,11 +397,11 @@
             var producName = "1";
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingName = "Product" }
+                    new() { SettingName = "Product" }
                 };
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1 , SettingName = "Product"}
+                    new() { SettingId = 1 , SettingName = "Product"}
                 };
 
             var service = MockService();
@@ -421,11 +420,11 @@
             var producName = "1";
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping {SettingId = 1, SettingName = "Product", SettingSource = "2" }
+                    new() {SettingId = 1, SettingName = "Product", SettingSource = "2" }
                 };
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1 , SettingName = "Product"}
+                    new() { SettingId = 1 , SettingName = "Product"}
                 };
             var service = MockService();
 
@@ -443,11 +442,11 @@
             var producName = "1";
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping {SettingId = 1, SettingName = "Product", SettingSource = "1" }
+                    new() {SettingId = 1, SettingName = "Product", SettingSource = "1" }
                 };
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 2 , SettingName = "Product"}
+                    new() { SettingId = 2 , SettingName = "Product"}
                 };
             var service = MockService();
 
@@ -465,11 +464,11 @@
             var producName = "RNG Casino";
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingId = 1, SettingName = "Product", SettingSource = "RNG Casino" }
+                    new() { SettingId = 1, SettingName = "Product", SettingSource = "RNG Casino" }
                 };
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1 , SettingName = "Product"}
+                    new() { SettingId = 1 , SettingName = "Product"}
                 };
 
             var service = MockService();
@@ -490,7 +489,7 @@
         {
             // Arrange
             var winLimit = fixture.Create<WinLimitFeedBackInfo>();
-            var settingMappings = fixture.Create <IEnumerable<SystemSettingMapping>> ();
+            var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var sport = fixture.Create<IEnumerable<SportInfo>>();
             var settings = fixture.Create<IEnumerable<SettingItem>>();
 
@@ -507,7 +506,6 @@
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.First().ParentIds.First());
         }
 
-
         [Fact]
         public void GetSubProduct_ExistProductName_ReturnExpectedSubproduct()
         {
@@ -518,19 +516,19 @@
             };
             var settingMappings = new List<SystemSettingMapping>
             {
-                    new SystemSettingMapping { SettingName = "SubProduct", SettingSource = "game" }
+                    new() { SettingName = "SubProduct", SettingSource = "game" }
             };
             var expected = new List<SystemSettingMapping>
             {
-                    new SystemSettingMapping { SettingId = 8063}
+                    new() { SettingId = 8063}
             };
             var sport = new List<SportInfo>
             {
-                new SportInfo{LogID = 1, SportType = 1, SportName = "test"}
+                new() {LogID = 1, SportType = 1, SportName = "test"}
             };
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "SubProduct", ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, SettingName = "SubProduct", ParentIds = new List<int> { 1 } }
             };
             var service = MockService();
 
@@ -567,23 +565,22 @@
             Assert.Equal(BackgroundJobConstants.SubProductNA, actual.First().ParentIds.First());
         }
 
-
         [Fact]
         public void GetBetType_ExistBetTypeMappings_ReturnExpectedBetType()
         {
             // Arrange
             var settingMappings = new List<SystemSettingMapping>
                 {
-                    new SystemSettingMapping { SettingId = 1, SettingName = "BetType", SettingSource = "a" }
+                    new() { SettingId = 1, SettingName = "BetType", SettingSource = "a" }
                 };
             var betTypeMappings = new List<BettypeInfo>
                 {
-                    new BettypeInfo { Name = "a" }
+                    new() { Name = "a" }
                 };
 
             var settings = new List<SettingItem>
             {
-                new SettingItem { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
+                new() { SettingId = 1, SettingName = "BetType", ParentIds = new List<int> { 1 } }
             };
 
             var subProducts = new List<int>
@@ -744,15 +741,15 @@
            {
                 new object[] { new List<BettypeInfo>
                 {
-                    new BettypeInfo{Name = "a"},
-                    new BettypeInfo{Name = "b"},
-                    new BettypeInfo{Name = "c"},
-                    new BettypeInfo{Name = "d"}
+                    new() {Name = "a"},
+                    new() {Name = "b"},
+                    new() {Name = "c"},
+                    new() {Name = "d"}
                 }, "a, b, c"},
                 new object[] { new List<BettypeInfo>
                 {
-                    new BettypeInfo{Name = "a"},
-                    new BettypeInfo{Name = "b"},
+                    new() {Name = "a"},
+                    new() {Name = "b"},
                 }, "a, b"},
                 new object[] { new List<BettypeInfo>(), ""}
            };
@@ -780,13 +777,14 @@
             var service = MockService();
             var description = new StringBuilder("<span style=\"color: rgb(255, 0, 0);\">This is an auto-generated entry.</span>");
             description.Append("<br />Informed Headline Win/Loss Alert for below member:");
-            description.AppendFormat("<br />Product: {0}", winlimit.ProductName);
+            description.Append($"<br />Product: {winlimit.ProductName}");
             description.Append("<br />Game Type: ");
             description.AppendFormat(betTypes.Count > 3 ? "{0} ..." : "{0}", numGamesFormat);
-            description.AppendFormat("<br /> UserName: {0}, Site: {1} ({2})", winlimit.UserName, winlimit.Site, winlimit.SiteLabel);
-            description.AppendFormat("<br /> Winning/Losing Limit Amount: {0} (RM), Winning/Losing Amount in RM: {1} (RM), Winloss Amount in player currency: {2} ({3})"
-            , "1,000", "1,000", "1,000", winlimit.Currency);
-            description.AppendFormat("<br />Reached Limit Time: {0}, Reached Limit Level: {1}", winlimit.ReachedTime, winlimit.Level);
+            description.Append($"<br /> UserName: {winlimit.UserName}, Site: {winlimit.Site} ({winlimit.SiteLabel})");
+            description.Append(
+                $"<br /> Winning/Losing Limit Amount: 1,000 (RM), Winning/Losing Amount in RM: 1,000 (RM), Winloss Amount in player currency: 1,000 ({winlimit.Currency})");
+            description.Append(
+                $"<br />Reached Limit Time: {winlimit.ReachedTime}, Reached Limit Level: {winlimit.Level}");
             description.Append(BackgroundJobConstants.LineBreak);
 
             // Act

@@ -6,15 +6,15 @@ public static class BackgroundJobConstants
     public const int ProductNA = 46004;
     public const int SubProductNA = 8063;
     public const int BettypeNA = 9144;
-    public const int ExtentionNA = 2022;
+    public const int ExtensionNA = 2022;
     public const int CommunicationNA = 1005;
 
     public const string SiteLabel777 = "777777";
 
     public const string Break = "<br />";
     public const string LineBreak = "<br /><br />";
-    public const string ThousanPase = "#,##0";
-    public const string ThousanPaseMoney = "#,###.00";
+    public const string ThousandParse = "#,##0";
+    public const string ThousandParseMoney = "#,###.00";
 
     public const string DefaultEnvironment = "LIVE";
 

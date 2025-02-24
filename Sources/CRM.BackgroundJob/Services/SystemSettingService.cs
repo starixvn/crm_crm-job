@@ -1,7 +1,7 @@
-﻿namespace CRM.BackgroundJob.Services;
+﻿using CRM.BackgroundJob.Criteria.TurnoverControl;
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace CRM.BackgroundJob.Services;
+
 using Constants;
 using Criteria;
 using Criteria.AutoFeedback;
@@ -9,7 +9,6 @@ using Criteria.ChatBot;
 using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
 using CRM.BackgroundJob.Criteria.ArchivingDA;
 using CRM.BackgroundJob.Criteria.ProblemsAccount;
-using CRM.BackgroundJob.Criteria.TurnoverControll;
 using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
 using CRM.BackgroundJob.Criteria.WinLossLimit;
 using CRM.BackgroundJob.Models.AbnormalBet;
@@ -21,6 +20,8 @@ using CRM.Extensions.Xml;
 using CRM.Models;
 using CRM.Services;
 using Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public interface ISystemSettingService
 {
@@ -105,7 +106,7 @@ public class SystemSettingService(IBaseService baseService) : ISystemSettingServ
 
     public async Task<WinLossSystemSetting> GetTurnoverSettingAsync()
     {
-        var criteria = new GetTOControllSystemSettingCriteria();
+        var criteria = new GetTOControlSystemSettingCriteria();
         return await baseService.GetDataEntityAsync<WinLossSystemSetting>(criteria);
     }
 

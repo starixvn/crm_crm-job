@@ -31,7 +31,7 @@
                 TargetMessage = "TargetMessage",
                 InfoMessage = "InfoMessage",
                 Environment = "LIVE",
-                Servername = "Servername",
+                ServerName = "ServerName",
                 ErrCode = 0,
                 ErrMsg = ""
             };

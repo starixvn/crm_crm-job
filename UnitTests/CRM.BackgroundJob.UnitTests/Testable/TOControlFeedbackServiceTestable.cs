@@ -1,41 +1,36 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Testable
+﻿using CRM.BackgroundJob.Models.TurnoverControl;
+
+namespace CRM.BackgroundJob.UnitTests.Testable
 {
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Services;
+    using CRM.Services;
+    using Microsoft.Extensions.Options;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using CRM.Services;
-    using CRM.BackgroundJob.Models.TurnoverControll;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Options;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
-    public class TOControlFeedbackServiceTestable : TOControlFeedbackService
+    public class TOControlFeedbackServiceTestable(
+        IOptionsSnapshot<AppJobSettings> appSettings,
+        IBaseService baseService,
+        ISettingService settingService,
+        ISystemSettingService systemSettingService,
+        ICustomerService customerService,
+        ICrmLogService logService,
+        IFeedbackTransactionService transactionService,
+        ICommonFeedback commonFeedback)
+        : TOControlFeedbackService(appSettings,
+            baseService,
+            settingService,
+            systemSettingService,
+            customerService,
+            logService,
+            commonFeedback,
+            transactionService)
     {
-        public TOControlFeedbackServiceTestable(IOptionsSnapshot<AppJobSettings> appSettings,
-            IBaseService baseService,
-            ISettingService settingService,
-            ISystemSettingService systemSettingService,
-            ICustomerService customerService,
-            ICrmLogService logService,
-            IFeedbackTransactionService transactionService,
-            ICommonFeedback commonFeedback)
-        : base(appSettings,
-                baseService,
-                settingService,
-                systemSettingService,
-                customerService,
-                logService,
-                commonFeedback,
-                transactionService
-              )
-        {
-        }
-
         public async Task Public_CreateTOControlFeedbackAsync(
-            TOControlFeedbackInfor ToInfor,
+            TOControlFeedbackInfo ToInfor,
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings)
         {
@@ -43,8 +38,8 @@
         }
 
         public async Task Public_CheckValidTOParamsAndInsertFeedbackAsync(
-            TOControlFeedbackInfor ToInfor,
-            CreateMutipleFeedbackCommand criteria)
+            TOControlFeedbackInfo ToInfor,
+            CreateMultipleFeedbackCommand criteria)
         {
             await base.CheckValidTOParamsAndInsertFeedbackAsync(ToInfor, criteria);
         }
@@ -80,23 +75,23 @@
             return base.GetTOBetType(betTypeMappings, settingMappings);
         }
 
-        public string Public_GetTORelatedCustomerXml(TOControlFeedbackInfor ToInfor)
+        public string Public_GetTORelatedCustomerXml(TOControlFeedbackInfo ToInfor)
         {
             return base.GetTORelatedCustomerXml(ToInfor);
         }
 
-        public string Public_GetTODescription(TOControlFeedbackInfor ToInfor)
+        public string Public_GetTODescription(TOControlFeedbackInfo ToInfor)
         {
             return base.GetTODescription(ToInfor);
         }
 
-        public string Public_GetTOSolution(TOControlFeedbackInfor ToInfor)
+        public string Public_GetTOSolution(TOControlFeedbackInfo ToInfor)
         {
             return base.GetTOSolution(ToInfor);
         }
 
         public StringBuilder Public_GetTOSolutionTemplateEN(
-           TOControlFeedbackInfor ToInfor,
+           TOControlFeedbackInfo ToInfor,
            TOSolutionTemplate TOSolTemplate,
            string smaLevelEN)
         {
@@ -104,13 +99,13 @@
         }
 
         public StringBuilder Public_GetTOSolutionTemplateYNSC(
-            TOControlFeedbackInfor ToInfor,
+            TOControlFeedbackInfo ToInfor,
             bool isVipCust,
             string smaLevelEN,
             string smaLevelSC,
             TOSolutionTemplate TOSolTemplate)
         {
-            return base.GetTOSolutionTemplateYNSC(ToInfor, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
+            return base.GetTOSolutionTemplateYnSc(ToInfor, isVipCust, smaLevelEN, smaLevelSC, TOSolTemplate);
         }
     }
 }

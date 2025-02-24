@@ -1,6 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Criteria.VoidingSettledTickets
 {
-    using System.Collections.Generic;
     using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
     using Xunit;
 
@@ -26,7 +25,7 @@
             // Arrange
             var criteria = new GetAutoVoidingIssueTypeCriteria
             {
-                VoidingMessages = new List<int> { 1, 2, 3 }
+                VoidingMessages = [1, 2, 3]
             };
 
             // Act

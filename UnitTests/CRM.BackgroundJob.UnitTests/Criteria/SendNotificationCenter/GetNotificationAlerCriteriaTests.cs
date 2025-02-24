@@ -9,7 +9,7 @@
         public void GetSettingKey_ReturnCorrectSettingKey()
         {
             // Arrange
-            var criteria = new GetNotificationAlerCriteria();
+            var criteria = new GetNotificationAlertCriteria();
             var expected = "MNC_Notification_AlertSel";
 
             // Action
@@ -23,7 +23,7 @@
         public void IsValid_ParamsAreValid_ReturnTrue()
         {
             // Arrange
-            var criteria = new GetNotificationAlerCriteria();
+            var criteria = new GetNotificationAlertCriteria();
 
             // Act
             var actual = criteria.IsValid();

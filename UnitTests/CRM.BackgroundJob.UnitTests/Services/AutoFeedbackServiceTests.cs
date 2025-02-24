@@ -1,11 +1,7 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
+    using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AbnormalBet;
     using CRM.BackgroundJob.Criteria.AutoFbMessageNotificationCenter;
     using CRM.BackgroundJob.Criteria.AutoFbRebateRetention;
@@ -22,12 +18,14 @@
     using CRM.BackgroundJob.Models.WinLossLimit;
     using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.UnitTests.Testable;
-    using CRM.BackgroundJob.Constants;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AutoFeedbackServiceTests
@@ -55,6 +53,7 @@
         private readonly IFixture fixture = new Fixture();
 
         #region ExecuteJobAsync
+
         [Fact]
         public async Task ExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
@@ -64,7 +63,7 @@
             systemSettingService.When(x => x.GetAbnormalBetSettingAsync(Arg.Any<string>())).Throw(exception);
 
             // Assert
-            await service.AbnormalbetExecuteJobAsync();
+            await service.AbnormalBetExecuteJobAsync();
 
             // Act
             await logService.Received().ErrorAsync(exception);
@@ -80,7 +79,7 @@
             systemSettingService.GetAbnormalBetSettingAsync(Arg.Any<string>()).Returns(setting);
 
             // Act
-            await service.AbnormalbetExecuteJobAsync();
+            await service.AbnormalBetExecuteJobAsync();
 
             // Assert
             logService.Received().LogInformation("Abnormal Bet - Service is shutdown.");
@@ -102,7 +101,7 @@
             configuration.GetValue<string>("SiteEnvironment").Returns(env);
 
             // Act
-            await service.AbnormalbetExecuteJobAsync();
+            await service.AbnormalBetExecuteJobAsync();
 
             // Assert
             service.Received().Protected("AbnormalbetRunJobByEnviromentAsync",
@@ -150,11 +149,11 @@
             await service.Public_AbnormalbetRunJobByEnviromentAsync(true, true, false, setting, "UAT");
 
             // Assert
-            await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_AutoFB);
+            await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
         }
 
         [Fact]
-        public async Task AbnormalbetRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
+        public async Task AbnormalBetRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
         {
             // Arrange
             var setting = new AbnormalBetSystemSetting
@@ -176,7 +175,7 @@
         }
 
         [Fact]
-        public async Task AbnormalbetRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
+        public async Task AbnormalBetRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
         {
             // Arrange
             var setting = new AbnormalBetSystemSetting
@@ -194,11 +193,11 @@
             await service.Public_AbnormalbetRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
 
             // Assert
-            await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_AutoFB);
+            await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
         }
 
         [Fact]
-        public async Task AbnormalbetRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsNotRunning_CallExactFunction()
+        public async Task AbnormalBetRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsNotRunning_CallExactFunction()
         {
             // Arrange
             var setting = new AbnormalBetSystemSetting
@@ -222,7 +221,7 @@
         }
 
         [Fact]
-        public async Task AbnormalbetRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsNotRunning_CallExactFunction()
+        public async Task AbnormalBetRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsNotRunning_CallExactFunction()
         {
             // Arrange
             var setting = new AbnormalBetSystemSetting
@@ -248,6 +247,7 @@
         #endregion ExecuteJobAsync
 
         #region WinLossExecuteJobAsync
+
         [Fact]
         public async Task WinLossExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
@@ -307,7 +307,7 @@
             // Arrange
             var service = GetService();
             var setting = new WinLossSystemSetting
-            { 
+            {
                 ServiceFlag = true,
                 LastRuntime = DateTime.Now.AddMinutes(-appSettings.RetryRuntime - 1),
                 JobStatus = JobStatus.Running
@@ -347,6 +347,7 @@
         #endregion WinLossExecuteJobAsync
 
         #region TurnoverControlExecuteJobAsync
+
         [Fact]
         public async Task TurnoverControlExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
@@ -445,6 +446,7 @@
         #endregion TurnoverControlExecuteJobAsync
 
         #region AmendmentNotiFbExecuteJobAsync
+
         [Fact]
         public async Task VoidingSettledTicketsExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
@@ -639,6 +641,7 @@
         #endregion AmendmentNotiFbExecuteJobAsync
 
         #region ProblemsAcccountExecuteJobAsync
+
         [Fact]
         public async Task ProblemsAcccountExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
@@ -648,7 +651,7 @@
             systemSettingService.When(x => x.GetProblemsAccountSettingAsync()).Throw(exception);
 
             // Assert
-            await service.ProblemsAcccountExecuteJobAsync();
+            await service.ProblemsAccountExecuteJobAsync();
 
             // Act
             await logService.Received().ErrorAsync(exception);
@@ -664,7 +667,7 @@
             systemSettingService.GetProblemsAccountSettingAsync().Returns(setting);
 
             // Act
-            await service.ProblemsAcccountExecuteJobAsync();
+            await service.ProblemsAccountExecuteJobAsync();
 
             // Assert
             logService.Received().LogInformation("Service Problems Account is shutdown.");
@@ -674,7 +677,8 @@
         public async Task ProblemsAcccountExecuteJobAsync_LIVEEnvironment_ExpectedCallExactFunction()
         {
             // Arrange
-            var setting = new ProblemsAccountSetting { 
+            var setting = new ProblemsAccountSetting
+            {
                 ServiceFlag = true,
                 JobStatus = "running",
                 JobStatusUAT = "completed"
@@ -685,7 +689,7 @@
             configuration.GetValue<string>("SiteEnvironment").Returns(env);
 
             // Act
-            await service.ProblemsAcccountExecuteJobAsync();
+            await service.ProblemsAccountExecuteJobAsync();
 
             // Assert
             service.Received().Protected("ProblemsAcccountRunJobByEnviromentAsync",
@@ -709,7 +713,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(false, true, false , setting, "LIVE");
+            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(false, true, false, setting, "LIVE");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -802,7 +806,7 @@
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForProblemsAccount);
-            await problemsAccountFeedbackService.Received().CreateFeedbackForProblemsAccountAsync(setting, false, setting.LastRuntime, SystemSettingName.LastRuntime, SystemSettingName.JobStatus,"LIVE");
+            await problemsAccountFeedbackService.Received().CreateFeedbackForProblemsAccountAsync(setting, false, setting.LastRuntime, SystemSettingName.LastRuntime, SystemSettingName.JobStatus, "LIVE");
             await jobRunningChecker.Received().ClearRunning(JobName.CreateFeedbackForProblemsAccount);
         }
 
@@ -833,6 +837,7 @@
         #endregion ProblemsAcccountExecuteJobAsync
 
         #region SynchronizeNewLicenseeOICExecuteJobAsync
+
         [Fact]
         public async Task SynchronizeNewLicenseeOICExecuteJobAsync_Exception_ExpectedWriteLog()
         {
@@ -898,9 +903,11 @@
             // Act
             logService.DidNotReceive();
         }
+
         #endregion SynchronizeNewLicenseeOICExecuteJobAsync
 
         #region VoidingSettledTicketsExecuteJobAsync
+
         [Fact]
         public async Task AmendmentNotiFbExecuteJobAsync_Exception_ExpectedWriteLogAndClearJob()
         {
@@ -1095,6 +1102,7 @@
         #endregion VoidingSettledTicketsExecuteJobAsync
 
         #region RefundSettledTicketJobAsync
+
         [Fact]
         public async Task RefundSettledTicketJobAsync_ServiceIsShutdown_ExpectedWriteLog()
         {
@@ -1152,9 +1160,11 @@
             // Assert
             await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
         }
+
         #endregion RefundSettledTicketJobAsync
 
         #region VoidingBetIDExecuteJobAsync
+
         [Fact]
         public async Task VoidingBetIDExecuteJobAsync_ServiceIsShutdown_ExpectedWriteLog()
         {
@@ -1216,9 +1226,11 @@
             // Assert
             await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
         }
+
         #endregion VoidingBetIDExecuteJobAsync
 
         #region AbnormalBetsExecuteJobAsync
+
         [Fact]
         public async Task AbnormalBetsExecuteJobAsync_ServiceIsShutdown_ExpectedWriteLog()
         {
@@ -1240,7 +1252,7 @@
             // Arrange
             var setting = new SystemSettingInfo { ServiceFlag = true };
             var voidedInfo = fixture.Create<ValueTuple<IEnumerable<VoidedInfo>, IEnumerable<VoidingMessage>, int>>();
-            var messages = fixture.Create<IEnumerable<MessageAbnormelBet>>();
+            var messages = fixture.Create<IEnumerable<MessageAbnormalBet>>();
             var commandResult = new CommandResult { Code = 1 };
             var criteria = fixture.Create<ImportAbnormalBetCommand>();
             var valueTupe = new ValueTuple<CommandResult, ImportAbnormalBetCommand>(commandResult, criteria);
@@ -1264,7 +1276,7 @@
             // Arrange
             var setting = new SystemSettingInfo { ServiceFlag = true };
             var voidedInfo = fixture.Create<ValueTuple<IEnumerable<VoidedInfo>, IEnumerable<VoidingMessage>, int>>();
-            var messages = fixture.Create<IEnumerable<MessageAbnormelBet>>();
+            var messages = fixture.Create<IEnumerable<MessageAbnormalBet>>();
             var commandResult = new CommandResult { Code = 0 };
             var criteria = fixture.Create<ImportAbnormalBetCommand>();
             var valueTupe = new ValueTuple<CommandResult, ImportAbnormalBetCommand>(commandResult, criteria);
@@ -1280,10 +1292,11 @@
             // Assert
             await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
         }
+
         #endregion AbnormalBetsExecuteJobAsync
 
-
         #region MessageNotificationCenterExecuteJobAsync
+
         [Fact]
         public async Task MessageNotificationCenterExecuteJobAsync_ServiceIsShutdown_ExpectedWriteLog()
         {
@@ -1341,9 +1354,11 @@
             // Assert
             await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
         }
+
         #endregion MessageNotificationCenterExecuteJobAsync
 
         #region RebateRetentionExecuteJobAsync
+
         [Fact]
         public async Task RebateRetentionExecuteJobAsync_ServiceIsShutdown_ExpectedWriteLog()
         {
@@ -1403,6 +1418,7 @@
             // Assert
             await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
         }
+
         #endregion RebateRetentionExecuteJobAsync
 
         #region Helpers
@@ -1423,7 +1439,7 @@
             problemsAccountFeedbackService = Substitute.For<IProblemsAccountFeedbackService>();
             amendmentNotiFbService = Substitute.For<IAmendmentNotiFbService>();
             feedbackService = Substitute.For<IFeedbackService>();
-            licenseeService = Substitute.For<ISynchronizeLicenseeService>(); 
+            licenseeService = Substitute.For<ISynchronizeLicenseeService>();
             configuration = Substitute.For<IConfiguration>();
             voidingSettledTicketsService = Substitute.For<IVoidingSettledTicketsFeedbackService>();
             archivingDAService = Substitute.For<IArchivingDAService>();

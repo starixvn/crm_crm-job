@@ -1,24 +1,21 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
+    using AutoFixture;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.ArchivingDA;
+    using CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.UnitTests.Testable;
+    using CRM.Models;
+    using CRM.Services;
+    using Microsoft.Extensions.Options;
+    using NSubstitute;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
-    using CRM.BackgroundJob.Models.ArchivingDA;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.UnitTests.Testable;
-    using CRM.BackgroundJob.Constants;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using Microsoft.Extensions.Options;
-    using NSubstitute;
-    using NSubstitute.ReceivedExtensions;
     using Xunit;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
 
     public class ArchivingDAServiceTests
     {
@@ -63,7 +60,7 @@
             var LastRuntimeEnv = DateTime.Now;
             fixture.Customize<ArchivingDASetting>(x => x.With(b => b.IsSyncArchivedAccount, false));
             var archivingDASetting = fixture.Create<ArchivingDASetting>();
-            var custInfor = fixture.Create<IEnumerable<ArchivingCustInfo>>(); 
+            var custInfor = fixture.Create<IEnumerable<ArchivingCustInfo>>();
             feedbackTransactionService.GetArchivingDAStatus().Returns(true);
             feedbackTransactionService.ArchivingAutoFeedbackInfoInsAsync(archivingDASetting, "LIVE").Returns(archivingAutoFbInfos);
             feedbackTransactionService.GetArchivingCustInfo().Returns(custInfor);
@@ -106,6 +103,7 @@
         #endregion CreateFeedbackForArchivingDAAsync
 
         #region CheckExistAnyArchivingFb
+
         [Fact]
         public async Task CheckExistAnyArchivingFb_IsAnyData_ExpectedCallExactFunction()
         {
@@ -114,7 +112,7 @@
             var settings = fixture.Create<IEnumerable<SettingItem>>();
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var service = MockService();
-            
+
             // Act
             await service.Public_CheckExistAnyArchivingFb(archivingAutoFbInfos, settings, settingMappings,
                  "jobStatusNameEnv", "lastRuntimeNameEnv");
@@ -123,10 +121,11 @@
             service.Received().Protected("CreateFeedbackForArchivingDACreditAsync", Arg.Any<ArchivingAutoFbInfo>(), Arg.Any<IEnumerable<SettingItem>>(), Arg.Any<IEnumerable<SystemSettingMapping>>());
             await commonFeedback.EditArchivingDAMaxLogIdSettingAsync(BackgroundJobConstants.ServiceName_ArchivingDA, Arg.Any<string>());
         }
+
         #endregion CheckExistAnyArchivingFb
 
-
         #region CreateFeedbackForArchivingDACreditAsync
+
         [Fact]
         public async Task CreateFeedbackForArchivingDACreditAsync_ExpectedCallExactFunction()
         {
@@ -138,20 +137,21 @@
             var service = MockService();
             service.Protected("GetCategorySubCategoryArchivingDA", settings, DefaultValue.Special_Notification).Returns(category);
 
-
             // Act
             await service.Public_CreateFeedbackForArchivingDACreditAsync(archivingAutoFbInfos, settings, settingMappings);
 
             // Assert
-            service.Received().Protected("CheckValidArchivingParamsAndInsertFeedbackAsync", Arg.Any<ArchivingAutoFbInfo>(), Arg.Any<CreateMutipleFeedbackCommand>());
+            service.Received().Protected("CheckValidArchivingParamsAndInsertFeedbackAsync", Arg.Any<ArchivingAutoFbInfo>(), Arg.Any<CreateMultipleFeedbackCommand>());
             service.Received().Protected("GetProductXmlNA");
             service.Received().Protected("GetArchivingRelatedCustomerXml", Arg.Any<ArchivingAutoFbInfo>());
             service.Received().Protected("GetArchivingDADescription", Arg.Any<ArchivingAutoFbInfo>());
             logService.Received(1).LogInformation(Arg.Any<string>());
         }
+
         #endregion CreateFeedbackForArchivingDACreditAsync
 
         #region GetArchivingDADescription
+
         [Fact]
         public void GetArchivingDADescription_ExpectedReturnExactString()
         {
@@ -169,9 +169,11 @@
             // Assert
             Assert.Equal(expect.ToString(), actual);
         }
+
         #endregion GetArchivingDADescription
 
         #region GetArchivingDASolution
+
         [Fact]
         public void GetArchivingDASolution_ExpectedReturnExactString()
         {
@@ -189,6 +191,7 @@
             // Assert
             Assert.Equal(expect.ToString(), actual);
         }
+
         #endregion GetArchivingDASolution
 
         #region GetArchivingRelatedCustomerXml
@@ -226,6 +229,7 @@
             // Assert
             Assert.Equal(expect, actual);
         }
+
         #endregion GetArchivingRelatedCustomerXml
 
         #region CheckValidArchivingParamsAndInsertFeedbackAsync
@@ -242,7 +246,7 @@
                 AffectedId = "1",
                 AffectedName = "1"
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -270,7 +274,7 @@
                 AffectedId = "1",
                 AffectedName = "1"
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -301,7 +305,7 @@
                 AffectedId = "1",
                 AffectedName = "1"
             };
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(false, ""));
 
@@ -332,7 +336,7 @@
                 AffectedName = "1"
             };
             var exception = fixture.Create<Exception>();
-            var criteria = fixture.Create<CreateMutipleFeedbackCommand>();
+            var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
             var service = MockService();
             commonFeedback.CheckFeedbackValidParams(criteria).Returns(new ValueTuple<bool, string>(true, ""));
 
@@ -366,6 +370,7 @@
             // Assert
             Assert.Equal("<ROOT><Product ProductID='46004' SubProductID='8063' BetTypeID='9144' /></ROOT>", actual);
         }
+
         #endregion GetProductXmlNA
 
         #region GetCategorySubCategoryArchivingDA
@@ -376,7 +381,7 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "MainCategory1", SettingValue = DefaultValue.Special_Notification }
+                    new() { SettingName = "MainCategory1", SettingValue = DefaultValue.Special_Notification }
                 };
             var service = MockService();
 
@@ -395,8 +400,8 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.Special_Notification },
-                     new SettingItem { SettingId = 2, SettingName = "SubCategory", SettingValue = "Archive Dormant Accounts" }
+                    new() { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.Special_Notification },
+                     new() { SettingId = 2, SettingName = "SubCategory", SettingValue = "Archive Dormant Accounts" }
                 };
             var service = MockService();
 
@@ -414,7 +419,7 @@
         #region UpdateArchivingStatus
 
         [Fact]
-        public async void UpdateArchivingStatus_IsSyncArchivedAccount_ExpectedCallExactFunction()
+        public async Task UpdateArchivingStatus_IsSyncArchivedAccount_ExpectedCallExactFunction()
         {
             // Arrange
             var service = MockService();
@@ -425,6 +430,7 @@
             // Assert
             await commonFeedback.EditArchivingDAStatusSettingAsync(BackgroundJobConstants.ServiceName_ArchivingDA, "0");
         }
+
         #endregion UpdateArchivingStatus
 
         #region Helpers

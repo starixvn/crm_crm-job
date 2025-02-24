@@ -1,17 +1,17 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
+    using AutoFixture;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria.ChatBot_CTO;
+    using CRM.BackgroundJob.Models.ChatBotCTO;
+    using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
+    using NSubstitute;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
-    using CRM.BackgroundJob.Criteria.ChatBot_CTO;
-    using CRM.BackgroundJob.Models.ChatBotCTO;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Constants;
-    using NSubstitute;
     using Xunit;
 
     public class ChatBotCTOServiceTests
@@ -19,15 +19,14 @@
         private IBaseService baseService;
         private ICommonFeedback commonFeedback;
 
-
         [Fact]
         public async Task GetChatbotCTOSettingInfoAsync_WhenCalled_ReturnTOReachInfor()
         {
             // Arrange
             var fixture = new Fixture();
-            var expected = fixture.Create<IEnumerable<TOReachInfor>>();
+            var expected = fixture.Create<IEnumerable<TOReachInfo>>();
             var service = GetService();
-            baseService.GetDataAsync<TOReachInfor>(Arg.Any<GetTOControlSettingByLastLogIdCriteria>()).Returns(expected);
+            baseService.GetDataAsync<TOReachInfo>(Arg.Any<GetTOControlSettingByLastLogIdCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetChatbotCTOSettingInfoAsync(0, 10);
@@ -41,13 +40,13 @@
         {
             // Arrange
             var fixture = new Fixture();
-            var expected = fixture.Create<IEnumerable<TOSMAInfor>>();
-            var tOReachInfors = new List<TOReachInfor>
+            var expected = fixture.Create<IEnumerable<TurnoverSMAInfo>>();
+            var tOReachInfors = new List<TOReachInfo>
             {
-                new TOReachInfor{ MatchId = 1, CustId = 1, LogId = 1}
+                new() { MatchId = 1, CustId = 1, LogId = 1}
             };
             var service = GetService();
-            baseService.GetDataAsync<TOSMAInfor>(Arg.Any<GetTOControlSMAInfroCriteria>()).Returns(expected);
+            baseService.GetDataAsync<TurnoverSMAInfo>(Arg.Any<GetTOControlSMAInfoCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetChatbotCTOSMAInfoAsync(tOReachInfors);
@@ -62,9 +61,9 @@
             // Arrange
             var fixture = new Fixture();
             var service = GetService();
-            var tOSMAInfors = new List<TOSMAInfor>
+            var tOSMAInfors = new List<TurnoverSMAInfo>
             {
-                fixture.Create<TOSMAInfor>()
+                fixture.Create<TurnoverSMAInfo>()
             };
 
             const string XmlTemplate = "<r LogId='{0}' CustId='{1}' Username='{2}' Recommend='{3}'" +
@@ -78,10 +77,10 @@
 
             var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
             var smaInfor = tOSMAInfors[0];
-            commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.en_US).Returns("sportNameEN");
-            commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.zh_CN).Returns("sportNameSC");
-            commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.th_TH).Returns("sportNameTH");
-            commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.vi_VN).Returns("sportNameYN");
+            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.en_US).Returns("sportNameEN");
+            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.zh_CN).Returns("sportNameSC");
+            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.th_TH).Returns("sportNameTH");
+            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.vi_VN).Returns("sportNameYN");
 
             commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.en_US).Returns("leagueNameEN");
             commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.zh_CN).Returns("leagueNameSC");
@@ -98,8 +97,8 @@
             commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.th_TH).Returns("awayNameTH");
             commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.vi_VN).Returns("awayNameYN");
 
-            var smaLevelYN = service.Protected("GetSMALevel",smaInfor.RoleId, Language.en_US);
-            var smaLevelEN = service.Protected("GetSMALevel",smaInfor.RoleId, Language.en_US);
+            var smaLevelYN = service.Protected("GetSMALevel", smaInfor.RoleId, Language.en_US);
+            var smaLevelEN = service.Protected("GetSMALevel", smaInfor.RoleId, Language.en_US);
             var smaLevelSC = service.Protected("GetSMALevel", smaInfor.RoleId, Language.zh_CN);
             var smaLevelTH = service.Protected("GetSMALevel", smaInfor.RoleId, Language.th_TH);
 
@@ -133,7 +132,7 @@
                     "awayNameYN",
                     smaInfor.Outstanding
                 );
-                   
+
             stringBuilder.Append(BackgroundJobConstants.EndRootTag.ToLowerInvariant());
             var criteria = fixture.Create<TOControlImportCommand>();
 
@@ -141,9 +140,8 @@
             baseService.ExecuteNonQueryAsync(Arg.Do<TOControlImportCommand>(x => criteria = x)).Returns(commandResult);
             var valueTupe = new ValueTuple<CommandResult, TOControlImportCommand>(commandResult, criteria);
 
-
             // Act
-            var actual = await service.ImportTOSMAInfoAsync(tOSMAInfors, BackgroundJobConstants.DefaultEnvironment);
+            var actual = await service.ImportTOSMAInfoAsync(tOSMAInfors);
 
             // Assert
             Assert.Equal(valueTupe.Item1, actual.Item1);
@@ -151,7 +149,7 @@
         }
 
         #region Helpers
-       
+
         private ChatBotCTOService GetService()
         {
             baseService = Substitute.For<IBaseService>();

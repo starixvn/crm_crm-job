@@ -2,7 +2,6 @@
 {
     using AutoFixture;
     using BackgroundJob.Criteria.AutoFeedback;
-    using CRM.Criteria;
     using Xunit;
 
     public class EditFeedbackInfoCommandTests

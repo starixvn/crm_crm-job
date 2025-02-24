@@ -1,13 +1,13 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Constants;
 using CRM.BackgroundJob.Models.ChatBotResulAmendment;
 using CRM.Services;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public interface IChatBotJobService
 {
@@ -21,7 +21,7 @@ public interface IChatBotJobService
 
     Task PullMessageResultAmendmentAndSendNotificationToHeadlineAsync();
 
-    Task PullMessagArchivingDAAndSendNotificationToHeadlineAsync();
+    Task PullMessageArchivingDAAndSendNotificationToHeadlineAsync();
 
     Task PullMessageRebateRetentionAsync();
 }
@@ -126,8 +126,8 @@ public class ChatBotJobService : IChatBotJobService
                 logService.LogInformation("Chat Bot CWL Service is shutdown.");
                 return;
             }
-            var cwlInfors = await chatBotCWLService.GetChatbotCWLLogInfoAsync(setting.LastLogId, setting.BatchSize);
-            var result = await chatBotCWLService.ImportCWLLogInfoAsync(cwlInfors, Environment);
+            var cwlInfo = await chatBotCWLService.GetChatbotCWLLogInfoAsync(setting.LastLogId, setting.BatchSize);
+            var result = await chatBotCWLService.ImportCWLLogInfoAsync(cwlInfo, Environment);
             if (result.Item1.IsSuccessful)
             {
                 await sendNotificationService.ScanAndSendMessageToBotEndpointAsync();
@@ -154,9 +154,9 @@ public class ChatBotJobService : IChatBotJobService
                 logService.LogInformation("Chat Bot CTO Service is shutdown.");
                 return;
             }
-            var tOReachInfors = await chatBotCTOService.GetChatbotCTOSettingInfoAsync(settingCTO.LastLogId, settingCTO.BatchSize);
-            var tOSMAInfors = await chatBotCTOService.GetChatbotCTOSMAInfoAsync(tOReachInfors);
-            var commandResult = await chatBotCTOService.ImportTOSMAInfoAsync(tOSMAInfors, Environment);
+            var tOReachInfo = await chatBotCTOService.GetChatbotCTOSettingInfoAsync(settingCTO.LastLogId, settingCTO.BatchSize);
+            var tOSMAInfo = await chatBotCTOService.GetChatbotCTOSMAInfoAsync(tOReachInfo);
+            var commandResult = await chatBotCTOService.ImportTOSMAInfoAsync(tOSMAInfo, Environment);
             if (commandResult.Item1.IsSuccessful)
             {
                 await sendNotificationService.ScanAndSendMessageToBotEndpointAsync();
@@ -183,9 +183,9 @@ public class ChatBotJobService : IChatBotJobService
                 logService.LogInformation("Chat Bot Problems Account Service is shutdown.");
                 return;
             }
-            var problemsAcountInfors = await chatBotProblemAccountService.GetChatbotProblemAccountInfoAsync(
+            var problemsAccountInfo = await chatBotProblemAccountService.GetChatbotProblemAccountInfoAsync(
                 settingProblemsAccount.LastLogId, settingProblemsAccount.BatchSize);
-            var commandResult = await chatBotProblemAccountService.ImportProblemsAccountInfoAsync(problemsAcountInfors, Environment);
+            var commandResult = await chatBotProblemAccountService.ImportProblemsAccountInfoAsync(problemsAccountInfo, Environment);
             if (commandResult.Item1.IsSuccessful)
             {
                 await sendNotificationService.ScanAndSendMessageToBotEndpointAsync();
@@ -214,20 +214,20 @@ public class ChatBotJobService : IChatBotJobService
             }
             var maxMsgTargetId = settingResultAmendment.MaxMsgTargetId;
             var batchSizeGetMsg = settingResultAmendment.BatchSizeGetMsg;
-            var (voiddingMessageInfo, voidingMesssageSettled) = await chatBotResultAmendmentService.GetChatBotMessageVoidSettledAsync(maxMsgTargetId, batchSizeGetMsg);
+            var (voidingMessageInfoList, voidingMessageSettled) = await chatBotResultAmendmentService.GetChatBotMessageVoidSettledAsync(maxMsgTargetId, batchSizeGetMsg);
 
             IEnumerable<MessageVoidSettled> settledTickets = new List<MessageVoidSettled>();
-            if (voidingMesssageSettled.Any())
+            if (voidingMessageSettled.Any())
             {
                 var siteDbConfigs = await baseService.GetSiteDbConfigAsync();
 
                 foreach (var item in siteDbConfigs)
                 {
-                    var settledTicket = await chatBotResultAmendmentService.VoidingMessageGetSettledTicketAsync(voidingMesssageSettled, item.SiteDBGroupID);
+                    var settledTicket = await chatBotResultAmendmentService.VoidingMessageGetSettledTicketAsync(voidingMessageSettled, item.SiteDBGroupID);
                     settledTickets = settledTickets.Concat(settledTicket);
                 }
             }
-            var settledTicketInfo = settledTickets.Concat(voiddingMessageInfo);
+            var settledTicketInfo = settledTickets.Concat(voidingMessageInfoList);
             var voidingMessageInfo = await chatBotResultAmendmentService.GetChatbotMessageVoidSettledInfoAsync(settledTicketInfo);
             var resultAmendmentInfo = await chatBotResultAmendmentService.GetChatBotResultAmendmentInfoAsync(settingResultAmendment);
             var messagesCombineDistinct = resultAmendmentInfo.Item1.Item3.Concat(voidingMessageInfo.Item1).Distinct().ToList();
@@ -258,7 +258,7 @@ public class ChatBotJobService : IChatBotJobService
         }
     }
 
-    public async Task PullMessagArchivingDAAndSendNotificationToHeadlineAsync()
+    public async Task PullMessageArchivingDAAndSendNotificationToHeadlineAsync()
     {
         try
         {
@@ -268,8 +268,8 @@ public class ChatBotJobService : IChatBotJobService
                 logService.LogInformation("Chat Bot Archiving Dormant Accounts Service is shutdown.");
                 return;
             }
-            var archivingDAInfors = await chatBotArchivingDAService.GetChatbotArchivingDASettingInfoAsync(archivingDASetting.LastLogId, archivingDASetting.BatchSize);
-            var (commandResult, command) = await chatBotArchivingDAService.ImportArchivedAccountsAsync(archivingDAInfors, Environment);
+            var archivingDAInfo = await chatBotArchivingDAService.GetChatbotArchivingDASettingInfoAsync(archivingDASetting.LastLogId, archivingDASetting.BatchSize);
+            var (commandResult, command) = await chatBotArchivingDAService.ImportArchivedAccountsAsync(archivingDAInfo, Environment);
             if (commandResult.IsSuccessful)
             {
                 await sendNotificationService.ScanAndSendMessageToBotEndpointAsync();
@@ -310,7 +310,6 @@ public class ChatBotJobService : IChatBotJobService
         }
         catch (Exception ex)
         {
-
             await logService.ErrorAsync(ex);
         }
     }

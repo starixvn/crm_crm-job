@@ -12,7 +12,7 @@ public class SystemSettingInfo
 
     public int LastMsgTargetId { get; set; }
 
-    public bool IncludeUUSCurency { get; set; }
+    public bool IncludeUUSCurrency { get; set; }
 
     public bool ServiceFlag { get; set; }
 

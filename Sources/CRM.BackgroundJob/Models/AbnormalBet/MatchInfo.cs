@@ -15,9 +15,9 @@ public class MatchInfo
     public int IssueTypeId { get; set; }
     public string RequestIDList { get; set; }
     public string DecidedBy { get; set; }
-    public string Requestby { get; set; }
+    public string RequestBy { get; set; }
     public string VoidBy { get; set; }
-    public DateTime MinWinlostdate { get; set; }
-    public DateTime MaxWinlostdate { get; set; }
+    public DateTime MinWinLostDate { get; set; }
+    public DateTime MaxWinLostDate { get; set; }
     public byte FilterBy { get; set; }
 }

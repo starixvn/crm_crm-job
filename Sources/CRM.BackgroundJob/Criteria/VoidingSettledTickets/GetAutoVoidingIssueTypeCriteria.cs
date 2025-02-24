@@ -1,11 +1,10 @@
 ﻿namespace CRM.BackgroundJob.Criteria.VoidingSettledTickets;
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Constants;
 using Fanex.Data;
 using Fanex.Data.Repository;
+using System.Collections.Generic;
+using System.Text;
 
 public class GetAutoVoidingIssueTypeCriteria : CriteriaBase
 {
@@ -18,7 +17,7 @@ public class GetAutoVoidingIssueTypeCriteria : CriteriaBase
     {
         get
         {
-            if (VoidingMessages is null && !VoidingMessages.Any())
+            if (VoidingMessages is null || VoidingMessages.Count == 0)
             {
                 return string.Empty;
             }

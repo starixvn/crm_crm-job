@@ -1,12 +1,12 @@
 ﻿namespace CRM.BackgroundJob.Workers;
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using CRM.BackgroundJob.Models;
 using CRM.Services;
 using Microsoft.Extensions.Hosting;
 using ONEbook.UM.Services;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 public abstract class BaseWorker(
     IMaintenanceService maintenanceService,
@@ -82,8 +82,8 @@ public abstract class BaseWorker(
 
     private async Task<bool> IsUM()
     {
-        var maintanceTime = await maintenanceService.GetUnderMaintenanceTimeAsync();
-        return maintanceTime.IsUnderMaintenanceTime;
+        var umTime = await maintenanceService.GetUnderMaintenanceTimeAsync();
+        return umTime.IsUnderMaintenanceTime;
     }
 
     private bool IsCheckUM(bool isUM) => !jobSetting.HasCheckUM || !isUM;

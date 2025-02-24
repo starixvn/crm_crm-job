@@ -1,13 +1,12 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Services
+﻿using CRM.BackgroundJob.Criteria.TurnoverControl;
+
+namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.ArchivingDA;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
     using CRM.BackgroundJob.Criteria.ChatBot;
-    using CRM.BackgroundJob.Criteria.TurnoverControll;
     using CRM.BackgroundJob.Criteria.WinLossLimit;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Models.AbnormalBet;
@@ -17,6 +16,8 @@
     using CRM.Models;
     using CRM.Services;
     using NSubstitute;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class SystemSettingServiceTests
@@ -69,7 +70,7 @@
             var expected = fixture.Create<CommandResult>();
             var settings = new List<SystemSettingItem>
             {
-                new SystemSettingItem { SettingName = SystemSettingName.JobStatus, Value = status }
+                new() { SettingName = SystemSettingName.JobStatus, Value = status }
             };
             var xml = settings.ToXML("ROOT").ToString();
             var criteria = new EditSystemSettingCommand();
@@ -95,7 +96,7 @@
             baseService.GetDataEntityAsync<AbnormalBetSystemSetting>(Arg.Do<GetChatBotSystemSettingCriteria>(x => criteria = x)).Returns(expected);
 
             // Act
-            var actual = await service.GetChatBotSystemSettingAsync(BackgroundJobConstants.ServiceName_ChatBot, BackgroundJobConstants.DefaultEnvironment);
+            var actual = await service.GetChatBotSystemSettingAsync(BackgroundJobConstants.ServiceName_ChatBot);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -126,7 +127,7 @@
             var fixture = new Fixture();
             var expected = fixture.Create<WinLossSystemSetting>();
             var service = GetSystemSettingService();
-            baseService.GetDataEntityAsync<WinLossSystemSetting>(Arg.Any<GetTOControllSystemSettingCriteria>()).Returns(expected);
+            baseService.GetDataEntityAsync<WinLossSystemSetting>(Arg.Any<GetTOControlSystemSettingCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetTurnoverSettingAsync();

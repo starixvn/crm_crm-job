@@ -1,19 +1,18 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
+    using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.ChatBot_ArchivingDA;
     using CRM.BackgroundJob.Models.ChatBot;
     using CRM.BackgroundJob.Services;
-    using CRM.Constants;
     using CRM.Extensions.Xml;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
-    using CRM.BackgroundJob.Constants;
 
     public class ChatBotArchivingDAServiceTests
     {
@@ -24,9 +23,9 @@
         {
             // Arrange
             var fixture = new Fixture();
-            var expected = fixture.Create<IEnumerable<ChatbotArchivingDAInfor>>();
+            var expected = fixture.Create<IEnumerable<ChatbotArchivingDAInfo>>();
             var service = GetService();
-            baseService.GetDataAsync<ChatbotArchivingDAInfor>(Arg.Any<GETChatbotArchivedAccountsCriteria>()).Returns(expected);
+            baseService.GetDataAsync<ChatbotArchivingDAInfo>(Arg.Any<GETChatbotArchivedAccountsCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetChatbotArchivingDASettingInfoAsync(0, 10);
@@ -39,7 +38,7 @@
         public async Task ImportArchivedAccountsAsync_WhenCalled_ReturnExpectedCommandResult()
         {
             var fixture = new Fixture();
-            var archivingDAInfors = fixture.Create<IEnumerable<ChatbotArchivingDAInfor>>();
+            var archivingDAInfors = fixture.Create<IEnumerable<ChatbotArchivingDAInfo>>();
             var expectedCommand = archivingDAInfors.ToXML("root").ToString();
             var service = GetService();
             var criteria = fixture.Create<ImportArchivedAccountsCommand>();
@@ -47,7 +46,6 @@
             var commandResult = fixture.Create<CommandResult>();
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportArchivedAccountsCommand>(x => criteria = x)).Returns(commandResult);
             var valueTupe = new ValueTuple<CommandResult, ImportArchivedAccountsCommand>(commandResult, criteria);
-
 
             // Act
             var actual = await service.ImportArchivedAccountsAsync(archivingDAInfors, BackgroundJobConstants.DefaultEnvironment);

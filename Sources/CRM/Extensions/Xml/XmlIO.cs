@@ -68,7 +68,8 @@ public static class XmlIO
 
         var args = GetExpressions(t, p, attrSetter);
 
-        var constructor = typeof(XElement).GetConstructor([typeof(XName), typeof(object[])]);
+        var constructor = typeof(XElement).GetConstructor([typeof(XName), typeof(object[])]) ??
+                          throw new InvalidOperationException("No constructor found for XElement");
         var body = Expression.New(constructor, Expression.Constant(elementName), Expression.NewArrayInit(typeof(object), args));
 
         return Expression.Lambda<Func<T, XElement>>(body, p).Compile();

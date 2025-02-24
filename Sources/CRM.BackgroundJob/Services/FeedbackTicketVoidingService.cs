@@ -1,11 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Models.AbnormalBet;
@@ -13,6 +7,12 @@ using CRM.Models;
 using CRM.Services;
 using Microsoft.Extensions.Configuration;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 public interface IFeedbackTicketVoidingService
 {
@@ -78,8 +78,7 @@ public class FeedbackTicketVoidingService(
         };
         var (matchInfo, transactionInfo, duplicateTicketDetails) = await baseService.FetchMultipleAsync<MatchInfo, TransactionInfo, DuplicateTicketDetail>(criteria);
 
-        var collectionId = matchInfo.Where(x =>
-                !transactionInfo.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId))
+        var collectionId = matchInfo.Where(x => transactionInfo.All(y => x.VoidingHistoryCollectionId != y.VoidingHistoryCollectionId))
             .Select(x => x.VoidingHistoryCollectionId).ToList();
         if (collectionId.Any())
         {
@@ -110,7 +109,7 @@ public class FeedbackTicketVoidingService(
         };
         var feedbackInfo = await baseService.GetDataAsync<AutoFeedbackInfo>(criteria);
 
-        var voidingHistoryCollectionIds = matchInfo.Where(x => !feedbackInfo.Any(y => y.VoidingHistoryCollectionId == x.VoidingHistoryCollectionId))
+        var voidingHistoryCollectionIds = matchInfo.Where(x => feedbackInfo.All(y => y.VoidingHistoryCollectionId != x.VoidingHistoryCollectionId))
             .Select(x => x.VoidingHistoryCollectionId).ToList();
         if (voidingHistoryCollectionIds.Any())
         {
@@ -154,22 +153,22 @@ public class FeedbackTicketVoidingService(
         foreach (var transaction in transactionInfosDistinct)
         {
             var matchInfo = matchInfos.FirstOrDefault(x => x.MessageId.Contains(transaction.MessageId.ToString()));
-            var headlineId = 0;
-            var relatedCustId = 0;
+            int headlineId;
+            int relatedCustomerId;
 
             if (transaction.IsDeposit)
             {
                 var licenseeManager = GetLicenseeManager(siteSettingMappings, transaction.Site);
                 headlineId = licenseeInfo.CustId;
-                relatedCustId = licenseeManager != null ? licenseeManager.LicenseeManagerId : 0;
+                relatedCustomerId = licenseeManager?.LicenseeManagerId ?? 0;
             }
             else
             {
                 var headline = headlines.FirstOrDefault(x => x.CustId == transaction.CustId);
-                headlineId = headline != null ? headline.HeadlineId : 0;
-                relatedCustId = transaction.CustId;
+                headlineId = headline?.HeadlineId ?? 0;
+                relatedCustomerId = transaction.CustId;
             }
-            if (transaction.IsDeposit || (!transaction.IsDeposit && matchInfo?.IssueTypeId != duplicateType))
+            if (transaction.IsDeposit || (matchInfo?.IssueTypeId != duplicateType))
             {
                 var transactionInfo = new TransactionInfo
                 {
@@ -179,7 +178,7 @@ public class FeedbackTicketVoidingService(
                 };
 
                 GetXmlTemplate(stringBuilder, XmlTemplate, transactionInfo, matchInfo, headlineId,
-                    transaction.IsDeposit && matchInfo?.IssueTypeId == duplicateType ? transaction.CustId : relatedCustId);
+                    transaction.IsDeposit && matchInfo?.IssueTypeId == duplicateType ? transaction.CustId : relatedCustomerId);
             }
         }
 
@@ -224,10 +223,10 @@ public class FeedbackTicketVoidingService(
         return await baseService.GetDataFromSiteDbAsync<TransactionInfo>(criteria);
     }
 
-    private static void GetXmlTemplate(StringBuilder stringBuilder, string xmlTemlate,
+    private static void GetXmlTemplate(StringBuilder stringBuilder, string xmlTemplate,
         TransactionInfo transaction, MatchInfo matchInfo, int headlineId, int relatedCustId)
     {
-        stringBuilder.AppendFormat(xmlTemlate,
+        stringBuilder.AppendFormat(xmlTemplate,
             transaction.MessageId,
             transaction.RequestId,
             transaction.CustId,

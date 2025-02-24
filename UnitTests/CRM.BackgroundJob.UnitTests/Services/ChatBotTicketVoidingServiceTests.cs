@@ -1,24 +1,21 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
+    using AutoFixture;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria.ChatBot;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.ChatBot;
+    using CRM.BackgroundJob.Services;
+    using CRM.Extensions.Xml;
+    using CRM.Models;
+    using CRM.Services;
+    using NSubstitute;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using System.Web;
-    using AutoFixture;
-    using CRM.Extensions.Xml;
-    using CRM.Models;
-    using CRM.Services;
-    using CRM.BackgroundJob.Criteria.ChatBot;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.ChatBot;
-    using CRM.BackgroundJob.Constants;
-    using CRM.BackgroundJob.Criteria.ChatBot;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.ChatBot;
-    using CRM.BackgroundJob.Services;
-    using NSubstitute;
     using Xunit;
 
     public class ChatBotTicketVoidingServiceTests
@@ -77,7 +74,6 @@
             Assert.Equal(expected, actual);
         }
 
-
         [Fact]
         public async Task EditVoidingMessageAsync_WhenCalled_ReturnExpectedCommandResult()
         {
@@ -106,7 +102,7 @@
             var fixture = new Fixture();
             var message = new List<Message>
             {
-                new Message
+                new()
                 {
                     Content_en = "@@1",
                     Content_cs = "@@1",
@@ -116,7 +112,7 @@
             };
             var expected = new List<Message>
             {
-                new Message
+                new()
                 {
                     Content_en = "1",
                     Content_cs = "1",
@@ -179,20 +175,20 @@
 
             var messages = new List<Message>
             {
-               new Message
+               new()
                {
                     MessageId = 1,
                     RequestId = 1,
                     VoidingHistoryCollectionId = 1
                }
             };
+
+            var ticketInfo = fixture.Create<ChatBotVoidingTicketInfo>();
+            ticketInfo.MessageId = 1;
             var ticketInfos = new List<ChatBotVoidingTicketInfo>
             {
-                fixture.Create<ChatBotVoidingTicketInfo>()
+                ticketInfo
             };
-
-            ticketInfos.First().MessageId = messages.First().MessageId;
-            var ticketInfo = ticketInfos.FirstOrDefault();
             var message = messages.FirstOrDefault();
             var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
             stringBuilder.AppendFormat(XmlTemplate,
@@ -218,7 +214,7 @@
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotTicketVoidingInfoCommand>(x => criteria = x)).Returns(valueTupe.Item1);
 
             // Act
-            var actual = await service.ImportTicketVoidingAsync(messages, ticketInfos, MAXVoidingHistoryCollectionId, MAXMsgTargetId, BackgroundJobConstants.DefaultEnvironment);
+            var actual = await service.ImportTicketVoidingAsync(messages, ticketInfos, MAXVoidingHistoryCollectionId, MAXMsgTargetId);
 
             // Assert
             Assert.Equal(valueTupe.Item1, actual.Item1);
@@ -239,27 +235,23 @@
 
             var messages = new List<Message>
             {
-               new Message
+               new()
                {
                    MessageId = 1,
                    RequestId = 1,
                    VoidingHistoryCollectionId = 1
                }
             };
-            var ticketInfos = new List<ChatBotVoidingTicketInfo>
-            {
-                new ChatBotVoidingTicketInfo
-                {
-                    MessageId = 2,
-                    VoidingHistoryCollectionId = 1
-                }
-            };
 
             var MAXVoidingHistoryCollectionId = fixture.Create<int>();
             var MAXMsgTargetId = fixture.Create<int>();
 
-            ticketInfos.First().MessageId = messages.First().MessageId;
-            var ticketInfo = ticketInfos.FirstOrDefault();
+            var ticketInfo = new ChatBotVoidingTicketInfo
+            {
+                MessageId = 1,
+                VoidingHistoryCollectionId = 1
+            };
+            var ticketInfos = new List<ChatBotVoidingTicketInfo> { ticketInfo };
             var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
             stringBuilder.AppendFormat(XmlTemplate,
                     ticketInfo.VoidingHistoryCollectionId,
@@ -284,7 +276,7 @@
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotTicketVoidingInfoCommand>(x => criteria = x)).Returns(valueTupe.Item1);
 
             // Act
-            var actual = await service.ImportTicketVoidingAsync(messages, ticketInfos, MAXVoidingHistoryCollectionId, MAXMsgTargetId, BackgroundJobConstants.DefaultEnvironment);
+            var actual = await service.ImportTicketVoidingAsync(messages, ticketInfos, MAXVoidingHistoryCollectionId, MAXMsgTargetId);
 
             // Assert
             Assert.Equal(valueTupe.Item1, actual.Item1);

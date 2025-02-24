@@ -1,7 +1,5 @@
 ﻿namespace CRM.BackgroundJob.Workers;
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Constants;
 using CRM.BackgroundJob.Extensions;
 using CRM.BackgroundJob.Models;
@@ -9,6 +7,8 @@ using CRM.Services;
 using Microsoft.Extensions.Options;
 using ONEbook.UM.Services;
 using Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class AutoFbVoidingAbnormalBetWorker : BaseWorker
 {
@@ -27,6 +27,6 @@ public class AutoFbVoidingAbnormalBetWorker : BaseWorker
 
     public override async Task ExecuteJobAsync()
     {
-        await autoFeedbackService.AbnormalbetExecuteJobAsync();
+        await autoFeedbackService.AbnormalBetExecuteJobAsync();
     }
 }

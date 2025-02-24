@@ -1,7 +1,8 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Criteria.AmendmentNotiFB
+﻿using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
+using Xunit;
+
+namespace CRM.BackgroundJob.UnitTests.Criteria.ResultAmendment
 {
-    using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
-    using Xunit;
     public class GetResultAmendmentSystemSettingCriteriaTests
     {
         [Fact]

@@ -1,20 +1,20 @@
 ﻿namespace CRM.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.UnitTests.Testable;
     using CRM.Constants;
     using CRM.Criteria.Announcement;
     using CRM.Enum;
     using CRM.Models.BotServices.Announcement;
     using CRM.Services;
+    using CRM.UnitTests.Testable;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class SendAnnouncementServiceTests
@@ -53,7 +53,7 @@
             var notifications = fixture.Create<IEnumerable<AnnouncementNotification>>();
             var empty = notifications.Where(n => string.IsNullOrWhiteSpace(n.Content) && string.IsNullOrWhiteSpace(n.FileName));
             var actionable = notifications.Except(empty).ToList();
-            var service = GetService();
+            GetService();
 
             // Act
             var actual = SendAnnouncementServiceTestable.Public_PartitionNotifications(notifications);
@@ -173,14 +173,15 @@
             };
             var sendResults = new List<SendNotificationResult>
             {
-                new (){ AnnouncementId = 1, ConversationId = "1", IsOnlyRetryImage = true, ErrImages = new List<string>(){"err.pdf"} }
+                new (){ AnnouncementId = 1, ConversationId = "1", IsOnlyRetryImage = true, ErrImages = ["err.pdf"] }
             };
 
             // Act
             var actual = SendAnnouncementServiceTestable.Public_ConvertSendMessageResultToUpdateStatusResult(notifications, sendResults);
 
             // Assert
-            Assert.Equal("err.pdf", actual.FirstOrDefault().ErrImages);
+            Assert.NotNull(actual);
+            Assert.Equal("err.pdf", actual.FirstOrDefault()?.ErrImages);
         }
 
         [Fact]
@@ -347,8 +348,8 @@
             var actual = await service.Public_GetAnnouncementNotificationAsync();
 
             // Assert
-            Assert.Equal("1/test01", actual.FirstOrDefault().Images[0]);
-            Assert.Equal("1/eTest01", actual.FirstOrDefault().RetryImages[0]);
+            Assert.Equal("1/test01", actual.FirstOrDefault()?.Images[0]);
+            Assert.Equal("1/eTest01", actual.FirstOrDefault()?.RetryImages[0]);
         }
 
         [Fact]
@@ -454,6 +455,7 @@
         }
 
         #region Helpers
+
         private SendAnnouncementServiceTestable GetService()
         {
             baseService = Substitute.For<IBaseService>();
@@ -462,6 +464,7 @@
             chatbotService = Substitute.For<IChatBotSendMessageService>();
             return Substitute.For<SendAnnouncementServiceTestable>(baseService, logService, configuration, chatbotService);
         }
+
         #endregion Helpers
     }
 }

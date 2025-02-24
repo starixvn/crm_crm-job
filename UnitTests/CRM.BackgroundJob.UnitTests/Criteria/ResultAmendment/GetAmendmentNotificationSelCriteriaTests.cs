@@ -1,16 +1,17 @@
-﻿
-namespace CRM.BackgroundJob.UnitTests.Criteria.AmendmentNotiFB
+﻿using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
+using System;
+using Xunit;
+
+namespace CRM.BackgroundJob.UnitTests.Criteria.ResultAmendment
 {
-    using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
-    using System;
-    using Xunit;
     public class GetAmendmentNotificationSelCriteriaTests
     {
         [Fact]
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
         {
             // Arrange
-            var criteria = new GetAmendmentNotificationSelCriteria{
+            var criteria = new GetAmendmentNotificationSelCriteria
+            {
                 BatchSizeTicket = 1,
                 LastSeq = 1,
                 LastSubmitDate = DateTime.Now,

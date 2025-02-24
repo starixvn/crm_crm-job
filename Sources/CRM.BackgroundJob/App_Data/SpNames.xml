@@ -148,8 +148,8 @@
 		<Setting Key="MNC_SettlResultHist_Initial" SpName="MNC_SettlResultHist_Initial" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_SettlResultHist_GetSessionByDate" SpName="MNC_SettlResultHist_GetSessionByDate" DbName="DBACC.bodb02.wsv_nap" />
 		<Setting Key="MNC_SettlResultHist_DataLoad" SpName="MNC_SettlResultHist_DataLoad" DbName="DBCRM.MessageNotification.wsv_nap" />
-                <Setting Key="MNC_ResultAmendment_PrepareGen" SpName="MNC_ResultAmendment_PrepareGen" DbName="DBCRM.MessageNotification.wsv_nap" />
-                <Setting Key="MNC_ResultAmendment_GenNotification" SpName="MNC_ResultAmendment_GenNotification" DbName="DBCRM.MessageNotification.wsv_nap" />
+		<Setting Key="MNC_ResultAmendment_PrepareGen" SpName="MNC_ResultAmendment_PrepareGen" DbName="DBCRM.MessageNotification.wsv_nap" />
+		<Setting Key="MNC_ResultAmendment_GenNotification" SpName="MNC_ResultAmendment_GenNotification" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_ResultAmendment_GetNotificationIDs" SpName="MNC_ResultAmendment_GetNotificationIDs" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_ResultAmendment_JSParseResult" SpName="MNC_ResultAmendment_JSParseResult" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_PushNotification_PrepareNoti" SpName="MNC_PushNotification_PrepareNoti" DbName="DBCRM.MessageNotification.wsv_nap" />
@@ -157,15 +157,15 @@
 		<Setting Key="MNC_PushNotification_NotiUpd" SpName="MNC_PushNotification_NotiUpd" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_PushNotification_MsgUpd" SpName="MNC_PushNotification_MsgUpd" DbName="DBMSG.bodb_Message.wsv_nap" />
 		<Setting Key="MNC_PushNotification_Complete" SpName="MNC_PushNotification_Complete" DbName="DBCRM.MessageNotification.wsv_nap" />
-                <Setting Key="MNC_ResultAmendment_PrepareGenLAP" SpName="MNC_ResultAmendment_PrepareGenLAP" DbName="DBCRM.MessageNotification.wsv_nap" />
-                <Setting Key="MNC_ResultAmendment_GenNotificationLAP" SpName="MNC_ResultAmendment_GenNotificationLAP" DbName="DBCRM.MessageNotification.wsv_nap" />
-                <Setting Key="MNC_Notification_AlertIns" SpName="MNC_Notification_AlertIns" DbName="DBCRM.MessageNotification.wsv_nap" />
+		<Setting Key="MNC_ResultAmendment_PrepareGenLAP" SpName="MNC_ResultAmendment_PrepareGenLAP" DbName="DBCRM.MessageNotification.wsv_nap" />
+		<Setting Key="MNC_ResultAmendment_GenNotificationLAP" SpName="MNC_ResultAmendment_GenNotificationLAP" DbName="DBCRM.MessageNotification.wsv_nap" />
+		<Setting Key="MNC_Notification_AlertIns" SpName="MNC_Notification_AlertIns" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_Notification_AlertSel" SpName="MNC_Notification_AlertSel" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="MNC_Notification_SystemSettingSel" SpName="MNC_Notification_SystemSettingSel" DbName="DBCRM.MessageNotification.wsv_nap" />
 		<Setting Key="Dot_Admin_message_new_insert" SpName="Dot_Admin_message_new_insert" DbName="DBONUSER.ON_USER.wsv_nap" />
 	</Function>
 	<Function Name="AutoFB MessageNotificationCenter">
 		<Setting Key="Acc_CRM_AutoFB_MessageNotificationCenter_GetMsgInfo" SpName="Acc_CRM_AutoFB_MessageNotificationCenter_GetMsgInfo" DbName="DBMSG.bodb_Message.wsv_nap" />
-        <Setting Key="Acc_CRM_AutoFB_MessageNotificationCenter_Import" SpName="Acc_CRM_AutoFB_MessageNotificationCenter_Import" DbName="DBCRM.bodb_CRM.wsv_nap" />
+		<Setting Key="Acc_CRM_AutoFB_MessageNotificationCenter_Import" SpName="Acc_CRM_AutoFB_MessageNotificationCenter_Import" DbName="DBCRM.bodb_CRM.wsv_nap" />
 	</Function>
 </Functions>

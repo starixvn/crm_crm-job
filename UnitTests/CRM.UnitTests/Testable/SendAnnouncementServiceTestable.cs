@@ -1,21 +1,19 @@
 ﻿namespace CRM.UnitTests.Testable
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using CRM.Enum;
     using CRM.Models.BotServices.Announcement;
     using CRM.Services;
     using Microsoft.Extensions.Configuration;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-    public class SendAnnouncementServiceTestable : SendAnnouncementService
+    public class SendAnnouncementServiceTestable(
+        IBaseService baseService,
+        ICrmLogService logService,
+        IConfiguration configuration,
+        IChatBotSendMessageService chatbotService)
+        : SendAnnouncementService(baseService, logService, configuration, chatbotService)
     {
-        public SendAnnouncementServiceTestable(
-            IBaseService baseService,
-            ICrmLogService logService,
-            IConfiguration configuration,
-            IChatBotSendMessageService chatbotService
-        ) : base(baseService, logService, configuration, chatbotService) { }
-
         public static (IEnumerable<AnnouncementNotification> empty, IEnumerable<AnnouncementNotification> actionable) Public_PartitionNotifications(IEnumerable<AnnouncementNotification> notifications)
         {
             return PartitionNotifications(notifications);

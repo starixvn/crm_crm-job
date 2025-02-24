@@ -1,7 +1,12 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
+using Constants;
+using Criteria.AutoFeedback;
+using CRM.Extensions.Xml;
+using CRM.Models;
 using Fanex.RemotingRef;
 using Microsoft.AspNetCore.Hosting;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,11 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Constants;
-using Criteria.AutoFeedback;
-using CRM.Extensions.Xml;
-using CRM.Models;
-using Models;
 
 public interface ICommonFeedback
 {
@@ -43,7 +43,7 @@ public interface ICommonFeedback
 
     string GetMatchCodeVirtualSportFormat(string matchCode, string language);
 
-    string GetCategogyName(string categoryId, string languageCode);
+    string GetCategoryName(string categoryId, string languageCode);
 
     string GetResourceCricketName(string resourceCricketId, string languageCode);
 
@@ -53,7 +53,7 @@ public interface ICommonFeedback
 
     T GetFeedbackTemplates<T>(string fileXml);
 
-    ValueTuple<bool, string> CheckFeedbackValidParams(CreateMutipleFeedbackCommand criteria);
+    ValueTuple<bool, string> CheckFeedbackValidParams(CreateMultipleFeedbackCommand criteria);
 
     Tuple<int, int, string> GetCategorySubCategoryCWL(IEnumerable<SettingItem> settings, string settingValueName);
 
@@ -157,7 +157,7 @@ public class CommonFeedback(
         return betTypeName;
     }
 
-    public string GetCategogyName(string categoryId, string languageCode)
+    public string GetCategoryName(string categoryId, string languageCode)
     {
         var categoryName = remotingRefService.GetResourceDataByRefIdAndResourceId("Category", categoryId, languageCode, string.Empty);
         return categoryName;
@@ -198,17 +198,17 @@ public class CommonFeedback(
             var subCategory = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
                                                            && x.ParentIds.Any(y => y == category.SettingId)
                                                            && x.SettingValue.Equals(settingValueName, StringComparison.OrdinalIgnoreCase));
-            subCategoryId = subCategory != null ? subCategory.SettingId : 0;
+            subCategoryId = subCategory?.SettingId ?? 0;
         }
 
         return new Tuple<int, int, string>(
-            category != null ? category.SettingId : 0, subCategoryId,
+            category?.SettingId ?? 0, subCategoryId,
             string.Format(DefaultValue.CategoryXml,
-                category != null ? category.SettingId : 0,
+                category?.SettingId ?? 0,
                 subCategoryId));
     }
 
-    public ValueTuple<bool, string> CheckFeedbackValidParams(CreateMutipleFeedbackCommand criteria)
+    public ValueTuple<bool, string> CheckFeedbackValidParams(CreateMultipleFeedbackCommand criteria)
     {
         var stringBuilder = new StringBuilder();
         const string invalid = "{0} is null.";
@@ -305,9 +305,9 @@ public class CommonFeedback(
         var MatchCodeReplace = matchCode;
         if (!string.IsNullOrEmpty(matchCode))
         {
-            const string pattern = @"({[^}]*})";
+            const string pattern = "({[^}]*})";
             var regex = Regex.Matches(matchCode, pattern);
-            var matchCodeRegexId = regex.Cast<Match>().Select(m => m.Groups[1].Value).ToList();
+            var matchCodeRegexId = regex.Select(m => m.Groups[1].Value).ToList();
             foreach (var matchCodeId in matchCodeRegexId)
             {
                 var matchCodeName = getMatchCodeFunc(matchCodeId, language);

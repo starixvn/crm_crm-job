@@ -40,9 +40,9 @@
             // Arrange
             var fixture = new Fixture();
             var message = fixture.Create<IEnumerable<VoidingMessage>>();
-            var expected = fixture.Create<IEnumerable<MessageAbnormelBet>>();
+            var expected = fixture.Create<IEnumerable<MessageAbnormalBet>>();
             var service = GetService();
-            baseService.GetDataAsync<MessageAbnormelBet>(Arg.Any<GetAbnormalBetMessageCriteria>()).Returns(expected);
+            baseService.GetDataAsync<MessageAbnormalBet>(Arg.Any<GetAbnormalBetMessageCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetMessageAbnormalBetAsync(message);
@@ -56,7 +56,7 @@
         {
             // Arrange
             var fixture = new Fixture();
-            var message = fixture.Create<IEnumerable<MessageAbnormelBet>>();
+            var message = fixture.Create<IEnumerable<MessageAbnormalBet>>();
             var voidedCollectionInfo = fixture.Create<IEnumerable<VoidedInfo>>();
             var commandResult = fixture.Create<CommandResult>();
             var command = fixture.Create<ImportAbnormalBetCommand>();

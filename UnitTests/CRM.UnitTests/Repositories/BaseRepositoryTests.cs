@@ -1,12 +1,12 @@
 ﻿namespace CRM.UnitTests.Repositories
 {
-    using System.Collections;
-    using System.Threading.Tasks;
     using CRM.Models;
     using CRM.Repositories;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using NSubstitute;
+    using System.Collections;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class BaseRepositoryTests
@@ -20,7 +20,7 @@
             .Run();
 
             objectDb = Substitute.For<IObjectDb>();
-            ObjectDbFactory.Mock((key, time, ip) => objectDb);
+            ObjectDbFactory.Mock((_, _, _) => objectDb);
         }
 
         #region ExecuteNonQueryAsync

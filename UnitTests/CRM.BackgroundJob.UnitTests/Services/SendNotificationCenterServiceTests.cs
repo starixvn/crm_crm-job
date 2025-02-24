@@ -38,7 +38,7 @@
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<MessageBotInfo>>();
             var service = GetService();
-            baseService.GetDataAsync<MessageBotInfo>(Arg.Any<GetNotificationAlerCriteria>()).Returns(expected);
+            baseService.GetDataAsync<MessageBotInfo>(Arg.Any<GetNotificationAlertCriteria>()).Returns(expected);
 
             // Act
             var actual = await service.GetNotificationAlertAsync("dev");

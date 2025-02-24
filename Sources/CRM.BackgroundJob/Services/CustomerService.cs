@@ -1,23 +1,24 @@
-﻿namespace CRM.BackgroundJob.Services;
+﻿using CRM.BackgroundJob.Criteria.TurnoverControl;
+using CRM.BackgroundJob.Models.TurnoverControl;
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace CRM.BackgroundJob.Services;
+
 using Criteria;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
 using CRM.BackgroundJob.Criteria.ProblemsAccount;
-using CRM.BackgroundJob.Criteria.TurnoverControll;
 using CRM.BackgroundJob.Criteria.WinLossLimit;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
 using CRM.BackgroundJob.Models.ProblemsAccount;
-using CRM.BackgroundJob.Models.TurnoverControll;
 using CRM.BackgroundJob.Models.WinLossLimit;
 using CRM.Services;
 using Fanex.Data.Repository;
 using Microsoft.Extensions.Configuration;
 using Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 public interface ICustomerService
 {
@@ -35,7 +36,7 @@ public interface ICustomerService
 
     Task<IEnumerable<CustOutStanding>> GetListCustOutStandingAsync(IEnumerable<TONotification> custNotifications);
 
-    Task<IEnumerable<CustCategoryInfor>> GetCustCategoryInfor(ProblemsAccountSetting problemsAccountSetting, bool isUAT);
+    Task<IEnumerable<CustCategoryInfo>> GetCustCategoryInfo(ProblemsAccountSetting problemsAccountSetting, bool isUAT);
 }
 
 public class CustomerService(
@@ -142,14 +143,14 @@ public class CustomerService(
         }
         stringBuilder.Append("</Root>");
 
-        var criteria = new GetTOControllCustOutstandingCriteria
+        var criteria = new GetTOControlCustOutstandingCriteria
         {
             xml = stringBuilder.ToString()
         };
         return await baseService.GetDataAsync<CustOutStanding>(criteria);
     }
 
-    public async Task<IEnumerable<CustCategoryInfor>> GetCustCategoryInfor(ProblemsAccountSetting problemsAccountSetting, bool isUAT)
+    public async Task<IEnumerable<CustCategoryInfo>> GetCustCategoryInfo(ProblemsAccountSetting problemsAccountSetting, bool isUAT)
     {
         var criteria = new GetProblemsAccountCustCategoryCriteria
         {
@@ -159,6 +160,6 @@ public class CustomerService(
             ConfigPRO = problemsAccountSetting.ConfigPRO,
             Environment = Environment
         };
-        return await baseService.GetDataAsync<CustCategoryInfor>(criteria);
+        return await baseService.GetDataAsync<CustCategoryInfo>(criteria);
     }
 }

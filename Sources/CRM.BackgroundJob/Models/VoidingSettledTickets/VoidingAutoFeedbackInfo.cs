@@ -16,7 +16,7 @@ public class VoidingAutoFeedbackInfo
     public string Site { get; set; }
     public string SiteLabel { get; set; }
     public string ListMsgTargetId { get; set; }
-    public string Listbettype { get; set; }
+    public string ListBettype { get; set; }
     public int IssueTypeId { get; set; }
     public DateTime CreatedDate { get; set; }
 }

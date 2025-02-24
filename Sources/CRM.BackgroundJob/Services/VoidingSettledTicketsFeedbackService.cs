@@ -1,19 +1,18 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
 using CRM.BackgroundJob.Models.VoidingSettledTickets;
-using CRM.Models;
 using CRM.Services;
 using Microsoft.Extensions.Options;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 public interface IVoidingSettledTicketsFeedbackService
 {
@@ -34,7 +33,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
 
     private const string descTemplateXml = "VoidingSettledTicketDescriptionTemplate.xml";
     private const string solTemplateXml = "VoidingSettledTicketSolutionTemplate.xml";
-    private readonly int[] MixParlayMatchIds = { 9, 29, 2799, 10449, 11099 };
+    private readonly int[] MixParlayMatchIds = [9, 29, 2799, 10449, 11099];
 
     private const int EventType2 = 2;
     private const int EventType3 = 3;
@@ -78,7 +77,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var settingMappings = await settingService.GetSystemSettingMappingAsync(settingNames);
 
         var messageVoidSettled = await voidingSettledTicketsService.GetMessageVoidSettledAsync();
-        var voidingMessageCheck = await voidingSettledTicketsService.GetVoidingMessasgeCheckAsync(messageVoidSettled, environment);
+        var voidingMessageCheck = await voidingSettledTicketsService.GetVoidingMessageCheckAsync(messageVoidSettled, environment);
         if (voidingMessageCheck.Any())
         {
             var settledTicket = await voidingSettledTicketsService.VoidingMessageGetSettledTicketAsync(voidingMessageCheck);
@@ -97,13 +96,14 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         logService.LogInformation("end GetAutoVoidingTicketAsync!!!");
 
         logService.LogInformation(
-            $"GetAutoVoidingTicketAsync Item1: {string.Join(",", voidingTickets?.Select(x => x.MessageId))}, {string.Join(",", voidingTickets?.Select(x => x.TransId))}"
+            $"GetAutoVoidingTicketAsync Item1: {string.Join(",", voidingTickets?.Select(x => x.MessageId) ?? Array.Empty<int>())}, {string.Join(",", voidingTickets?.Select(x => x.TransId) ?? Array.Empty<long>())}"
         );
+
         if (msgTargets.Any())
         {
             await voidingSettledTicketsService.UpdateAutoVoidingMessageAsync(msgTargets, environment);
         }
-        if (!voidingTickets.Any())
+        if (voidingTickets is null || !voidingTickets.Any())
         {
             await commonFeedback.EditSystemSettingAsyncByEnvFormatDate(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoVoidFB);
             logService.LogInformation("Do not have any data set1, return voiding settled tickets!!!");
@@ -150,19 +150,19 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var response = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Response, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals(DefaultValue.Neutral, StringComparison.OrdinalIgnoreCase));
         var station = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Extension, StringComparison.OrdinalIgnoreCase)
-                                                   && x.SettingId == BackgroundJobConstants.ExtentionNA);
+                                                   && x.SettingId == BackgroundJobConstants.ExtensionNA);
         var status = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.Status, StringComparison.OrdinalIgnoreCase)
                                                   && x.SettingValue.Equals(DefaultValue.Closed, StringComparison.OrdinalIgnoreCase));
 
         var category = GetCategorySubCategoryVoidingSettledTicket(settings, DefaultValue.ResultAmended, feedbackInfo.IssueTypeId);
-        var sportTypeIds = eventDetails.Select(x => x.Sporttype);
+        var sportTypeIds = eventDetails.Select(x => x.SportType);
         var productIds = eventDetails.Select(x => x.ProductId).Distinct();
         var isMixParlay = eventDetails.All(e => MixParlayMatchIds.Contains(e.MatchId));
-        var criteria = new CreateMutipleFeedbackCommand
+        var criteria = new CreateMultipleFeedbackCommand
         {
             IsCheckedDefaultComm = true,
             StationId = station != null ? station.SettingId.ToString() : string.Empty,
-            StatusId = status != null ? status.SettingId : 0,
+            StatusId = status?.SettingId ?? 0,
             FeedbackDate = feedbackDate.Subtract(timeSpan),
             ResolutionDate = feedbackDate.AddMinutes(1).Subtract(timeSpan),
             CreatorId = appSettings.CreatorId,
@@ -170,7 +170,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
             CategoryXml = category.Item3,
             CategoryIds = category.Item1.ToString(),
             SubCategoryIds = category.Item2.ToString(),
-            ResponseId = response != null ? response.SettingId : 0,
+            ResponseId = response?.SettingId ?? 0,
             AutoField2 = string.Format(DefaultValue.DateTimeTool, feedbackDate.ToString("yyyyMMdd"), feedbackDate.ToString("hh:mmtt")),
             AutoField = string.Empty,
             AutoField1 = string.Empty,
@@ -178,7 +178,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
             Subject = feedbackInfo.IssueTypeId == DuplicateTicketIssueTypeId ? DefaultValue.Special_Notification : DefaultValue.ResultAmended,
             AutoField3 = $"{Environment.NewLine}System ID: ",
             CustomerXml = string.Format(DefaultValue.CustomerXml, feedbackInfo.HeadlineId, feedbackInfo.HeadlineName),
-            ProductXml = GetVoidingSettledTicketsProductXml(isMixParlay, productIds, sportTypeIds, feedbackInfo.Listbettype, settings, settingMappings),
+            ProductXml = GetVoidingSettledTicketsProductXml(isMixParlay, productIds, sportTypeIds, feedbackInfo.ListBettype, settings, settingMappings),
             Solution = GetVoidingSettledTicketSolution(feedbackInfo, messages),
             RelatedCustomerXml = GetRelatedCustomerXml(feedbackInfo),
             MessageId = feedbackInfo.MessageId.ToString(),
@@ -194,7 +194,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
 
     protected internal virtual async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync(
         VoidingAutoFeedbackInfo feedbackInfo,
-        CreateMutipleFeedbackCommand criteria,
+        CreateMultipleFeedbackCommand criteria,
         string environment)
     {
         var checkValidParamBeforeInsert = commonFeedback.CheckFeedbackValidParams(criteria);
@@ -323,14 +323,13 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
                                                          && productNames.Exists(productName => p.SettingSource.Equals(productName, StringComparison.OrdinalIgnoreCase))).ToList();
 
         var products = settings.Where(x => x.SettingName.Equals(SettingName.Product, StringComparison.OrdinalIgnoreCase)
-                                           && productMappings != null
                                            && productMappings.Exists(mapping => x.SettingId == mapping.SettingId)).ToList();
 
         logService.LogInformation("End mapping amendment product.");
 
         return products.Any()
             ? products.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem> { new() { SettingId = BackgroundJobConstants.ProductNA } };
+            : [new() { SettingId = BackgroundJobConstants.ProductNA }];
     }
 
     protected internal virtual IList<SettingItem> GetVoidingSettledTicketsSubProduct(
@@ -354,17 +353,20 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var subProducts = isMixParlay ? settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                             && x.SettingValue.Equals("Multiple Sports", StringComparison.OrdinalIgnoreCase)).ToList() :
             settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
-                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent))
-                                  && mappings != null && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
+                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent)) && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
         logService.LogInformation("End mapping sub-product.");
 
         return subProducts.Any()
             ? subProducts.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SettingItem>
-            {
-                new() { SettingId = BackgroundJobConstants.SubProductNA, ParentIds = new List<int> { BackgroundJobConstants.ProductNA } }
-            };
+            :
+            [
+                new()
+                {
+                    SettingId = BackgroundJobConstants.SubProductNA,
+                    ParentIds = new List<int> { BackgroundJobConstants.ProductNA }
+                }
+            ];
     }
 
     protected internal virtual List<SystemSettingMapping> GetVoidingSettledTicketsBetType(
@@ -388,12 +390,9 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
                                              && betTypeMappings.Exists(name => name.Equals(mapping.SettingSource, StringComparison.OrdinalIgnoreCase))).ToList();
 
         logService.LogInformation("End mapping betType.");
-        return betTypes != null && betTypes.Any()
+        return betTypes.Any()
             ? betTypes.GroupBy(x => x.SettingId).Select(x => x.First()).ToList()
-            : new List<SystemSettingMapping>
-            {
-                new() { SettingId = BackgroundJobConstants.BettypeNA }
-            };
+            : [new SystemSettingMapping { SettingId = BackgroundJobConstants.BettypeNA }];
     }
 
     protected internal virtual Tuple<int, int, string> GetCategorySubCategoryVoidingSettledTicket(IEnumerable<SettingItem> settings, string settingValueName, int issueTypeId)
@@ -409,13 +408,13 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
             var subCategory = issueTypeId == DuplicateTicketIssueTypeId ?
                 subCategories.FirstOrDefault(x => x.ParentIds.Any(y => y == category.SettingId) && x.SettingValue.Equals("Duplicate Tickets", StringComparison.OrdinalIgnoreCase)) :
                 subCategories.FirstOrDefault(x => x.SettingId == 4029);
-            subCategoryId = subCategory != null ? subCategory.SettingId : 0;
+            subCategoryId = subCategory?.SettingId ?? 0;
         }
 
         return new Tuple<int, int, string>(
-            category != null ? category.SettingId : 0, subCategoryId,
+            category?.SettingId ?? 0, subCategoryId,
             string.Format(DefaultValue.CategoryXml,
-                category != null ? category.SettingId : 0,
+                category?.SettingId ?? 0,
                 subCategoryId));
     }
 
@@ -508,13 +507,14 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
     }
 
 #pragma warning disable S1541
+
     protected internal virtual string GetVoidingSettledTicketDescriptionByProduct(AutoVoidingEventDetails eventDetail,
         VoidingSettledTicketDescriptionTemplate ticketDescTemplate,
         string site)
     {
         var stringBuilder = new StringBuilder();
         const string line = "-------------------------------------------------------- {0}";
-        var sportName = commonFeedback.GetSportName(eventDetail.Sporttype.ToString(), Language.en_US);
+        var sportName = commonFeedback.GetSportName(eventDetail.SportType.ToString(), Language.en_US);
         var leagueName = commonFeedback.GetLeagueNameBySiteName(site, eventDetail.LeagueId, eventDetail.LeagueGroupId, Language.en_US);
         var getTeamNameFunc = eventDetail.EventType == EventType5
             ? commonFeedback.GetTeamName3rd
@@ -525,34 +525,35 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var homeName = getTeamNameFunc(eventDetail.HomeId.ToString(), Language.en_US);
         var awayName = getTeamNameFunc(eventDetail.AwayId.ToString(), Language.en_US);
 
-        var EventdateGMT4Format = eventDetail.Eventdate.ToString(DefaultValue.FortmatddmmmyyyyDash);
+        var eventDateGMT4Format = eventDetail.EventDate.ToString(DefaultValue.DateHyphenFormat);
         var timeSpan = new TimeSpan(appSettings.TimeSpan, 0, 0);
-        var kO_time = eventDetail.KO_time.Add(timeSpan).ToString(DefaultValue.Formathhmmtt);
-        var race_time = eventDetail.Race_time.Add(timeSpan).ToString(DefaultValue.Formathhmmtt);
+        var kO_time = eventDetail.KO_time.Add(timeSpan).ToString(DefaultValue.TimeFormat);
+        var race_time = eventDetail.Race_time.Add(timeSpan).ToString(DefaultValue.TimeFormat);
         var matchCode = getMatchCodeFunc(eventDetail.MatchCode, Language.en_US);
-        var numberGameEnGame = eventDetail.Sporttype == SportType161 ? leagueName : sportName;
+        var numberGameEnGame = eventDetail.SportType == SportType161 ? leagueName : sportName;
         var productName = commonFeedback.GetProductName(eventDetail.ProductId.ToString(), Language.en_US);
         stringBuilder.Append(GetDescriptionSportBook(eventDetail, productName, kO_time, leagueName, homeName, sportName, awayName, matchCode));
-        if (productName == "Virtual Sports" && (eventDetail.Sporttype == SportType180 || eventDetail.Sporttype == SportType186))
+        if (productName == "Virtual Sports" && (eventDetail.SportType == SportType180 || eventDetail.SportType == SportType186))
         {
             stringBuilder.AppendFormat(line, BackgroundJobConstants.Break);
-            stringBuilder.AppendFormat(ticketDescTemplate.VirtualSports, EventdateGMT4Format, sportName, homeName, awayName, BackgroundJobConstants.Break);
+            stringBuilder.AppendFormat(ticketDescTemplate.VirtualSports, eventDateGMT4Format, sportName, homeName, awayName, BackgroundJobConstants.Break);
         }
 
-        if (productName == "Virtual Sports" && (eventDetail.Sporttype > SportType180 && eventDetail.Sporttype < SportType186))
+        if (productName == "Virtual Sports" && eventDetail.SportType is > SportType180 and < SportType186)
         {
             stringBuilder.AppendFormat(line, BackgroundJobConstants.Break);
-            stringBuilder.AppendFormat(ticketDescTemplate.VirtualSports181185, EventdateGMT4Format, sportName, race_time, BackgroundJobConstants.Break);
+            stringBuilder.AppendFormat(ticketDescTemplate.VirtualSports181185, eventDateGMT4Format, sportName, race_time, BackgroundJobConstants.Break);
         }
 
         if (productName == "Number Game")
         {
             stringBuilder.AppendFormat(line, BackgroundJobConstants.Break);
-            stringBuilder.AppendFormat(ticketDescTemplate.NumberGames, EventdateGMT4Format, numberGameEnGame, matchCode, BackgroundJobConstants.Break);
+            stringBuilder.AppendFormat(ticketDescTemplate.NumberGames, eventDateGMT4Format, numberGameEnGame, matchCode, BackgroundJobConstants.Break);
         }
 
         return stringBuilder.ToString();
     }
+
 #pragma warning restore S1541
 
 #pragma warning disable S1541, S1067, S121, S107
@@ -564,12 +565,12 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var stringBuilder = new StringBuilder();
         const string line = "-------------------------------------------------------- {0}";
         var ticketDescTemplate = commonFeedback.GetFeedbackTemplates<VoidingSettledTicketDescriptionTemplate>(descTemplateXml);
-        var EventdateGMT4Format = eventDetail.Eventdate.ToString(DefaultValue.FortmatddmmmyyyyDash);
+        var eventDateGMT4Format = eventDetail.EventDate.ToString(DefaultValue.DateHyphenFormat);
 
         if (productName == "Sportsbook" && eventDetail.EventType == EventType2)
         {
             stringBuilder.AppendFormat(line, BackgroundJobConstants.Break);
-            stringBuilder.AppendFormat(ticketDescTemplate.Outright, eventDetail.Leaguenametc, kO_time, leagueName, homeName, BackgroundJobConstants.Break);
+            stringBuilder.AppendFormat(ticketDescTemplate.Outright, eventDetail.LeagueNameTc, kO_time, leagueName, homeName, BackgroundJobConstants.Break);
         }
 
 #pragma warning disable S1067
@@ -585,12 +586,12 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
 
         if (productName.Equals("Virtual Sports 2", StringComparison.OrdinalIgnoreCase) && eventDetail.EventType == EventType3)
         {
-            stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2Racing, EventdateGMT4Format, sportName, kO_time, league, eventDetail.VendorMatchId, BackgroundJobConstants.Break);
+            stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2Racing, eventDateGMT4Format, sportName, kO_time, league, eventDetail.VendorMatchId, BackgroundJobConstants.Break);
             return stringBuilder.ToString();
         }
-            
-        stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2, EventdateGMT4Format, sportName, kO_time, league, homeName, awayName, matchCode, BackgroundJobConstants.Break);
-            
+
+        stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2, eventDateGMT4Format, sportName, kO_time, league, homeName, awayName, matchCode, BackgroundJobConstants.Break);
+
         return stringBuilder.ToString();
     }
 

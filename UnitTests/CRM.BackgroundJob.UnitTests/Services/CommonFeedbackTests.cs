@@ -1,8 +1,5 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using CRM.BackgroundJob.Constants;
     using CRM.BackgroundJob.Criteria.AutoFeedback;
     using CRM.BackgroundJob.Models;
@@ -10,6 +7,9 @@
     using Fanex.RemotingRef;
     using Microsoft.AspNetCore.Hosting;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class CommonFeedbackTests
@@ -24,7 +24,7 @@
         public void CheckFeedbackValidParams__ValidParamsCriteria_ExpectedReturnTrue()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "1",
@@ -48,7 +48,7 @@
         public void CheckFeedbackValidParams__InValidParamsResponseIdCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "1",
@@ -72,7 +72,7 @@
         public void CheckFeedbackValidParams__InValidParamsStatusIdCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "1",
@@ -96,7 +96,7 @@
         public void CheckFeedbackValidParams__InValidParamsCategoryIdsCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "",
                 CategoryXml = "1",
@@ -120,7 +120,7 @@
         public void CheckFeedbackValidParams__InValidParamsCategoryXmlCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "",
@@ -144,7 +144,7 @@
         public void CheckFeedbackValidParams__InValidParamsProductXmlCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "1",
@@ -168,7 +168,7 @@
         public void CheckFeedbackValidParams__InValidParamsSubCategoryIdsCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "1",
@@ -192,7 +192,7 @@
         public void CheckFeedbackValidParams__InValidParamsStationIdCriteria_ExpectedReturnFalseAndMessage()
         {
             // Arrange
-            var criteria = new CreateMutipleFeedbackCommand
+            var criteria = new CreateMultipleFeedbackCommand
             {
                 CategoryIds = "1",
                 CategoryXml = "1",
@@ -222,7 +222,7 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingName = "MainCategory", SettingValue = "Special" }
+                    new() { SettingName = "MainCategory", SettingValue = "Special" }
                 };
             var service = GetService();
 
@@ -241,8 +241,8 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.Special_Notification },
-                    new SettingItem { SettingName = "SubCategory", SettingValue = "Company" }
+                    new() { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.Special_Notification },
+                    new() { SettingName = "SubCategory", SettingValue = "Company" }
                 };
 
             var service = GetService();
@@ -262,8 +262,8 @@
             // Arrange
             var settings = new List<SettingItem>
                 {
-                    new SettingItem { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.Special_Notification },
-                    new SettingItem { SettingId = 2, SettingName = "SubCategory", SettingValue = DefaultValue.MANotification , ParentIds = new List<int>{ 1 }}
+                    new() { SettingId = 1, SettingName = "MainCategory", SettingValue = DefaultValue.Special_Notification },
+                    new() { SettingId = 2, SettingName = "SubCategory", SettingValue = DefaultValue.MANotification , ParentIds = new List<int>{ 1 }}
                 };
             var service = GetService();
 
@@ -410,6 +410,7 @@
         }
 
         #region GetMatchCodeFormat
+
         [Theory]
         [InlineData("", "")]
         [InlineData("{2} 23, {0} 6666", "match code 2 23, match code 0 6666")]
@@ -426,9 +427,11 @@
             // Assert
             Assert.Equal(expected, actual);
         }
+
         #endregion GetMatchCodeFormat
 
         #region Helpers
+
         private CommonFeedback GetService()
         {
             remotingRefService = Substitute.For<IRemotingRefService>();

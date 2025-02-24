@@ -1,49 +1,52 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Constants;
 using CRM.BackgroundJob.Criteria.ChatBot_CTO;
 using CRM.BackgroundJob.Models.ChatBotCTO;
 using CRM.Extensions.Xml;
 using CRM.Models;
 using CRM.Services;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 public interface IChatBotCTOService
 {
-    Task<IEnumerable<TOReachInfor>> GetChatbotCTOSettingInfoAsync(long LastLogId, int BatchSize);
-    Task<IEnumerable<TOSMAInfor>> GetChatbotCTOSMAInfoAsync(IEnumerable<TOReachInfor> tOReachInfors);
-    Task<ValueTuple<CommandResult, TOControlImportCommand>> ImportTOSMAInfoAsync(IEnumerable<TOSMAInfor> tOSMAInfors,
+    Task<IEnumerable<TOReachInfo>> GetChatbotCTOSettingInfoAsync(long LastLogId, int BatchSize);
+
+    Task<IEnumerable<TurnoverSMAInfo>> GetChatbotCTOSMAInfoAsync(IEnumerable<TOReachInfo> tOReachInfo);
+
+    Task<ValueTuple<CommandResult, TOControlImportCommand>> ImportTOSMAInfoAsync(IEnumerable<TurnoverSMAInfo> tOSMAInfo,
         string Environment = BackgroundJobConstants.DefaultEnvironment);
 }
+
 public class ChatBotCTOService(
     IBaseService baseService,
     ICommonFeedback commonFeedback)
     : IChatBotCTOService
 {
-    public async Task<IEnumerable<TOReachInfor>> GetChatbotCTOSettingInfoAsync(long LastLogId, int BatchSize)
+    public async Task<IEnumerable<TOReachInfo>> GetChatbotCTOSettingInfoAsync(long LastLogId, int BatchSize)
     {
         var criteria = new GetTOControlSettingByLastLogIdCriteria
         {
             LastLogId = LastLogId,
             BatchSize = BatchSize
         };
-        return await baseService.GetDataAsync<TOReachInfor>(criteria);
+        return await baseService.GetDataAsync<TOReachInfo>(criteria);
     }
 
-    public async Task<IEnumerable<TOSMAInfor>> GetChatbotCTOSMAInfoAsync(IEnumerable<TOReachInfor> tOReachInfors)
+    public async Task<IEnumerable<TurnoverSMAInfo>> GetChatbotCTOSMAInfoAsync(IEnumerable<TOReachInfo> tOReachInfors)
     {
-        var criteria = new GetTOControlSMAInfroCriteria
+        var criteria = new GetTOControlSMAInfoCriteria
         {
             XML = tOReachInfors.ToXML("root").ToString()
         };
-        return await baseService.GetDataAsync<TOSMAInfor>(criteria);
+        return await baseService.GetDataAsync<TurnoverSMAInfo>(criteria);
     }
 
-    public async Task<ValueTuple<CommandResult, TOControlImportCommand>> ImportTOSMAInfoAsync(IEnumerable<TOSMAInfor> tOSMAInfors,
+    public async Task<ValueTuple<CommandResult, TOControlImportCommand>> ImportTOSMAInfoAsync(IEnumerable<TurnoverSMAInfo> tOSMAInfors,
         string Environment = BackgroundJobConstants.DefaultEnvironment)
     {
         const string XmlTemplate = "<r LogId='{0}' CustId='{1}' Username='{2}' Recommend='{3}'" +
@@ -56,42 +59,42 @@ public class ChatBotCTOService(
                                    " Outstanding='{27}'> </r>";
 
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
-        foreach (var smaInfor in tOSMAInfors)
+        foreach (var smaInfo in tOSMAInfors)
         {
-            var sportNameEN = commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.en_US);
-            var sportNameSC = commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.zh_CN);
-            var sportNameTH = commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.th_TH);
-            var sportNameYN = commonFeedback.GetSportName(smaInfor.Sporttype.ToString(), Language.vi_VN);
+            var sportNameEN = commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.en_US);
+            var sportNameSC = commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.zh_CN);
+            var sportNameTH = commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.th_TH);
+            var sportNameYN = commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.vi_VN);
 
-            var leagueNameEN = commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.en_US);
-            var leagueNameSC = commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.zh_CN);
-            var leagueNameTH = commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.th_TH);
-            var leagueNameYN = commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.vi_VN);
+            var leagueNameEN = commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.en_US);
+            var leagueNameSC = commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.zh_CN);
+            var leagueNameTH = commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.th_TH);
+            var leagueNameYN = commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.vi_VN);
 
-            var homeNameEN = commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.en_US);
-            var homeNameSC = commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.zh_CN);
-            var homeNameTH = commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.th_TH);
-            var homeNameYN = commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.vi_VN);
+            var homeNameEN = commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.en_US);
+            var homeNameSC = commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.zh_CN);
+            var homeNameTH = commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.th_TH);
+            var homeNameYN = commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.vi_VN);
 
-            var awayNameEN = commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.en_US);
-            var awayNameSC = commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.zh_CN);
-            var awayNameTH = commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.th_TH);
-            var awayNameYN = commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.vi_VN);
+            var awayNameEN = commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.en_US);
+            var awayNameSC = commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.zh_CN);
+            var awayNameTH = commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.th_TH);
+            var awayNameYN = commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.vi_VN);
 
-            var smaLevelYN = GetSMALevel(smaInfor.RoleId, Language.en_US);
-            var smaLevelEN = GetSMALevel(smaInfor.RoleId, Language.en_US);
+            var smaLevelYN = GetSMALevel(smaInfo.RoleId, Language.en_US);
+            var smaLevelEN = GetSMALevel(smaInfo.RoleId, Language.en_US);
 
             stringBuilder.AppendFormat(XmlTemplate,
-                smaInfor.LogId,
-                smaInfor.CustId,
-                smaInfor.UserName,
-                smaInfor.Recommend,
-                smaInfor.Mrecommend,
-                smaInfor.Srecommend,
-                smaInfor.CurrencyName,
+                smaInfo.LogId,
+                smaInfo.CustId,
+                smaInfo.UserName,
+                smaInfo.Recommend,
+                smaInfo.Mrecommend,
+                smaInfo.Srecommend,
+                smaInfo.CurrencyName,
                 smaLevelEN,
-                GetSMALevel(smaInfor.RoleId, Language.zh_CN),
-                GetSMALevel(smaInfor.RoleId, Language.th_TH),
+                GetSMALevel(smaInfo.RoleId, Language.zh_CN),
+                GetSMALevel(smaInfo.RoleId, Language.th_TH),
                 smaLevelYN,
                 HttpUtility.HtmlEncode(sportNameEN),
                 HttpUtility.HtmlEncode(sportNameSC),
@@ -109,7 +112,7 @@ public class ChatBotCTOService(
                 HttpUtility.HtmlEncode(awayNameSC),
                 HttpUtility.HtmlEncode(awayNameTH),
                 HttpUtility.HtmlEncode(awayNameYN),
-                smaInfor.Outstanding
+                smaInfo.Outstanding
             );
         }
 
@@ -135,14 +138,17 @@ public class ChatBotCTOService(
                 var isMasterUS = roleId == MasterID ? SMALevel.Master : SMALevel.Agent;
                 smaLevel = roleId == SuperID ? SMALevel.Super : isMasterUS;
                 break;
+
             case Language.zh_CN:
                 var isMasterSC = roleId == MasterID ? SMALevel.MasterSC : SMALevel.AgentSC;
                 smaLevel = roleId == SuperID ? SMALevel.SuperSC : isMasterSC;
                 break;
+
             case Language.th_TH:
                 var isMasterTH = roleId == MasterID ? SMALevel.MasterTH : SMALevel.AgentTH;
                 smaLevel = roleId == SuperID ? SMALevel.SuperTH : isMasterTH;
                 break;
+
             default:
                 smaLevel = "";
                 break;

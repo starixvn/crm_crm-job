@@ -31,25 +31,25 @@ namespace CRM.BackgroundJob.UnitTests.Workers
             // Assert
             await chatBotJobService.Received().PullMessageResultAmendmentAndSendNotificationToHeadlineAsync();
         }
-        private AutoChatbotResultAmendmentWoker GetService()
+        private AutoChatbotResultAmendmentWorker GetService()
         {
-            appSettings = new List<JobSetting>
-            {
+            appSettings =
+            [
                 new JobSetting
                 {
-                   JobName = "PullMessageResultAmendmentForChatBot",
-                   IsEnabled = true,
-                   HasCheckUM = false,
-                   TimeInterval = 60
+                    JobName = "PullMessageResultAmendmentForChatBot",
+                    IsEnabled = true,
+                    HasCheckUM = false,
+                    TimeInterval = 60
                 }
-            };
+            ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
             chatBotJobService = Substitute.For<IChatBotJobService>();
             maintenanceService = Substitute.For<IMaintenanceService>();
             logService = Substitute.For<ICrmLogService>();
 
-            return new AutoChatbotResultAmendmentWoker(chatBotJobService, maintenanceService, appJobSettings, logService);
+            return new AutoChatbotResultAmendmentWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
         }
     }
 }

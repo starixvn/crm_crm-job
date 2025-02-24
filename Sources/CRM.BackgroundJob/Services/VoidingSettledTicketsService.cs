@@ -1,39 +1,50 @@
 ﻿namespace CRM.BackgroundJob.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CRM.BackgroundJob.Criteria.ChatBot_ResultAmendment;
 using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
-using CRM.BackgroundJob.Models.ChatBotResulAmendment;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
+using CRM.BackgroundJob.Models.ChatBotResulAmendment;
 using CRM.BackgroundJob.Models.VoidingSettledTickets;
 using CRM.Extensions.Xml;
 using CRM.Models;
 using CRM.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public interface IVoidingSettledTicketsService
 {
     Task<IEnumerable<MessageVoidSettled>> GetMessageVoidSettledAsync();
+
     Task<IEnumerable<MessageVoidSettled>> GetAutoVoidingMessageAsync(AmendmentNotiFbSetting voidingSettledTicketSetting, string environment);
+
     Task<ValueTuple<IEnumerable<VoidingTicketEventInfo>, IEnumerable<MsgTarget>>> GetAutoVoidingTicketAsync(
-        AmendmentNotiFbSetting voidingSettledTicketSetting, List<MessageVoidSettled> voidSettleds, string environment
+        AmendmentNotiFbSetting voidingSettledTicketSetting, List<MessageVoidSettled> voidSettles, string environment
     );
+
     Task<IEnumerable<MessageVoidSettled>> GetFailVoidingMessageAsync();
-    Task<IEnumerable<MessageVoidSettled>> GetVoidingMessasgeCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment);
-    Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds);
+
+    Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettles, string environment);
+
+    Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> messageVoidSettles);
+
     Task<ValueTuple<IEnumerable<VoidingAutoFeedbackInfo>, IEnumerable<AutoVoidingEventDetails>>> GetVoidingAutoFeedbackInfoAsync(int batchSize);
+
     Task<CommandResult> ImportMessageVoidSettledAsync(IEnumerable<MessageVoidSettled> messages);
+
     Task<CommandResult> UpdateVoidingAutoFeedbackInfoBatchAsync(int logVoidingID, string status, string description, string environment);
+
     Task<CommandResult> UpdateAutoVoidingMessageAsync(IEnumerable<MsgTarget> messages, string environment);
+
     Task<CommandResult> ImportVoidingAutoFeedbackInfoAsync(IEnumerable<VoidingTicketEventInfo> ticketEventInfos, string environment);
 }
+
 public class VoidingSettledTicketsService(IBaseService baseService, ICrmLogService logService)
     : IVoidingSettledTicketsService
 {
     public async Task<IEnumerable<MessageVoidSettled>> GetMessageVoidSettledAsync()
     {
-        var criteria = new GetMesssagesVoidingSettledCriteria();
+        var criteria = new GetMessagesVoidingSettledCriteria();
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);
     }
 
@@ -72,7 +83,7 @@ public class VoidingSettledTicketsService(IBaseService baseService, ICrmLogServi
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);
     }
 
-    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessasgeCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment)
+    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment)
     {
         var criteria = new GetChatbotVoidingMessageCheck
         {
@@ -119,7 +130,8 @@ public class VoidingSettledTicketsService(IBaseService baseService, ICrmLogServi
         };
         return await baseService.ExecuteNonQueryAsync(criteria);
     }
-    public async Task<CommandResult> UpdateVoidingAutoFeedbackInfoBatchAsync(int logVoidingID, string status,string description, string environment)
+
+    public async Task<CommandResult> UpdateVoidingAutoFeedbackInfoBatchAsync(int logVoidingID, string status, string description, string environment)
     {
         var criteria = new VoidingAutoFeedbackInfoBatchUpdCommand
         {
@@ -130,9 +142,8 @@ public class VoidingSettledTicketsService(IBaseService baseService, ICrmLogServi
         };
         return await baseService.ExecuteNonQueryAsync(criteria);
     }
-        
 
-    public async Task<CommandResult>ImportVoidingAutoFeedbackInfoAsync(IEnumerable<VoidingTicketEventInfo> ticketEventInfos, string environment)
+    public async Task<CommandResult> ImportVoidingAutoFeedbackInfoAsync(IEnumerable<VoidingTicketEventInfo> ticketEventInfos, string environment)
     {
         var criteria = new VoidingAutoFeedbackInfoInsCommand
         {

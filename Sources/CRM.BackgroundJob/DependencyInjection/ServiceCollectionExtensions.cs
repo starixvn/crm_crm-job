@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 
 namespace CRM.BackgroundJob.DependencyInjection;
 
@@ -105,32 +105,31 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISendNotificationCenterService, SendNotificationCenterService>();
     }
 
-
     public static void AddWorkers(this IServiceCollection services)
     {
-        services.AddHostedService<AutoFbAmendmentNotiFbWoker>();
-        services.AddHostedService<AutoFbProblemAccountWoker>();
+        services.AddHostedService<AutoFbAmendmentNotiFbWorker>();
+        services.AddHostedService<AutoFbProblemAccountWorker>();
         services.AddHostedService<AutoFbVoidingAbnormalBetWorker>();
         services.AddHostedService<AutoFbWinLossLimitWorker>();
         services.AddHostedService<AutoFbTurnoverControlWorker>();
         services.AddHostedService<AutoFbVoidingBetIDWorker>();
         services.AddHostedService<AutoFbAbnormalBetsWorker>();
-        services.AddHostedService<AutoFbMessageNotificationCenterWoker>();
+        services.AddHostedService<AutoFbMessageNotificationCenterWorker>();
 
         services.AddHostedService<AutoChatbotWorker>();
-        services.AddHostedService<AutoChatbotCWLWoker>();
-        services.AddHostedService<AutoChatbotCTOWoker>();
+        services.AddHostedService<AutoChatbotCWLWorker>();
+        services.AddHostedService<AutoChatbotCTOWorker>();
         services.AddHostedService<AutoChatbotProblemAccountWorker>();
-        services.AddHostedService<AutoChatbotResultAmendmentWoker>();
+        services.AddHostedService<AutoChatbotResultAmendmentWorker>();
         services.AddHostedService<AutoChatbotRebateRetentionWorker>();
         services.AddHostedService<ScanAndSendLetstalkNotificationWorker>();
         services.AddHostedService<ScanAndSendAnnouncementWorker>();
         services.AddHostedService<SynchronizeNewLicenseeWorker>();
         services.AddHostedService<AutoFbVoidingSettledTicketsWorker>();
-        services.AddHostedService<AutoFbArchivingDAWoker>();
-        services.AddHostedService<AutoChatbotArchivingDAWoker>();
+        services.AddHostedService<AutoFbArchivingDAWorker>();
+        services.AddHostedService<AutoChatbotArchivingDAWorker>();
         services.AddHostedService<LetstalkHealthCheckWorker>();
-        services.AddHostedService<AutoFbRefundSettledTicketWoker>();
+        services.AddHostedService<AutoFbRefundSettledTicketWorker>();
         services.AddHostedService<AutoFbRebateRetentionWorker>();
 
         services.AddHostedService<MncCaptureSettlementDataWorker>();
@@ -140,11 +139,11 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<MncSendNotificationCenterWorker>();
     }
 
-
     public static void AddRemotingRef(this IConfiguration configuration)
     {
         RefDataTypeContainer
-            .ConnectTo(new Uri(configuration["RemotingRefService:Fanex.RemotingRef.Service.Url"]))
+            .ConnectTo(new Uri(configuration["RemotingRefService:Fanex.RemotingRef.Service.Url"] ??
+                               throw new MissingFieldException("Miss RemotingRefService configuration")))
             .FromApplication("CRM.BackgroundJob");
     }
 }

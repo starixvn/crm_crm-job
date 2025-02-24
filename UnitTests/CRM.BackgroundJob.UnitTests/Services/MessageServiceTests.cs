@@ -1,21 +1,19 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
+    using AutoFixture;
+    using CRM.BackgroundJob.Constants;
+    using CRM.BackgroundJob.Criteria.AutoFeedback;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Models.AbnormalBet;
+    using CRM.BackgroundJob.Services;
+    using CRM.Extensions.Xml;
+    using CRM.Models;
+    using CRM.Services;
+    using NSubstitute;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using AutoFixture;
-    using CRM.Extensions.Xml;
-    using CRM.Models;
-    using CRM.Services;
-    using CRM.BackgroundJob.Criteria.AutoFeedback;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Models.AbnormalBet;
-    using CRM.BackgroundJob.Constants;
-    using CRM.BackgroundJob.Criteria;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using NSubstitute;
     using Xunit;
 
     public class MessageServiceTests
@@ -47,7 +45,7 @@
             var xml = voidingHisMessages.ToXML("root").ToString();
             var criteria = new GetVoidingMessageHistoryCheckFbCriteria();
             var service = GetMessageService();
-            baseService.GetDataAsync<VoidingHisMessage>(Arg.Do <GetVoidingMessageHistoryCheckFbCriteria>(x => criteria = x)).Returns(voidingHisMessages);
+            baseService.GetDataAsync<VoidingHisMessage>(Arg.Do<GetVoidingMessageHistoryCheckFbCriteria>(x => criteria = x)).Returns(voidingHisMessages);
 
             // Act
             var actual = await service.ImportVoidingMessageHistoryCheckAsync(voidingHisMessages);
@@ -65,7 +63,7 @@
             var batchSize = fixture.Create<int>();
             var voidingMessages = new List<VoidingMessage>
             {
-                new VoidingMessage
+                new()
                 {
                     MessageId = 1,
                     RequestId = 1,
@@ -75,7 +73,7 @@
 
             var voidingMessageUserName = new List<VoidingMessageUserName>
             {
-                new VoidingMessageUserName
+                new()
                 {
                     VoidingHistoryCollectionId = 1,
                     MessageId = 1,
@@ -124,7 +122,7 @@
             var fixture = new Fixture();
             var message = new List<Message>
             {
-                new Message
+                new()
                 {
                     Content_en = "@@1",
                     Content_cs = "@@1"
@@ -132,7 +130,7 @@
             };
             var expected = new List<Message>
             {
-                new Message
+                new()
                 {
                     Content_en = "1",
                     Content_cs = "1"
@@ -158,7 +156,7 @@
             var fixture = new Fixture();
             var expected = fixture.Create<CommandResult>();
             var voidingMessageUserNames = new List<VoidingMessageUserName>{
-                new VoidingMessageUserName { MessageId = 1, RequestId = 1, VoidingHistoryCollectionId= 1}
+                new() { MessageId = 1, RequestId = 1, VoidingHistoryCollectionId= 1}
             };
             var xml = "<ROOT><r VoidingHistoryCollectionId='1' MsgID='1' ReqID='1' /></ROOT>";
             var criteria = new EditStatusVoidingMessageCommand();

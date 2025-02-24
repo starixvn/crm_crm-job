@@ -26,7 +26,7 @@ public class SendNotificationCenterService(IBaseService baseService) : ISendNoti
 
     public async Task<IEnumerable<MessageBotInfo>> GetNotificationAlertAsync(string environment)
     {
-        var criteria = new GetNotificationAlerCriteria
+        var criteria = new GetNotificationAlertCriteria
         {
             Environment = environment
         };

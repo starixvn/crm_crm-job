@@ -1,10 +1,10 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Threading.Tasks;
     using AutoFixture;
-    using Fanex.Caching;
     using CRM.BackgroundJob.Services;
+    using Fanex.Caching;
     using NSubstitute;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class JobRunningCheckerTests
@@ -39,7 +39,7 @@
             await job.MarkRunning(jobName);
 
             // Assert
-            await cacheService.Received().SetAsync(string.Format("RunningJobs:{0}", jobName), true);
+            await cacheService.Received().SetAsync($"RunningJobs:{jobName}", true);
         }
 
         [Fact]
@@ -54,7 +54,7 @@
             await job.ClearRunning(jobName);
 
             // Assert
-            await cacheService.Received().SetAsync(string.Format("RunningJobs:{0}", jobName), false);
+            await cacheService.Received().SetAsync($"RunningJobs:{jobName}", false);
         }
 
         #region Helpers

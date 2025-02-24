@@ -1,16 +1,14 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
     using CRM.BackgroundJob.Criteria.AutoFbMessageNotificationCenter;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Services;
     using CRM.Models;
     using CRM.Services;
     using NSubstitute;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class AutoFbMessageNotificationCenterServiceTests
@@ -40,9 +38,8 @@
             var fixture = new Fixture();
             var messages = fixture.Create<IEnumerable<MessageInfoID>>();
             var commandResult = fixture.Create<CommandResult>();
-            var command = new ImportMessageNotificationCenterCommand();
             var service = GetService();
-            baseService.ExecuteNonQueryAsync(Arg.Do<ImportMessageNotificationCenterCommand>(x => command = x)).Returns(commandResult);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ImportMessageNotificationCenterCommand>(x => _ = x)).Returns(commandResult);
 
             // Act
             var actual = await service.ImportMessageNotificationAsync(messages, "dev");
@@ -52,11 +49,13 @@
         }
 
         #region Helpers
+
         private AutoFbMessageNotificationCenterService GetService()
         {
             baseService = Substitute.For<IBaseService>();
             return new AutoFbMessageNotificationCenterService(baseService);
         }
+
         #endregion Helpers
     }
 }

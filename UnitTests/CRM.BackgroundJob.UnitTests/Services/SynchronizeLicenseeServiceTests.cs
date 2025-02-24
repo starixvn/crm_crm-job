@@ -1,16 +1,14 @@
-﻿
-
-namespace CRM.BackgroundJob.UnitTests.Services
+﻿namespace CRM.BackgroundJob.UnitTests.Services
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using CRM.Models;
-    using CRM.Services;
     using CRM.BackgroundJob.Criteria.SynchronizeLicensee;
     using CRM.BackgroundJob.Models.LicenseeInfo;
     using CRM.BackgroundJob.Services;
+    using CRM.Models;
+    using CRM.Services;
     using NSubstitute;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class SynchronizeLicenseeServiceTests
@@ -24,10 +22,9 @@ namespace CRM.BackgroundJob.UnitTests.Services
         {
             // Arrange
             var expected = fixture.Create<IEnumerable<LicenseeStatus>>();
-            var criteria = new GetLicenseeStatus();
             var service = GetService();
 
-            baseService.GetDataAsync<LicenseeStatus>(Arg.Do<GetLicenseeStatus>(x => criteria = x)).Returns(expected);
+            baseService.GetDataAsync<LicenseeStatus>(Arg.Do<GetLicenseeStatus>(x => _ = x)).Returns(expected);
             // Act
             var actual = await service.GetOICLicenseeInfo();
 
@@ -41,7 +38,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             // Arrange
             var licensees = new List<LicenseeStatus>
             {
-                new LicenseeStatus
+                new()
                 {
                     LicenseeName = "1",
                     StatusId = "1"
@@ -57,7 +54,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             await service.ImportLicenseeStatus(licensees, "LIVE");
 
             // Assert
-            Assert.Equal(expected.ToString(), criteria.Licensees.ToString());
+            Assert.Equal(expected, criteria.Licensees);
         }
 
         #region Helpers
