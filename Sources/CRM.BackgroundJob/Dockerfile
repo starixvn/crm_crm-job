@@ -13,8 +13,8 @@ COPY --from=deps $NUGET_PACKAGES/. $NUGET_PACKAGES/
 WORKDIR /src
 
 COPY ["nuget.config", "."]
-COPY ["CRM.BackgroundJob/CRM.BackgroundJob.csproj", "CRM.BackgroundJob/"]
-COPY ["CRM.BackgroundJob.Core/CRM.BackgroundJob.Core.csproj", "CRM.BackgroundJob.Core/"]
+COPY ["Sources/CRM.BackgroundJob/CRM.BackgroundJob.csproj", "Sources/CRM.BackgroundJob/"]
+COPY ["Sources/CRM/CRM.csproj", "Sources/CRM/"]
 
 RUN dotnet nuget add source https://nuget.nexdev.net/api/v2
 
@@ -22,7 +22,7 @@ RUN dotnet restore -v n -r linux-x64 "CRM.BackgroundJob/CRM.BackgroundJob.csproj
 
 COPY . .
 
-WORKDIR "/src/CRM.BackgroundJob"
+WORKDIR "/src/Sources/CRM.BackgroundJob"
 
 RUN dotnet publish CRM.BackgroundJob.csproj -r linux-x64 --self-contained false -o /app
 
