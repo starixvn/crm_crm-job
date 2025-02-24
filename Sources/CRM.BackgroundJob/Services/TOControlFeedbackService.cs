@@ -30,8 +30,8 @@ public class TOControlFeedbackService : ITOControlFeedbackService
     private readonly ICommonFeedback commonFeedback;
     private readonly IFeedbackTransactionService transactionService;
 
-    private readonly string descTemplateXml = "TODesctiptionTemplate.xml";
-    private readonly string solTemplateXml = "TOSolutionTemplate.xml";
+    private const string descTemplateXml = "TODesctiptionTemplate.xml";
+    private const string solTemplateXml = "TOSolutionTemplate.xml";
 
 #pragma warning disable S107 // Methods should not have too many parameters
 

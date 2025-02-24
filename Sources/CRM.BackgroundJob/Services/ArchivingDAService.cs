@@ -30,7 +30,7 @@ public class ArchivingDAService(
 {
     private readonly AppJobSettings appSettings = appSettings.Value;
 
-    private readonly string templateXml = "ArchivingDATemplate.xml";
+    private const string templateXml = "ArchivingDATemplate.xml";
 
     public async Task CreateFeedbackForArchivingDAAsync(ArchivingDASetting archivingDASetting, bool isUAT,
         DateTime LastRuntimeEnv, string LastRuntimeNameEnv, string JobStatusNameEnv, string Environment

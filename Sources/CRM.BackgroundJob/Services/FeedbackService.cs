@@ -489,7 +489,7 @@ public class FeedbackService : IFeedbackService
                 if (commandResult.IsSuccessful)
                 {
                     logService.LogInformation(
-                        $"Abnormal Bet - {"Create feedback successfully"}. MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
+                        $"Abnormal Bet - Create feedback successfully. MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
                 }
                 else
                 {

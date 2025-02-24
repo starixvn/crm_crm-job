@@ -41,7 +41,7 @@ public interface IChatBotResultAmendmentService
 public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeedback commonFeedback)
     : IChatBotResultAmendmentService
 {
-    private readonly int EventType5 = 5;
+    private const int EventType5 = 5;
 
     public async Task<(IEnumerable<MessageVoidSettled>, IEnumerable<MessageVoidSettled>)> GetChatBotMessageVoidSettledAsync(int lastMsgTargetId, int batchSizeGetMsg)
     {

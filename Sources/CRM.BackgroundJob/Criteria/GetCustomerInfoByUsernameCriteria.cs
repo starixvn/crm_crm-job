@@ -7,7 +7,7 @@ public class GetCustomerInfoByUsernameCriteria : CriteriaBase
 {
     public string Username { get; set; }
     public bool IsGuest { get; set; }
-    public short UserRole { get; } = BackgroundJobConstants.UserRole;
+    public short UserRole => BackgroundJobConstants.UserRole;
     public string SiteLabel { get; set; } = string.Empty;
 
 #pragma warning disable S3052

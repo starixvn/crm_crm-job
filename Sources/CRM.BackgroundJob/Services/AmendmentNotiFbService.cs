@@ -32,14 +32,14 @@ public class AmendmentNotiFbService(
 {
     private readonly AppJobSettings appSettings = appSettings.Value;
 
-    private readonly string descTemplateXml = "AmendmentDescriptionTemplate.xml";
-    private readonly string solTemplateXml = "AmendmentSolutionTemplate.xml";
-    private readonly int SportType180 = 180;
-    private readonly int SportType186 = 186;
-    private readonly int SportType161 = 161;
-    private readonly int EventType2 = 2;
-    private readonly int EventType9 = 9;
-    private readonly int EventType5 = 5;
+    private const string descTemplateXml = "AmendmentDescriptionTemplate.xml";
+    private const string solTemplateXml = "AmendmentSolutionTemplate.xml";
+    private const int SportType180 = 180;
+    private const int SportType186 = 186;
+    private const int SportType161 = 161;
+    private const int EventType2 = 2;
+    private const int EventType9 = 9;
+    private const int EventType5 = 5;
 
     public async Task CreateFeedbackForAmendmentNotiFbAsync(AmendmentNotiFbSetting resultAmendmentSetting, bool isUAT,
         DateTime LastRuntimeEnv, string LastRuntimeNameEnv,

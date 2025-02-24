@@ -5,7 +5,7 @@ using Fanex.Data.Repository;
 
 public class GetAllSettingCriteria : CriteriaBase
 {
-    public short UserRole { get; } = BackgroundJobConstants.UserRole;
+    public short UserRole => BackgroundJobConstants.UserRole;
 
     public override string GetSettingKey() => "Acc_CRM_SettingSel";
 

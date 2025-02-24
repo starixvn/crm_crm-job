@@ -29,7 +29,7 @@ public class WinLossFeedbackService : IWinLossFeedbackService
     private readonly IFeedbackTransactionService transactionService;
     private readonly ICommonFeedback commonFeedback;
 
-    private readonly string templateXml = "FeedbackTemplate.xml";
+    private const string templateXml = "FeedbackTemplate.xml";
 
 #pragma warning disable S107 // Methods should not have too many parameters
 

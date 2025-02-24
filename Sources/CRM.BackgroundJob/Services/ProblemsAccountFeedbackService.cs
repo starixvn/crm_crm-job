@@ -31,8 +31,8 @@ public class ProblemsAccountFeedbackService(
 {
     private readonly AppJobSettings appSettings = appSettings.Value;
 
-    private readonly string templateXml = "ProblemsSolutionTemplate.xml";
-    private readonly int maxUserNameInOneFb = 250;
+    private const string templateXml = "ProblemsSolutionTemplate.xml";
+    private const int maxUserNameInOneFb = 250;
 
     public async Task CreateFeedbackForProblemsAccountAsync(ProblemsAccountSetting problemsAccountSetting, bool isUAT,
         DateTime LastRuntimeEnv, string LastRuntimeNameEnv,
