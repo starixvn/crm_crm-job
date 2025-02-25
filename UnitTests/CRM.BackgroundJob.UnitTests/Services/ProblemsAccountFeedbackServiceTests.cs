@@ -56,13 +56,13 @@
         }
 
         [Fact]
-        public async Task CreateFeedbackForProblemsAccountAsync_ExistedProblemsAccountInforAndUserNamePerCategoryLessThan250_ExpectedCallExactFunction()
+        public async Task CreateFeedbackForProblemsAccountAsync_ExistedProblemsAccountInfoAndUserNamePerCategoryLessThan250_ExpectedCallExactFunction()
         {
             // Arrange
             var service = MockService();
             var problemsAccountSetting = fixture.Create<ProblemsAccountSetting>();
             var custCategory = fixture.Create<IEnumerable<CustCategoryInfo>>();
-            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfo>
+            var problemsAccountInfo = new List<ProblemsAccountAutoFeedbackInfo>
             {
                 new()
                 {
@@ -78,7 +78,7 @@
             };
             var LastRuntimeEnv = DateTime.Now;
             customerService.GetCustCategoryInfo(problemsAccountSetting, false).Returns(custCategory);
-            transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfor);
+            transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfo);
 
             // Act
             await service.Public_CreateFeedbackForProblemsAccountAsync(problemsAccountSetting, false, LastRuntimeEnv, "LastRuntimeNameEnv", "JobStatusNameEnv", "LIVE");
@@ -93,13 +93,13 @@
         }
 
         [Fact]
-        public async Task CreateFeedbackForProblemsAccountAsync_ExistedProblemsAccountInforAndUserNamePerCategoryGreaterThan250_ExpectedCallExactFunction()
+        public async Task CreateFeedbackForProblemsAccountAsync_ExistedProblemsAccountInfoAndUserNamePerCategoryGreaterThan250_ExpectedCallExactFunction()
         {
             // Arrange
             var service = MockService();
             var problemsAccountSetting = fixture.Create<ProblemsAccountSetting>();
             var custCategory = fixture.Create<IEnumerable<CustCategoryInfo>>();
-            var problemsAccountInfor = new List<ProblemsAccountAutoFeedbackInfo>();
+            var problemsAccountInfo = new List<ProblemsAccountAutoFeedbackInfo>();
 
             for (int i = 0; i < 255; i++)
             {
@@ -115,7 +115,7 @@
                     RelatedCustID = 1,
                     CategoryID = 1
                 };
-                problemsAccountInfor.Add(problem);
+                problemsAccountInfo.Add(problem);
             }
             var cateProblems = new ProblemsAccountAutoFeedbackInfo
             {
@@ -128,11 +128,11 @@
                 RelatedCustID = 1,
                 CategoryID = 2
             };
-            problemsAccountInfor.Add(cateProblems);
+            problemsAccountInfo.Add(cateProblems);
 
             var LastRuntimeEnv = DateTime.Now;
             customerService.GetCustCategoryInfo(problemsAccountSetting, true).Returns(custCategory);
-            transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfor);
+            transactionService.ImportProblemsAccountFeedbackInfoAsync(Arg.Any<IEnumerable<GroupHeadline>>(), custCategory, "LIVE").Returns(problemsAccountInfo);
 
             // Act
             await service.Public_CreateFeedbackForProblemsAccountAsync(problemsAccountSetting, true, LastRuntimeEnv, "LastRuntimeNameEnv", "JobStatusNameEnv", "LIVE");
@@ -152,7 +152,7 @@
         #region CreateProblemsAccountFeedbackByBatchAsync
 
         [Fact]
-        public async Task CreateProblemsAccountFeedbackByBatchAsync_DevideBatchInsertFeedback_ExpectedCallFunctionExactParams()
+        public async Task CreateProblemsAccountFeedbackByBatchAsync_DivideBatchInsertFeedback_ExpectedCallFunctionExactParams()
         {
             // Arrange
             var service = MockService();
@@ -187,7 +187,7 @@
         }
 
         [Fact]
-        public async Task CreateProblemsAccountFeedbackByBatchAsync_DevideBatchInsertFeedbackLastItem_ExpectedCallFunctionExactParams()
+        public async Task CreateProblemsAccountFeedbackByBatchAsync_DivideBatchInsertFeedbackLastItem_ExpectedCallFunctionExactParams()
         {
             // Arrange
             var service = MockService();
@@ -272,7 +272,7 @@
         #region CheckValidParamsAndInsertFeedbackAsync
 
         [Fact]
-        public async Task CheckValidParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
+        public async Task CheckValidParamsAndInsertFeedbackAsync_CreateSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfo>>();
@@ -294,7 +294,7 @@
         }
 
         [Fact]
-        public async Task CheckValidParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
+        public async Task CheckValidParamsAndInsertFeedbackAsync_CreateUnSuccessful_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
             var problemsAccounts = fixture.Create<IEnumerable<ProblemsAccountAutoFeedbackInfo>>();
@@ -464,12 +464,12 @@
         #region GetProblemsSportsbookProduct
 
         [Fact]
-        public void GetProblemsSportsbookProduct_NotExistSportbook_ReturnDefaultProduct()
+        public void GetProblemsSportsbookProduct_NotExistSportsbook_ReturnDefaultProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new() { SettingName = "Product", SettingValue = "sportbook1" }
+                    new() { SettingName = "Product", SettingValue = "sportsbook1" }
                 };
 
             var service = MockService();
@@ -482,7 +482,7 @@
         }
 
         [Fact]
-        public void GetProblemsSportsbookProduct_ExistSportbook_ReturnDefaultProduct()
+        public void GetProblemsSportsbookProduct_ExistSportsbook_ReturnDefaultProduct()
         {
             // Arrange
             var settings = new List<SettingItem>
@@ -557,8 +557,8 @@
                 SolutionENYN = "SolutionYN"
             };
             commonFeedback.GetFeedbackTemplates<SolutionTemplate>(Arg.Any<string>()).Returns(solution);
-            commonFeedback.GetCategoryName(Arg.Any<string>(), Language.en_US).Returns("CategogyEN");
-            commonFeedback.GetCategoryName(Arg.Any<string>(), Language.vi_VN).Returns("CategogyYN");
+            commonFeedback.GetCategoryName(Arg.Any<string>(), Language.en_US).Returns("CategoryEN");
+            commonFeedback.GetCategoryName(Arg.Any<string>(), Language.vi_VN).Returns("CategoryYN");
 
             // Act
             var actual = service.Public_GetSolution(problemsAccounts);

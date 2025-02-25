@@ -84,14 +84,14 @@
             stringBuilder.Append(BackgroundJobConstants.EndRootTag.ToLowerInvariant());
             var criteria = new ProblemsAccountImportCommand();
             var commandResult = fixture.Create<CommandResult>();
-            var valueTupe = new ValueTuple<CommandResult, ProblemsAccountImportCommand>(commandResult, criteria);
-            baseService.ExecuteNonQueryAsync(Arg.Do<ProblemsAccountImportCommand>(x => criteria = x)).Returns(valueTupe.Item1);
+            var valueTuple = new ValueTuple<CommandResult, ProblemsAccountImportCommand>(commandResult, criteria);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ProblemsAccountImportCommand>(x => criteria = x)).Returns(valueTuple.Item1);
 
             // Act
             var actual = await service.ImportProblemsAccountInfoAsync(problemsAccounts);
 
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(stringBuilder.ToString(), criteria.XmlData);
             Assert.Equal(BackgroundJobConstants.DefaultEnvironment, criteria.Environment);
             Assert.Equal(0, criteria.ErrCode);

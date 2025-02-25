@@ -174,7 +174,7 @@
         #region CheckValidParamsAndInsertFeedbackAsync
 
         [Fact]
-        public async Task CheckValidParamsAndInsertFeedbackAsync__CreateSuccessfull_ExpectedWriteLog()
+        public async Task CheckValidParamsAndInsertFeedbackAsync__CreateSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var winLimit = new WinLimitFeedBackInfo
@@ -205,7 +205,7 @@
         }
 
         [Fact]
-        public async Task CheckValidParamsAndInsertFeedbackAsync__CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
+        public async Task CheckValidParamsAndInsertFeedbackAsync__CreateUnSuccessful_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
             var winLimit = new WinLimitFeedBackInfo
@@ -394,7 +394,7 @@
         public void GetProduct_SettingSourceIsNull_ReturnDefaultProduct()
         {
             // Arrange
-            var producName = "1";
+            var productName = "1";
             var settingMappings = new List<SystemSettingMapping>
                 {
                     new() { SettingName = "Product" }
@@ -407,7 +407,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetProduct(settings, settingMappings, producName);
+            var actual = service.Public_GetProduct(settings, settingMappings, productName);
 
             // Assert
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.SettingId);
@@ -417,7 +417,7 @@
         public void GetProduct_SettingSourceNotEqualProductName_ReturnDefaultProduct()
         {
             // Arrange
-            var producName = "1";
+            var productName = "1";
             var settingMappings = new List<SystemSettingMapping>
                 {
                     new() {SettingId = 1, SettingName = "Product", SettingSource = "2" }
@@ -429,7 +429,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetProduct(settings, settingMappings, producName);
+            var actual = service.Public_GetProduct(settings, settingMappings, productName);
 
             // Assert
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.SettingId);
@@ -439,7 +439,7 @@
         public void GetProduct_SourceMappingIdNotEqualSettingItem_ReturnDefaultProduct()
         {
             // Arrange
-            var producName = "1";
+            var productName = "1";
             var settingMappings = new List<SystemSettingMapping>
                 {
                     new() {SettingId = 1, SettingName = "Product", SettingSource = "1" }
@@ -451,7 +451,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetProduct(settings, settingMappings, producName);
+            var actual = service.Public_GetProduct(settings, settingMappings, productName);
 
             // Assert
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.SettingId);
@@ -461,7 +461,7 @@
         public void GetProduct_ExistProductNameMappingAndSetting_ReturnExpectedProduct()
         {
             // Arrange
-            var producName = "RNG Casino";
+            var productName = "RNG Casino";
             var settingMappings = new List<SystemSettingMapping>
                 {
                     new() { SettingId = 1, SettingName = "Product", SettingSource = "RNG Casino" }
@@ -474,7 +474,7 @@
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetProduct(settings, settingMappings, producName);
+            var actual = service.Public_GetProduct(settings, settingMappings, productName);
 
             // Assert
             Assert.Equal(settings.First(), actual);
@@ -507,7 +507,7 @@
         }
 
         [Fact]
-        public void GetSubProduct_ExistProductName_ReturnExpectedSubproduct()
+        public void GetSubProduct_ExistProductName_ReturnExpectedSubProduct()
         {
             // Arrange
             var winLimit = new WinLimitFeedBackInfo
@@ -608,7 +608,7 @@
         public void GetSolution_ProductNameRNGCasinoNotVipCustomer_ReturnExactTemplate(string ProductGroup)
         {
             // Arrange
-            var winlimit = new WinLimitFeedBackInfo
+            var winLimit = new WinLimitFeedBackInfo
             {
                 UserName = "test",
                 TotalWinAmt = 1000,
@@ -627,7 +627,7 @@
             commonFeedback.GetFeedbackTemplates<FeedbackTemplate>(Arg.Any<string>()).Returns(template);
             var expect = "test 1,000 USD";
             // Act
-            var result = service.Public_GetSolution(winlimit, false);
+            var result = service.Public_GetSolution(winLimit, false);
 
             // Assert
             var expected = Regex.Replace(expect, @"\s", "");
@@ -649,7 +649,7 @@
         public void GetSolution_DependOnLevelAndIsVIPCustomer_ReturnExactTemplate(string level, bool isVip, string productName)
         {
             // Arrange
-            var winlimit = new WinLimitFeedBackInfo
+            var winLimit = new WinLimitFeedBackInfo
             {
                 Level = level,
                 UserName = "test",
@@ -674,15 +674,15 @@
                 }
             };
             commonFeedback.GetFeedbackTemplates<FeedbackTemplate>(Arg.Any<string>()).Returns(template);
-            service.Protected("GetTransformedProductName", winlimit, "en-US").Returns("ProductNameUS");
-            service.Protected("GetTransformedProductName", winlimit, "zh-CN").Returns("ProductNameSC");
-            service.Protected("GetTransformedProductName", winlimit, "vi-VN").Returns("ProductNameYN");
-            commonFeedback.GetProductName(winlimit.ProductID.ToString(), "en-US").Returns("ProductNameUS");
-            commonFeedback.GetProductName(winlimit.ProductID.ToString(), "zh-CN").Returns("ProductNameSC");
-            commonFeedback.GetProductName(winlimit.ProductID.ToString(), "vi-VN").Returns("ProductNameYN");
+            service.Protected("GetTransformedProductName", winLimit, "en-US").Returns("ProductNameUS");
+            service.Protected("GetTransformedProductName", winLimit, "zh-CN").Returns("ProductNameSC");
+            service.Protected("GetTransformedProductName", winLimit, "vi-VN").Returns("ProductNameYN");
+            commonFeedback.GetProductName(winLimit.ProductID.ToString(), "en-US").Returns("ProductNameUS");
+            commonFeedback.GetProductName(winLimit.ProductID.ToString(), "zh-CN").Returns("ProductNameSC");
+            commonFeedback.GetProductName(winLimit.ProductID.ToString(), "vi-VN").Returns("ProductNameYN");
             var expect = "test 1,000 USD ProductNameUS " + productName + BackgroundJobConstants.LineBreak;
             // Act
-            var result = service.Public_GetSolution(winlimit, isVip);
+            var result = service.Public_GetSolution(winLimit, isVip);
 
             // Assert
             var expected = Regex.Replace(expect, @"\s", "");
@@ -694,7 +694,7 @@
         public void GetSolution_DoesNotHaveLevelID_ReturnDefault()
         {
             // Arrange
-            var winlimit = new WinLimitFeedBackInfo
+            var winLimit = new WinLimitFeedBackInfo
             {
                 Level = "Default",
                 UserName = "test",
@@ -720,12 +720,12 @@
                 }
             };
             commonFeedback.GetFeedbackTemplates<FeedbackTemplate>(Arg.Any<string>()).Returns(template);
-            commonFeedback.GetProductName(winlimit.ProductID.ToString(), "en-US").Returns("ProductNameUS");
-            commonFeedback.GetProductName(winlimit.ProductID.ToString(), "zh-CN").Returns("ProductNameSC");
-            commonFeedback.GetProductName(winlimit.ProductID.ToString(), "vi-VN").Returns("ProductNameYN");
+            commonFeedback.GetProductName(winLimit.ProductID.ToString(), "en-US").Returns("ProductNameUS");
+            commonFeedback.GetProductName(winLimit.ProductID.ToString(), "zh-CN").Returns("ProductNameSC");
+            commonFeedback.GetProductName(winLimit.ProductID.ToString(), "vi-VN").Returns("ProductNameYN");
 
             // Act
-            var result = service.Public_GetSolution(winlimit, false);
+            var result = service.Public_GetSolution(winLimit, false);
 
             // Assert
             Assert.Equal("", result);
@@ -762,7 +762,7 @@
                 string numGamesFormat)
         {
             // Arrange
-            var winlimit = new WinLimitFeedBackInfo
+            var winLimit = new WinLimitFeedBackInfo
             {
                 MaxWinLimitSetting = "1000",
                 TotalWinAmt_RM = 1000,
@@ -777,18 +777,18 @@
             var service = MockService();
             var description = new StringBuilder("<span style=\"color: rgb(255, 0, 0);\">This is an auto-generated entry.</span>");
             description.Append("<br />Informed Headline Win/Loss Alert for below member:");
-            description.Append($"<br />Product: {winlimit.ProductName}");
+            description.Append($"<br />Product: {winLimit.ProductName}");
             description.Append("<br />Game Type: ");
             description.AppendFormat(betTypes.Count > 3 ? "{0} ..." : "{0}", numGamesFormat);
-            description.Append($"<br /> UserName: {winlimit.UserName}, Site: {winlimit.Site} ({winlimit.SiteLabel})");
+            description.Append($"<br /> UserName: {winLimit.UserName}, Site: {winLimit.Site} ({winLimit.SiteLabel})");
             description.Append(
-                $"<br /> Winning/Losing Limit Amount: 1,000 (RM), Winning/Losing Amount in RM: 1,000 (RM), Winloss Amount in player currency: 1,000 ({winlimit.Currency})");
+                $"<br /> Winning/Losing Limit Amount: 1,000 (RM), Winning/Losing Amount in RM: 1,000 (RM), Winloss Amount in player currency: 1,000 ({winLimit.Currency})");
             description.Append(
-                $"<br />Reached Limit Time: {winlimit.ReachedTime}, Reached Limit Level: {winlimit.Level}");
+                $"<br />Reached Limit Time: {winLimit.ReachedTime}, Reached Limit Level: {winLimit.Level}");
             description.Append(BackgroundJobConstants.LineBreak);
 
             // Act
-            var actual = service.Public_GetDescription(winlimit, betTypes);
+            var actual = service.Public_GetDescription(winLimit, betTypes);
 
             // Assert
             Assert.Equal(description.ToString(), actual);
@@ -822,7 +822,7 @@
 
         #region Helpers
 
-        private WinLossFeedbackServiceTesable MockService()
+        private WinLossFeedbackServiceTestable MockService()
         {
             appSettings = new AppJobSettings
             {
@@ -839,7 +839,7 @@
             transactionService = Substitute.For<IFeedbackTransactionService>();
             commonFeedback = Substitute.For<ICommonFeedback>();
 
-            return Substitute.For<WinLossFeedbackServiceTesable>(
+            return Substitute.For<WinLossFeedbackServiceTestable>(
                 appJobSettings,
                 baseService,
                 settingService,

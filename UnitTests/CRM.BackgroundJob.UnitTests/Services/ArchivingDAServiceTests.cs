@@ -60,10 +60,10 @@
             var LastRuntimeEnv = DateTime.Now;
             fixture.Customize<ArchivingDASetting>(x => x.With(b => b.IsSyncArchivedAccount, false));
             var archivingDASetting = fixture.Create<ArchivingDASetting>();
-            var custInfor = fixture.Create<IEnumerable<ArchivingCustInfo>>();
+            var custInfo = fixture.Create<IEnumerable<ArchivingCustInfo>>();
             feedbackTransactionService.GetArchivingDAStatus().Returns(true);
             feedbackTransactionService.ArchivingAutoFeedbackInfoInsAsync(archivingDASetting, "LIVE").Returns(archivingAutoFbInfos);
-            feedbackTransactionService.GetArchivingCustInfo().Returns(custInfor);
+            feedbackTransactionService.GetArchivingCustInfo().Returns(custInfo);
             // Act
             await service.Public_CreateFeedbackForArchivingDAAsync(archivingDASetting, false, LastRuntimeEnv, "LastRuntimeNameEnv", "JobStatusNameEnv", "LIVE");
 
@@ -87,10 +87,10 @@
             var LastRuntimeEnv = DateTime.Now;
             fixture.Customize<ArchivingDASetting>(x => x.With(b => b.IsSyncArchivedAccount, false));
             var archivingDASetting = fixture.Create<ArchivingDASetting>();
-            var custInfor = fixture.Create<IEnumerable<ArchivingCustInfo>>();
+            var custInfo = fixture.Create<IEnumerable<ArchivingCustInfo>>();
             feedbackTransactionService.GetArchivingDAStatus().Returns(false);
             feedbackTransactionService.ArchivingAutoFeedbackInfoInsAsync(archivingDASetting, "LIVE").Returns(archivingAutoFbInfos);
-            feedbackTransactionService.GetArchivingCustInfo().Returns(custInfor);
+            feedbackTransactionService.GetArchivingCustInfo().Returns(custInfo);
             // Act
             await service.Public_CreateFeedbackForArchivingDAAsync(archivingDASetting, false, LastRuntimeEnv, "LastRuntimeNameEnv", "JobStatusNameEnv", "LIVE");
 
@@ -235,7 +235,7 @@
         #region CheckValidArchivingParamsAndInsertFeedbackAsync
 
         [Fact]
-        public async Task CheckValidArchivingParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
+        public async Task CheckValidArchivingParamsAndInsertFeedbackAsync_CreateSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var archivingAutoFbInfo = new ArchivingAutoFbInfo
@@ -264,7 +264,7 @@
         }
 
         [Fact]
-        public async Task CheckValidArchivingParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
+        public async Task CheckValidArchivingParamsAndInsertFeedbackAsync_CreateUnSuccessful_ExpectedWriteLogAndUpdateStatus()
         {
             var archivingAutoFbInfo = new ArchivingAutoFbInfo
             {

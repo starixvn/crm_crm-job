@@ -182,6 +182,7 @@
             var settingMappings = fixture.Create<IEnumerable<SystemSettingMapping>>();
             var siteSettingMappings = fixture.Create<IEnumerable<SiteSettingMapping>>();
             var duplicateTicketDetails = fixture.Create<IEnumerable<DuplicateTicketDetail>>();
+            var messageImportCombine = fixture.Create<IEnumerable<VoidingMessageUserName>>();
             var licenseeInfo = fixture.Create<CustomerInfo>();
             var headlines = new List<GroupHeadline>
             {
@@ -194,7 +195,7 @@
             customerService.GetCustomerInfoAsync(appSettings.LicenseeUsername, true).Returns(licenseeInfo);
             customerService.GetGroupHeadlineVipAsync(Arg.Any<IEnumerable<int>>()).Returns(headlines);
             ticketVoidingService.ImportTicketVoidingInfoAsync(
-                    new List<VoidingMessageUserName>(),
+                    messageImportCombine,
                     ticketInfo.Item1,
                     ticketInfo.Item2,
                     siteSettingMappings,
@@ -206,7 +207,7 @@
             await service.Public_CreateFeedbackForCreditDepositSiteAsync(messages,
                         ticketInfo.Item1,
                         ticketInfo.Item2,
-                        new List<VoidingMessageUserName>(),
+                        messageImportCombine,
                         false,
                         setting,
                         duplicateTicketDetails
@@ -1022,7 +1023,7 @@
                 MaxWinLostDate = new DateTime(2020 - 01 - 01),
                 MinWinLostDate = new DateTime(2020 - 01 - 01),
                 DecidedBy = "DecidedBy",
-                RequestBy = "Requestby",
+                RequestBy = "RequestBy",
                 VoidBy = "VoidBy"
             };
 

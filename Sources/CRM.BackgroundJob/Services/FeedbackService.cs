@@ -20,16 +20,18 @@ public interface IFeedbackService
         string JobStatusNameEnv, string Environment);
 }
 
-public class FeedbackService : IFeedbackService
+public class FeedbackService(
+    IOptions<AppJobSettings> appSettings,
+    IBaseService baseService,
+    ISettingService settingService,
+    IMessageService messageService,
+    ICustomerService customerService,
+    ICrmLogService logService,
+    IFeedbackTicketVoidingService ticketVoidingService,
+    ICommonFeedback commonFeedback)
+    : IFeedbackService
 {
-    private readonly AppJobSettings appSettings;
-    private readonly IBaseService baseService;
-    private readonly ISettingService settingService;
-    private readonly IMessageService messageService;
-    private readonly ICustomerService customerService;
-    private readonly ICrmLogService logService;
-    private readonly IFeedbackTicketVoidingService ticketVoidingService;
-    private readonly ICommonFeedback commonFeedback;
+    private readonly AppJobSettings appSettings = appSettings.Value;
 
     private const int abnormalAccount = 13;
     private const int mixParlayIssueTypeId = 11;
@@ -38,41 +40,13 @@ public class FeedbackService : IFeedbackService
     private const string templateXml = "MixParlayTemplate.xml";
     private const string templateDuplicateXml = "FeedbackDuplicateTemplate.xml";
 
-#pragma warning disable S107 // Methods should not have too many parameters
-
-    public FeedbackService(
-        IOptions<AppJobSettings> appSettings,
-        IBaseService baseService,
-        ISettingService settingService,
-        IMessageService messageService,
-        ICustomerService customerService,
-        ICrmLogService logService,
-        IFeedbackTicketVoidingService ticketVoidingService,
-        ICommonFeedback commonFeedback
-    )
-
-#pragma warning restore S107 // Methods should not have too many parameters
-    {
-        this.appSettings = appSettings.Value;
-        this.baseService = baseService;
-        this.settingService = settingService;
-        this.messageService = messageService;
-        this.customerService = customerService;
-        this.logService = logService;
-        this.ticketVoidingService = ticketVoidingService;
-        this.commonFeedback = commonFeedback;
-    }
-
-#pragma warning disable S138
-
     public async Task CreateFeedbackForVoidingAbnormalBetAsync(AbnormalBetSystemSetting setting, bool isUAT,
-        DateTime LastRuntimeEnv, string LastRuntimeNameEnv,
-        string JobStatusNameEnv, string Environment)
-#pragma warning restore S138
+        DateTime lastRuntimeEnv, string lastRuntimeNameEnv,
+        string jobStatusNameEnv, string environment)
     {
         logService.LogInformation("CreateFeedbackForVoidingAbnormalBetAsync start!!!");
 
-        await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_AutoFB);
+        await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_AutoFB);
         var MaxVoidingHistoryCollectionId = isUAT ? setting.MaxVoidingHistoryCollectionIdUAT : setting.MaxVoidingHistoryCollectionId;
         var voidingMessages = await messageService.GetVoidingMessageAsync(MaxVoidingHistoryCollectionId);
 
@@ -86,8 +60,8 @@ public class FeedbackService : IFeedbackService
         var messagesImport = await messageService.ImportVoidingMessageAsync(voidingMessageUserName,
             voidingMessages.Item1,
             setting.BatchSize,
-            Environment,
-            LastRuntimeEnv);
+            environment,
+            lastRuntimeEnv);
 
         logService.LogInformation("after ImportVoidingMessageAsync!!!");
 
@@ -96,7 +70,7 @@ public class FeedbackService : IFeedbackService
         if (!messagesImportCombineDistinct.Any())
         {
             logService.LogInformation("Abnormal Bet - import do not have any data");
-            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
+            await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
             return;
         }
         IEnumerable<int> messageIds = messagesImportCombineDistinct.Where(x => x.MessageId != 0).Select(y => y.MessageId).Distinct().ToList();
@@ -137,8 +111,8 @@ public class FeedbackService : IFeedbackService
         if (!matchInfosCombine.Any())
         {
             logService.LogInformation("Abnormal Bet - import do not have any ticket");
-            await messageService.EditStatusVoidingMessageAsync(messagesImportCombineDistinct, Environment);
-            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
+            await messageService.EditStatusVoidingMessageAsync(messagesImportCombineDistinct, environment);
+            await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoFB);
             return;
         }
 
@@ -160,8 +134,6 @@ public class FeedbackService : IFeedbackService
         );
     }
 
-#pragma warning disable S1541
-
     protected internal virtual async Task CreateFeedbackForCreditDepositSiteAsync(
         IEnumerable<Message> messages,
         IEnumerable<MatchInfo> matchInfos,
@@ -171,7 +143,6 @@ public class FeedbackService : IFeedbackService
         AbnormalBetSystemSetting setting,
         IEnumerable<DuplicateTicketDetail> duplicateTicketDetails
     )
-#pragma warning restore S1541
     {
         var settingNames = new[] { SettingName.Product, SettingName.SubProduct, SettingName.Bettype };
         var settings = await settingService.GetAllSettingAsync();

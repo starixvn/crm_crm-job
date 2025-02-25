@@ -1,22 +1,22 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Workers
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Workers;
     using CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Workers;
+    using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
-    public class AutoFbMessageNotificationCenterWokerTests
+    public class AutoChatbotCTOWorkerTests
     {
-        private IAutoFeedbackService autoFeedbackService;
+        private IChatBotJobService chatBotJobService;
         private IMaintenanceService maintenanceService;
-        private List<JobSetting> appSettings;
         private ICrmLogService logService;
+        private List<JobSetting> appSettings;
 
         [Fact]
         public async Task ExecuteJobAsync_Override_CallExactFunction()
@@ -28,29 +28,28 @@
             await service.ExecuteJobAsync();
 
             // Assert
-            await autoFeedbackService.Received().MessageNotificationCenterExecuteJobAsync();
+            await chatBotJobService.Received().PullMessageCTOAndSendNotificationToHeadlineAsync();
         }
 
-        private AutoFbMessageNotificationCenterWorker GetService()
+        private AutoChatbotCTOWorker GetService()
         {
             appSettings =
             [
                 new JobSetting
                 {
-                    JobName = "Test",
+                    JobName = "PullMessageCTOForChatBot",
                     IsEnabled = true,
                     HasCheckUM = false,
-                    IsDisableAtWeekend = false,
                     TimeInterval = 60
                 }
             ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
-            autoFeedbackService = Substitute.For<IAutoFeedbackService>();
+            chatBotJobService = Substitute.For<IChatBotJobService>();
             maintenanceService = Substitute.For<IMaintenanceService>();
             logService = Substitute.For<ICrmLogService>();
 
-            return new AutoFbMessageNotificationCenterWorker(autoFeedbackService, maintenanceService, appJobSettings, logService);
+            return new AutoChatbotCTOWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
         }
     }
 }

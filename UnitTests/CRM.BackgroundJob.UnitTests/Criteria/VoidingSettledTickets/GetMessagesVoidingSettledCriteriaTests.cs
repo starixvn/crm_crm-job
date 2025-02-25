@@ -1,16 +1,16 @@
-﻿using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
-using Xunit;
-
-namespace CRM.BackgroundJob.UnitTests.Criteria.ResultAmendment
+﻿namespace CRM.BackgroundJob.UnitTests.Criteria.VoidingSettledTickets
 {
-    public class GetAmendmentNotiAutoFeedbackInforCriteriaTests
+    using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
+    using Xunit;
+
+    public class GetMessagesVoidingSettledCriteriaTests
     {
         [Fact]
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
         {
             // Arrange
-            var criteria = new GetAmendmentNotiAutoFeedbackInfoCriteria();
-            var expected = "Acc_CRM_AmendmentNoti_AutoFeedbackInfoSel";
+            var criteria = new GetMessagesVoidingSettledCriteria();
+            var expected = "Acc_CRM_VoidingMsg_GetMessage";
 
             // Act
             var actual = criteria.GetSettingKey();
@@ -23,7 +23,7 @@ namespace CRM.BackgroundJob.UnitTests.Criteria.ResultAmendment
         public void IsValid_WhenCalled_ReturnTrue()
         {
             // Arrange
-            var criteria = new GetAmendmentNotiAutoFeedbackInfoCriteria();
+            var criteria = new GetMessagesVoidingSettledCriteria();
 
             // Act
             var actual = criteria.IsValid();

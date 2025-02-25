@@ -63,7 +63,7 @@
             return base.GetAmendmentProductXml(sportTypeId, productId, betTypeMappings, settings, settingMappings);
         }
 
-        public SettingItem Public_GetAmenmentProduct(
+        public SettingItem Public_GetAmendmentProduct(
             IEnumerable<SettingItem> settings,
             IEnumerable<SystemSettingMapping> settingMappings,
             int productId)
@@ -111,7 +111,7 @@
             string homeName,
             string awayName,
             string Race_time,
-            string EventdateGMT4
+            string eventDateGMT4
             )
         {
             return base.GetAmendmentDescriptionVirtualSports(amendment,
@@ -120,7 +120,7 @@
                 homeName,
                 awayName,
                 Race_time,
-                EventdateGMT4);
+                eventDateGMT4);
         }
 
         public StringBuilder Public_GetAmendmentDescriptionNumberGame(
@@ -128,7 +128,7 @@
             AmendmentDescriptionTemplate amendmentDescTemplate,
             string leagueName,
             string sportName,
-            string EventdateGMT4
+            string eventDateGMT4
             )
         {
             return base.GetAmendmentDescriptionNumberGame(
@@ -136,7 +136,7 @@
              amendmentDescTemplate,
              leagueName,
              sportName,
-             EventdateGMT4);
+             eventDateGMT4);
         }
 
         public StringBuilder Public_GetAmendmentDescriptionSportOutRight(
@@ -155,7 +155,7 @@
              homeName);
         }
 
-        public string Public_GetAmenmendSolution(AmendmentAutoFeedbackInfo amendment,
+        public string Public_GetAmendmentSolution(AmendmentAutoFeedbackInfo amendment,
             IEnumerable<Message> messageContent, bool isNoResultTemplate)
         {
             return base.GetAmendmentSolution(amendment, messageContent, isNoResultTemplate);
@@ -225,7 +225,7 @@
             AmendmentSolutionTemplate amendmentSolTemplate,
             bool isVipCust,
             string leagueNameYN,
-            string Eventdate,
+            string eventDate,
             string leagueNameSC)
         {
             return base.GetAmendmentSolutionTemplateYnScNumberGame(
@@ -234,7 +234,7 @@
             amendmentSolTemplate,
             isVipCust,
             leagueNameYN,
-            Eventdate,
+            eventDate,
             leagueNameSC);
         }
     }

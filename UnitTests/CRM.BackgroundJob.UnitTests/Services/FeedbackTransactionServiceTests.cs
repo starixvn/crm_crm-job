@@ -178,7 +178,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public async Task ImportTOControllFeedbackInfoAsync_CustOutStandingHasData_ReturnExpectedXML()
+        public async Task ImportTOControlFeedbackInfoAsync_CustOutStandingHasData_ReturnExpectedXML()
         {
             // Arrange
             var custNotifications = new List<TONotification>
@@ -231,7 +231,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public async Task ImportTOControllFeedbackInfoAsync_CustOutStandingHasntData_ReturnExpectedXML()
+        public async Task ImportTOControlFeedbackInfoAsync_CustOutStandingNoData_ReturnExpectedXML()
         {
             // Arrange
             var custNotifications = new List<TONotification>
@@ -287,7 +287,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public async Task ImportProblemsAccountFeedbackInfoAsync_CustCategoryHasData_ReturnExpectedXML()
         {
             // Arrange
-            var custCategoryInfors = new List<CustCategoryInfo>
+            var custCategoryInfo = new List<CustCategoryInfo>
             {
                 new()
                 {
@@ -312,7 +312,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             baseService.GetDataAsync<ProblemsAccountAutoFeedbackInfo>(Arg.Do<InsertProblemsAccountAutoFeedbackInfoCommand>(x => criteria = x)).Returns(new List<ProblemsAccountAutoFeedbackInfo>());
 
             // Act
-            await service.ImportProblemsAccountFeedbackInfoAsync(headlines, custCategoryInfors, "LIVE");
+            await service.ImportProblemsAccountFeedbackInfoAsync(headlines, custCategoryInfo, "LIVE");
 
             // Assert
 
@@ -323,7 +323,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public async Task ImportProblemsAccountFeedbackInfoAsync_CustCategoryNotEqualHeadline_ReturnExpectedXML()
         {
             // Arrange
-            var custCategoryInfors = new List<CustCategoryInfo>
+            var custCategoryInfo = new List<CustCategoryInfo>
             {
                 new()
                 {
@@ -348,7 +348,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             baseService.GetDataAsync<ProblemsAccountAutoFeedbackInfo>(Arg.Do<InsertProblemsAccountAutoFeedbackInfoCommand>(x => criteria = x)).Returns(new List<ProblemsAccountAutoFeedbackInfo>());
 
             // Act
-            await service.ImportProblemsAccountFeedbackInfoAsync(headlines, custCategoryInfors, "LIVE");
+            await service.ImportProblemsAccountFeedbackInfoAsync(headlines, custCategoryInfo, "LIVE");
 
             // Assert
 

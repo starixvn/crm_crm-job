@@ -99,7 +99,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public async Task CreateTOControlFeedbackAsync_CreateNewCriteria_ExpectedToCallFunction()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var ToInfo = new TOControlFeedbackInfo
             {
                 SportType = 2,
                 BettypeList = "1,20",
@@ -128,13 +128,13 @@ namespace CRM.BackgroundJob.UnitTests.Services
             commonFeedback.GetCategorySubCategoryCWL(settings, DefaultValue.MANotification).Returns(category);
             service.Protected("GetTOSportsbookProduct", settings).Returns(setting);
             service.Protected("GetTOProductXml", Arg.Any<string>(), setting.SettingId, Arg.Any<List<string>>(), settings, settingMappings).Returns("product xml");
-            service.Protected("GetTOSolution", ToInfor).Returns("solution");
-            service.Protected("GetTORelatedCustomerXml", ToInfor).Returns("related customer xml");
-            service.Protected("GetTODescription", ToInfor).Returns("description");
+            service.Protected("GetTOSolution", ToInfo).Returns("solution");
+            service.Protected("GetTORelatedCustomerXml", ToInfo).Returns("related customer xml");
+            service.Protected("GetTODescription", ToInfo).Returns("description");
 
             // Act
             await service.Public_CreateTOControlFeedbackAsync(
-                ToInfor,
+                ToInfo,
                 settings,
                 settingMappings
                 );
@@ -149,10 +149,10 @@ namespace CRM.BackgroundJob.UnitTests.Services
         #region CheckValidTOParamsAndInsertFeedbackAsync
 
         [Fact]
-        public async Task CheckValidTOParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
+        public async Task CheckValidTOParamsAndInsertFeedbackAsync_CreateSuccessful_ExpectedWriteLog()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var ToInfo = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -170,7 +170,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
 
             // Act
             await service.Public_CheckValidTOParamsAndInsertFeedbackAsync(
-                ToInfor,
+                ToInfo,
                 criteria
                 );
 
@@ -179,10 +179,10 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public async Task CheckValidTOParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
+        public async Task CheckValidTOParamsAndInsertFeedbackAsync_CreateUnSuccessful_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var ToInfo = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -200,7 +200,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
 
             // Act
             await service.Public_CheckValidTOParamsAndInsertFeedbackAsync(
-                ToInfor,
+                ToInfo,
                 criteria
                 );
 
@@ -214,7 +214,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public async Task CheckValidTOParamsAndInsertFeedbackAsync_InvalidParams_ExpectedReturnAndUpdateStatus()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var ToInfo = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -232,7 +232,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
 
             // Act
             await service.Public_CheckValidTOParamsAndInsertFeedbackAsync(
-                ToInfor,
+                ToInfo,
                 criteria
                 );
 
@@ -245,7 +245,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public async Task CheckValidTOParamsAndInsertFeedbackAsync_Exception_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var ToInfo = new TOControlFeedbackInfo
             {
                 LogID = 1,
                 HeadlineID = 1,
@@ -263,7 +263,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
 
             // Act
             await service.Public_CheckValidTOParamsAndInsertFeedbackAsync(
-                ToInfor,
+                ToInfo,
                 criteria
                 );
 
@@ -344,12 +344,12 @@ namespace CRM.BackgroundJob.UnitTests.Services
         #region GetTOSportsbookProduct
 
         [Fact]
-        public void GetTOSportsbookProduct_NotExistSportbook_ReturnDefaultProduct()
+        public void GetTOSportsbookProduct_NotExistSportsbook_ReturnDefaultProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
                 {
-                    new() { SettingName = "Product", SettingValue = "sportbook1" }
+                    new() { SettingName = "Product", SettingValue = "sportsbook1" }
                 };
 
             var service = MockService();
@@ -362,7 +362,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public void GetTOSportsbookProduct_ExistSportbook_ReturnDefaultProduct()
+        public void GetTOSportsbookProduct_ExistSportsbook_ReturnDefaultProduct()
         {
             // Arrange
             var settings = new List<SettingItem>
@@ -389,7 +389,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         #region GetTOSubProduct
 
         [Fact]
-        public void GetTOSubProduct_NotExistedsportNames_ReturnDefaultSubProduct()
+        public void GetTOSubProduct_NotExistedSportNames_ReturnDefaultSubProduct()
         {
             // Arrange
             var sportName = fixture.Create<string>();
@@ -407,7 +407,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public void GetTOSubProduct_ExistedsportNames_ReturnExpectedSubProduct()
+        public void GetTOSubProduct_ExistedSportNames_ReturnExpectedSubProduct()
         {
             // Arrange
             var sportName = "1";
@@ -496,7 +496,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public void GetTORelatedCustomerXml_CallFunction_ReturnExpectTemplate()
         {
             // Arrange
-            var Toinfor = new TOControlFeedbackInfo
+            var toInfo = new TOControlFeedbackInfo
             {
                 HeadlineID = 1,
                 RelatedCustID = 1,
@@ -506,7 +506,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             var service = MockService();
 
             // Act
-            var actual = service.Public_GetTORelatedCustomerXml(Toinfor);
+            var actual = service.Public_GetTORelatedCustomerXml(toInfo);
 
             // Assert
             Assert.Equal("<ROOT><Row CustId='1' RelatedCustId='1' Username='test' /></ROOT>", actual);
@@ -523,7 +523,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public void GetTODescription_BaseOnSmaLevel_ReturnExpectedTemplate(byte RoleID)
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var toInfo = new TOControlFeedbackInfo
             {
                 RoleID = RoleID,
                 ProfileID = 1,
@@ -542,10 +542,10 @@ namespace CRM.BackgroundJob.UnitTests.Services
             };
             var service = MockService();
 
-            commonFeedback.GetSportName(ToInfor.SportType.ToString(), "en-US").Returns("sportName");
-            commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), "en-US").Returns("leagueName");
-            commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), "en-US").Returns("homeName");
-            commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), "en-US").Returns("awayName");
+            commonFeedback.GetSportName(toInfo.SportType.ToString(), "en-US").Returns("sportName");
+            commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), "en-US").Returns("leagueName");
+            commonFeedback.GetTeamName(toInfo.HomeID.ToString(), "en-US").Returns("homeName");
+            commonFeedback.GetTeamName(toInfo.AwayID.ToString(), "en-US").Returns("awayName");
             var desc = new TODescriptionTemplate
             {
                 Desc = "test"
@@ -558,7 +558,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             var expected = stringBuilder.ToString();
 
             // Act
-            var actual = service.Public_GetTODescription(ToInfor);
+            var actual = service.Public_GetTODescription(toInfo);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -674,7 +674,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         public void GetTOSolutionTemplateYNSC_CallFunction_ReturnExpectedTemplate(bool isVipCust, string language)
         {
             // Arrange
-            var ToInfor = new TOControlFeedbackInfo
+            var toInfo = new TOControlFeedbackInfo
             {
                 ProfileID = 1,
                 SportType = 1,
@@ -691,10 +691,10 @@ namespace CRM.BackgroundJob.UnitTests.Services
             };
             var service = MockService();
 
-            commonFeedback.GetSportName(ToInfor.SportType.ToString(), language).Returns("sportName");
-            commonFeedback.GetLeagueName(ToInfor.LeagueID.ToString(), language).Returns("leagueName");
-            commonFeedback.GetTeamName(ToInfor.HomeID.ToString(), language).Returns("homeName");
-            commonFeedback.GetTeamName(ToInfor.AwayID.ToString(), language).Returns("awayName");
+            commonFeedback.GetSportName(toInfo.SportType.ToString(), language).Returns("sportName");
+            commonFeedback.GetLeagueName(toInfo.LeagueID.ToString(), language).Returns("leagueName");
+            commonFeedback.GetTeamName(toInfo.HomeID.ToString(), language).Returns("homeName");
+            commonFeedback.GetTeamName(toInfo.AwayID.ToString(), language).Returns("awayName");
             var sol = new TOSolutionTemplate
             {
                 SolutionEN = "test",
@@ -705,7 +705,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
             var expected = stringBuilder.ToString();
 
             // Act
-            var actual = service.Public_GetTOSolutionTemplateYNSC(ToInfor, isVipCust, SMALevel.Master, SMALevel.MasterSC, sol);
+            var actual = service.Public_GetTOSolutionTemplateYNSC(toInfo, isVipCust, SMALevel.Master, SMALevel.MasterSC, sol);
 
             // Assert
             Assert.Equal(expected, actual.ToString());

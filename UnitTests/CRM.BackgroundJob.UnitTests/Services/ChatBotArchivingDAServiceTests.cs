@@ -19,7 +19,7 @@
         private IBaseService baseService;
 
         [Fact]
-        public async Task GetChatbotCTOSettingInfoAsync_WhenCalled_ReturnTOReachInfor()
+        public async Task GetChatbotCTOSettingInfoAsync_WhenCalled_ReturnTOReachInfo()
         {
             // Arrange
             var fixture = new Fixture();
@@ -38,20 +38,20 @@
         public async Task ImportArchivedAccountsAsync_WhenCalled_ReturnExpectedCommandResult()
         {
             var fixture = new Fixture();
-            var archivingDAInfors = fixture.Create<IEnumerable<ChatbotArchivingDAInfo>>();
-            var expectedCommand = archivingDAInfors.ToXML("root").ToString();
+            var archivingDAInfo = fixture.Create<IEnumerable<ChatbotArchivingDAInfo>>();
+            var expectedCommand = archivingDAInfo.ToXML("root").ToString();
             var service = GetService();
             var criteria = fixture.Create<ImportArchivedAccountsCommand>();
 
             var commandResult = fixture.Create<CommandResult>();
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportArchivedAccountsCommand>(x => criteria = x)).Returns(commandResult);
-            var valueTupe = new ValueTuple<CommandResult, ImportArchivedAccountsCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportArchivedAccountsCommand>(commandResult, criteria);
 
             // Act
-            var actual = await service.ImportArchivedAccountsAsync(archivingDAInfors, BackgroundJobConstants.DefaultEnvironment);
+            var actual = await service.ImportArchivedAccountsAsync(archivingDAInfo, BackgroundJobConstants.DefaultEnvironment);
 
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(expectedCommand, criteria.XmlData);
         }
 

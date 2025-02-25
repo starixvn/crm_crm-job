@@ -3,7 +3,7 @@
     using CRM.BackgroundJob.Criteria.SendNotificationCenter;
     using Xunit;
 
-    public class GetNotificationAlerCriteriaTests
+    public class GetNotificationAlertCriteriaTests
     {
         [Fact]
         public void GetSettingKey_ReturnCorrectSettingKey()

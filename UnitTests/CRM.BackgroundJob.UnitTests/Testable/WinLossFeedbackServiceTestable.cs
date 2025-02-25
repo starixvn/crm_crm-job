@@ -9,7 +9,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class WinLossFeedbackServiceTesable(
+    public class WinLossFeedbackServiceTestable(
         IOptionsSnapshot<AppJobSettings> appSettings,
         IBaseService baseService,
         ISettingService settingService,

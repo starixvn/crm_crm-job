@@ -2,6 +2,7 @@
 {
     using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
     using Xunit;
+
     public class VoidingAutoFeedbackInfoInsCommandTests
     {
         [Fact]
@@ -47,12 +48,12 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string messsage)
+        public void IsValid_ParamIsInvalid_ReturnFalse(string message)
         {
             // Arrange
             var criteria = new VoidingAutoFeedbackInfoInsCommand
             {
-                Message = messsage
+                Message = message
             };
 
             // Act

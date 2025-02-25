@@ -43,29 +43,29 @@
             // Arrange
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<MessageVoidSettled>>();
-            var messageVoidSettleds = fixture.Create<IEnumerable<MessageVoidSettled>>();
+            var messageVoidSettles = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var service = GetService();
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<VoidingMessageGetSettledTicket>()).Returns(expected);
 
             // Act
-            var actual = await service.VoidingMessageGetSettledTicketAsync(messageVoidSettleds, 1);
+            var actual = await service.VoidingMessageGetSettledTicketAsync(messageVoidSettles, 1);
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public async Task GetVoidingMessasgeCheckAsync_WhenCalled_ReturnExpectedMessages()
+        public async Task GetVoidingMessageCheckAsync_WhenCalled_ReturnExpectedMessages()
         {
             // Arrange
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<MessageVoidSettled>>();
-            var messageVoidSettleds = fixture.Create<IEnumerable<MessageVoidSettled>>();
+            var messageVoidSettles = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var service = GetService();
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<GetChatbotVoidingMessageCheck>()).Returns(expected);
 
             // Act
-            var actual = await service.GetVoidingMessageCheckAsync(messageVoidSettleds, "LIVE");
+            var actual = await service.GetVoidingMessageCheckAsync(messageVoidSettles, "LIVE");
 
             // Assert
             Assert.Equal(expected, actual);
@@ -98,14 +98,14 @@
             fixture.Create<AbnormalBetSystemSetting>();
             var targetMessages = fixture.Create<IEnumerable<TargetMessage>>();
             var targetMessageInfos = fixture.Create<IEnumerable<TargetMessageInfo>>();
-            var messageVoidSettleds = fixture.Create<IEnumerable<MessageVoidSettled>>();
+            var messageVoidSettles = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var messageIds = fixture.Create<IEnumerable<int>>();
             var expected = new ValueTuple<IEnumerable<int>, IEnumerable<TargetMessage>, IEnumerable<TargetMessageInfo>>(messageIds, targetMessages, targetMessageInfos);
             var service = GetService();
             baseService.FetchMultipleAsync<int, TargetMessage, TargetMessageInfo>(Arg.Any<GetChatbotMessageVoidSettledInfo>()).Returns(expected);
 
             // Act
-            var actual = await service.GetChatbotMessageVoidSettledInfoAsync(messageVoidSettleds);
+            var actual = await service.GetChatbotMessageVoidSettledInfoAsync(messageVoidSettles);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -237,13 +237,13 @@
             var targetMessagesInfo = fixture.Create<IEnumerable<TargetMessageInfo>>();
             var criteria = new ImportChatBotResultAmendmentCommand();
             var commandResult = fixture.Create<CommandResult>();
-            var valueTupe = new ValueTuple<CommandResult, ImportChatBotResultAmendmentCommand>(commandResult, criteria);
-            baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotResultAmendmentCommand>(x => criteria = x)).Returns(valueTupe.Item1);
+            var valueTuple = new ValueTuple<CommandResult, ImportChatBotResultAmendmentCommand>(commandResult, criteria);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotResultAmendmentCommand>(x => criteria = x)).Returns(valueTuple.Item1);
 
             // Act
             var actual = await service.ImportChatBotAmendmentResultAsync(ticketEvents, transactions, messages, targetMessages, targetMessagesInfo, BackgroundJobConstants.DefaultEnvironment, "ServerName");
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(ticketEvents.ToXML("root").ToString(), criteria.TicketData);
             Assert.Equal(stringBuilderEventData.ToString(), criteria.EventData);
             Assert.Equal(xmlTemplateMessage, criteria.MessageData);

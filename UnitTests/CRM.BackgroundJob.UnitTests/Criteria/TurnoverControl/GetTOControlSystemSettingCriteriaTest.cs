@@ -1,16 +1,16 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Criteria.VoidingSettledTickets
-{
-    using CRM.BackgroundJob.Criteria.VoidingSettledTickets;
-    using Xunit;
+﻿using CRM.BackgroundJob.Criteria.TurnoverControl;
+using Xunit;
 
-    public class GetMesssagesVoidingSettledCriteriaTests
+namespace CRM.BackgroundJob.UnitTests.Criteria.TurnoverControl
+{
+    public class GetTOControlSystemSettingCriteriaTest
     {
         [Fact]
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
         {
             // Arrange
-            var criteria = new GetMessagesVoidingSettledCriteria();
-            var expected = "Acc_CRM_VoidingMsg_GetMessage";
+            var criteria = new GetTOControlSystemSettingCriteria();
+            var expected = "Acc_CRM_TOControl_SystemSettingSel";
 
             // Act
             var actual = criteria.GetSettingKey();
@@ -23,7 +23,7 @@
         public void IsValid_WhenCalled_ReturnTrue()
         {
             // Arrange
-            var criteria = new GetMessagesVoidingSettledCriteria();
+            var criteria = new GetTOControlSystemSettingCriteria();
 
             // Act
             var actual = criteria.IsValid();

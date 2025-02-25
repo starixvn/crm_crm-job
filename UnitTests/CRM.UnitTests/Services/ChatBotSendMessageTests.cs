@@ -152,17 +152,17 @@
         private void FakeHttpClientResponse(HttpStatusCode status = HttpStatusCode.OK)
         {
             IEnumerable<SendResult> fakeResult = FakeListSendResult();
-            SendResult signeReult = new SendResult { NotificationId = 100, ConversationGroupId = 100, ErrorCode = 0, IsBlockedBot = false, IsIgnoreRetry = false };
-            var fakeTokenReult = new
+            SendResult signeResult = new SendResult { NotificationId = 100, ConversationGroupId = 100, ErrorCode = 0, IsBlockedBot = false, IsIgnoreRetry = false };
+            var fakeTokenResult = new
             {
                 accessToken = "token",
                 expriedDate = new DateTime(2100, 1, 1)
             };
             var httpClientFake = new Dictionary<string, HttpResponseMessage>
             {
-                { botServiceSettings.ServiceUrl + "api/authenticate", new HttpResponseMessage(status) { Content = new StringContent(JsonConvert.SerializeObject(fakeTokenReult))} },
+                { botServiceSettings.ServiceUrl + "api/authenticate", new HttpResponseMessage(status) { Content = new StringContent(JsonConvert.SerializeObject(fakeTokenResult))} },
                 { botServiceSettings.ServiceUrl + "api/multiple-notify", new HttpResponseMessage(status) { Content = new StringContent(JsonConvert.SerializeObject(fakeResult))} },
-                { botServiceSettings.ServiceUrl + "api/single-notify", new HttpResponseMessage(status) { Content = new StringContent(JsonConvert.SerializeObject(signeReult))} },
+                { botServiceSettings.ServiceUrl + "api/single-notify", new HttpResponseMessage(status) { Content = new StringContent(JsonConvert.SerializeObject(signeResult))} },
             };
             httpClientFactory.CreateClient().Returns(new HttpClient(new MockHttpMessageHandler(httpClientFake)));
         }

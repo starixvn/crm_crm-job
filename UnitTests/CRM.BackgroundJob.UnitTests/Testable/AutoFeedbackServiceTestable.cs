@@ -50,28 +50,28 @@
             autoFbRebateRetentionService,
             configuration)
     {
-        public async Task Public_ProblemsAcccountRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
+        public async Task Public_ProblemsAccountRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
             bool isRunningLive, ProblemsAccountSetting problemsAccountSetting, string Environment)
         {
             await base.ProblemsAccountRunJobByEnvironmentAsync(isUAT, isRunningUAT,
                 isRunningLive, problemsAccountSetting, Environment);
         }
 
-        public async Task Public_ResultAmendmentRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
+        public async Task Public_ResultAmendmentRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
             bool isRunningLive, AmendmentNotiFbSetting resultAmendmentSetting, string Environment)
         {
             await base.ResultAmendmentRunJobByEnvironmentAsync(isUAT, isRunningUAT,
                 isRunningLive, resultAmendmentSetting, Environment);
         }
 
-        public async Task Public_VoidingSettledTicketsRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
+        public async Task Public_VoidingSettledTicketsRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
             bool isRunningLive, AmendmentNotiFbSetting resultAmendmentSetting, string Environment)
         {
             await base.VoidingSettledTicketsRunJobByEnvironmentAsync(isUAT, isRunningUAT,
                 isRunningLive, resultAmendmentSetting, Environment);
         }
 
-        public async Task Public_AbnormalbetRunJobByEnviromentAsync(bool isUAT, bool isRunningUAT,
+        public async Task Public_AbnormalBetRunJobByEnvironmentAsync(bool isUAT, bool isRunningUAT,
             bool isRunningLive, AbnormalBetSystemSetting setting, string Environment)
         {
             await base.AbnormalBetRunJobByEnvironmentAsync(isUAT, isRunningUAT,

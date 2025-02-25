@@ -75,8 +75,8 @@
         {
             return new Hashtable
             {
-                { "errcode", 0 },
-                { "errmsg", string.Empty },
+                { "errCode", 0 },
+                { "errMsg", string.Empty },
             };
         }
 

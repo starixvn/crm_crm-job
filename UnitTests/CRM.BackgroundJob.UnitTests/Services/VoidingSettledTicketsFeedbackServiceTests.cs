@@ -130,7 +130,7 @@
         #region CheckValidVoidingSettledParamsAndInsertFeedbackAsync
 
         [Fact]
-        public async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
+        public async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync_CreateSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
@@ -149,7 +149,7 @@
         }
 
         [Fact]
-        public async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
+        public async Task CheckValidVoidingSettledParamsAndInsertFeedbackAsync_CreateUnSuccessful_ExpectedWriteLogAndUpdateStatus()
         {
             var feedbackInfo = fixture.Create<VoidingAutoFeedbackInfo>();
             var criteria = fixture.Create<CreateMultipleFeedbackCommand>();
@@ -234,13 +234,13 @@
                     SettingId = 1
                 }
             };
-            var productSubproductXml = "<Product ProductID='1' SubProductID='1' BetTypeID='1' />";
+            var productSubProductXml = "<Product ProductID='1' SubProductID='1' BetTypeID='1' />";
             var productIds = new List<int> { 1 };
             var sportTypeIds = new List<short> { 1 };
             service.Protected("GetVoidingSettledTicketsProduct", settings, settingMappings, productIds).Returns(products);
             service.Protected("GetVoidingSettledTicketsSubProduct", isMixParlay, products.Select(x => x.SettingId), sportTypeIds, settings, settingMappings).Returns(subProducts);
             service.Protected("GetVoidingSettledTicketsBetType", isMixParlay, Arg.Any<string[]>(), settingMappings).Returns(betTypesMapping);
-            service.Protected("GetProductSubXml", Arg.Any<SettingItem>(), Arg.Any<IList<SettingItem>>(), Arg.Any<IList<SystemSettingMapping>>()).Returns(productSubproductXml);
+            service.Protected("GetProductSubXml", Arg.Any<SettingItem>(), Arg.Any<IList<SettingItem>>(), Arg.Any<IList<SystemSettingMapping>>()).Returns(productSubProductXml);
 
             // Act
             var actual = service.Public_GetVoidingSettledTicketsProductXml(isMixParlay, productIds, sportTypeIds, "1,2", settings, settingMappings);
@@ -401,7 +401,7 @@
         #region GetVoidingSettledTicketsSubProduct
 
         [Fact]
-        public void GetVoidingSettledTicketsSubProduct_NotExistsportName_ReturnDefaultSubProduct()
+        public void GetVoidingSettledTicketsSubProduct_NotExistSportName_ReturnDefaultSubProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
@@ -661,7 +661,7 @@
         }
 
         [Fact]
-        public void GetCategorySubCategoryVoidingSettledTicket_NotExistsettingValueName_ReturnDefaultMainCategoryXML()
+        public void GetCategorySubCategoryVoidingSettledTicket_NotExistSettingValueName_ReturnDefaultMainCategoryXML()
         {
             // Arrange
             var settings = new List<SettingItem>
@@ -735,7 +735,7 @@
             // Act
             var actual = service.Public_GetCategorySubCategoryVoidingSettledTicket(settings, DefaultValue.ResultAmended, 10);
 
-            // Assertg
+            // Assert
             Assert.Equal(1, actual.Item1);
             Assert.Equal(0, actual.Item2);
             Assert.Equal("<ROOT><Category MainCategoryID='1' SubCategoryID='0' /></ROOT>", actual.Item3);
@@ -848,11 +848,11 @@
             stringBuilder.Append(BackgroundJobConstants.Break);
             stringBuilder.AppendFormat(messageTemplate, feedbackInfo.MessageId, BackgroundJobConstants.Break);
             stringBuilder.Append(BackgroundJobConstants.Break);
-            const string mainParlayticketsText = "<span style =\"font-weight:bold;\">Following Members have voided settled Main Parlay tickets: </span>";
-            stringBuilder.Append(mainParlayticketsText);
+            const string mainParlayTicketsText = "<span style =\"font-weight:bold;\">Following Members have voided settled Main Parlay tickets: </span>";
+            stringBuilder.Append(mainParlayTicketsText);
             stringBuilder.Append(BackgroundJobConstants.Break);
-            const string templateMainParlaytickets = "- {0}";
-            stringBuilder.AppendFormat(templateMainParlaytickets, "MatchCode");
+            const string templateMainParlayTickets = "- {0}";
+            stringBuilder.AppendFormat(templateMainParlayTickets, "MatchCode");
 
             // Act
             var actual = service.Public_GetVoidingSettledTicketDescription(feedbackInfo, eventDetails);
@@ -1012,7 +1012,7 @@
             stringBuilder.AppendFormat(ticketDescTemplate.Outright);
 
             // Act
-            var actual = service.Public_GetDescriptionSportBook(eventDetail, "Sportsbook", "kO_time", "leagueName", "homeName", "sportName", "awayName", "macthCode");
+            var actual = service.Public_GetDescriptionSportBook(eventDetail, "Sportsbook", "kO_time", "leagueName", "homeName", "sportName", "awayName", "matchCode");
 
             // Assert
             Assert.Equal(stringBuilder.ToString(), actual);
@@ -1032,7 +1032,7 @@
             stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2);
 
             // Act
-            var actual = service.Public_GetDescriptionSportBook(eventDetail, "Sportsbook", "kO_time", "leagueName", "homeName", "sportName", "awayName", "macthCode");
+            var actual = service.Public_GetDescriptionSportBook(eventDetail, "Sportsbook", "kO_time", "leagueName", "homeName", "sportName", "awayName", "matchCode");
 
             // Assert
             Assert.Equal(stringBuilder.ToString(), actual);

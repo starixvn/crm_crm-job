@@ -208,16 +208,16 @@
             stringBuilder.Append(BackgroundJobConstants.EndRootTag.ToLowerInvariant());
             var commandResult = fixture.Create<CommandResult>();
             var criteria = new ImportChatBotTicketVoidingInfoCommand();
-            var valueTupe = new ValueTuple<CommandResult, ImportChatBotTicketVoidingInfoCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportChatBotTicketVoidingInfoCommand>(commandResult, criteria);
 
             var service = GetService();
-            baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotTicketVoidingInfoCommand>(x => criteria = x)).Returns(valueTupe.Item1);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotTicketVoidingInfoCommand>(x => criteria = x)).Returns(valueTuple.Item1);
 
             // Act
             var actual = await service.ImportTicketVoidingAsync(messages, ticketInfos, MAXVoidingHistoryCollectionId, MAXMsgTargetId);
 
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(stringBuilder.ToString(), criteria.XmlData);
             Assert.Equal(BackgroundJobConstants.DefaultEnvironment, criteria.Environment);
             Assert.Equal(0, criteria.ErrCode);
@@ -270,16 +270,16 @@
             stringBuilder.Append(BackgroundJobConstants.EndRootTag.ToLowerInvariant());
             var commandResult = fixture.Create<CommandResult>();
             var criteria = new ImportChatBotTicketVoidingInfoCommand();
-            var valueTupe = new ValueTuple<CommandResult, ImportChatBotTicketVoidingInfoCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportChatBotTicketVoidingInfoCommand>(commandResult, criteria);
 
             var service = GetService();
-            baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotTicketVoidingInfoCommand>(x => criteria = x)).Returns(valueTupe.Item1);
+            baseService.ExecuteNonQueryAsync(Arg.Do<ImportChatBotTicketVoidingInfoCommand>(x => criteria = x)).Returns(valueTuple.Item1);
 
             // Act
             var actual = await service.ImportTicketVoidingAsync(messages, ticketInfos, MAXVoidingHistoryCollectionId, MAXMsgTargetId);
 
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(stringBuilder.ToString(), criteria.XmlData);
             Assert.Equal(BackgroundJobConstants.DefaultEnvironment, criteria.Environment);
             Assert.Equal(0, criteria.ErrCode);

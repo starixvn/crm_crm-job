@@ -68,7 +68,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public async Task GetListSMANotificationAsync_NotExistEnviroment_ReturnDefault()
+        public async Task GetListSMANotificationAsync_NotExistEnvironment_ReturnDefault()
         {
             // Arrange
             var expected = fixture.Create<IEnumerable<TONotification>>();
@@ -92,7 +92,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public async Task GetListSMANotificationAsync_ExistEnviroment_ReturnExpectedEniroment()
+        public async Task GetListSMANotificationAsync_ExistEnvironment_ReturnExpectedEnvironment()
         {
             // Arrange
             var expected = fixture.Create<IEnumerable<TONotification>>();
@@ -115,7 +115,7 @@ namespace CRM.BackgroundJob.UnitTests.Services
         }
 
         [Fact]
-        public async Task GetListCustReachLimitAsync_WhenCalled_ReturnExpectedLimitInfor()
+        public async Task GetListCustReachLimitAsync_WhenCalled_ReturnExpectedLimitInfo()
         {
             // Arrange
             var expected = fixture.Create<IEnumerable<CustomerWinLimit>>();

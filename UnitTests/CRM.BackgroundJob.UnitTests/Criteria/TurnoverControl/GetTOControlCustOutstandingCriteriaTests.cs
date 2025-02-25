@@ -3,14 +3,14 @@ using Xunit;
 
 namespace CRM.BackgroundJob.UnitTests.Criteria.TurnoverControl
 {
-    public class GetTOControllSystemSettingCriteriaTest
+    public class GetTOControlCustOutstandingCriteriaTests
     {
         [Fact]
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
         {
             // Arrange
-            var criteria = new GetTOControlSystemSettingCriteria();
-            var expected = "Acc_CRM_TOControl_SystemSettingSel";
+            var criteria = new GetTOControlCustOutstandingCriteria();
+            var expected = "Acc_CRM_TOControl_CustOutstandingSel";
 
             // Act
             var actual = criteria.GetSettingKey();
@@ -23,13 +23,29 @@ namespace CRM.BackgroundJob.UnitTests.Criteria.TurnoverControl
         public void IsValid_WhenCalled_ReturnTrue()
         {
             // Arrange
-            var criteria = new GetTOControlSystemSettingCriteria();
+            var criteria = new GetTOControlCustOutstandingCriteria
+            {
+                xml = "test"
+            };
 
             // Act
             var actual = criteria.IsValid();
 
             // Assert
             Assert.True(actual);
+        }
+
+        [Fact]
+        public void IsValid_WhenCalled_ReturnFalse()
+        {
+            // Arrange
+            var criteria = new GetTOControlCustNotificationSelCriteria();
+
+            // Act
+            var actual = criteria.IsValid();
+
+            // Assert
+            Assert.False(actual);
         }
     }
 }

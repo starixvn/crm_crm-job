@@ -22,7 +22,7 @@
         private IRemotingRefService remotingRefService;
 
         [Fact]
-        public async Task GetChatbotCWLLogInfoAsync_WhenCalled_ReturnCWLInfors()
+        public async Task GetChatbotCWLLogInfoAsync_WhenCalled_ReturnCWLInfo()
         {
             // Arrange
             var fixture = new Fixture();
@@ -79,12 +79,12 @@
 
             var commandResult = fixture.Create<CommandResult>();
             baseService.ExecuteNonQueryAsync(Arg.Do<ImportCWLLogInfoCommand>(x => criteria = x)).Returns(commandResult);
-            var valueTupe = new ValueTuple<CommandResult, ImportCWLLogInfoCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportCWLLogInfoCommand>(commandResult, criteria);
             // Act
             var actual = await service.ImportCWLLogInfoAsync(cWLInfos);
 
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(stringBuilder.ToString(), criteria.XmlData);
             Assert.Equal(BackgroundJobConstants.DefaultEnvironment, criteria.Environment);
             Assert.Equal(0, criteria.ErrCode);

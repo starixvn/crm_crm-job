@@ -125,7 +125,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingAbnormalBet).Returns(false);
 
             // Act
-            await service.Public_AbnormalbetRunJobByEnviromentAsync(false, true, false, setting, "LIVE");
+            await service.Public_AbnormalBetRunJobByEnvironmentAsync(false, true, false, setting, "LIVE");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -146,7 +146,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingAbnormalBet).Returns(false);
 
             // Act
-            await service.Public_AbnormalbetRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_AbnormalBetRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -168,7 +168,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingAbnormalBet).Returns(false);
 
             // Act
-            await service.Public_AbnormalbetRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_AbnormalBetRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -190,7 +190,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingAbnormalBet).Returns(false);
 
             // Act
-            await service.Public_AbnormalbetRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
+            await service.Public_AbnormalBetRunJobByEnvironmentAsync(false, true, true, setting, "LIVE");
 
             // Assert
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -212,7 +212,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingAbnormalBet).Returns(false);
 
             // Act
-            await service.Public_AbnormalbetRunJobByEnviromentAsync(false, false, false, setting, "LIVE");
+            await service.Public_AbnormalBetRunJobByEnvironmentAsync(false, false, false, setting, "LIVE");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForVoidingAbnormalBet);
@@ -236,7 +236,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingAbnormalBet).Returns(false);
 
             // Act
-            await service.Public_AbnormalbetRunJobByEnviromentAsync(true, false, false, setting, "UAT");
+            await service.Public_AbnormalBetRunJobByEnvironmentAsync(true, false, false, setting, "UAT");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForVoidingAbnormalBet);
@@ -503,7 +503,7 @@
         }
 
         [Fact]
-        public async Task VoidingSettledTicketsRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
+        public async Task VoidingSettledTicketsRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -518,14 +518,14 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingSettledTickets).Returns(false);
 
             // Act
-            await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(false, true, false, setting, "LIVE");
+            await service.Public_VoidingSettledTicketsRunJobByEnvironmentAsync(false, true, false, setting, "LIVE");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
         }
 
         [Fact]
-        public async Task VoidingSettledTicketsRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
+        public async Task VoidingSettledTicketsRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -539,14 +539,14 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingSettledTickets).Returns(false);
 
             // Act
-            await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_VoidingSettledTicketsRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_AutoVoidFB);
         }
 
         [Fact]
-        public async Task VoidingSettledTicketsRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
+        public async Task VoidingSettledTicketsRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -561,7 +561,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingSettledTickets).Returns(false);
 
             // Act
-            await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_VoidingSettledTicketsRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -583,7 +583,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingSettledTickets).Returns(false);
 
             // Act
-            await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
+            await service.Public_VoidingSettledTicketsRunJobByEnvironmentAsync(false, true, true, setting, "LIVE");
 
             // Assert
             logService.Received().LogInformation("Update  status and return service voiding settled tickets.");
@@ -606,7 +606,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForVoidingSettledTickets).Returns(false);
 
             // Act
-            await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(false, false, false, setting, "LIVE");
+            await service.Public_VoidingSettledTicketsRunJobByEnvironmentAsync(false, false, false, setting, "LIVE");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForVoidingSettledTickets);
@@ -630,7 +630,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackAmendmentNotiFB).Returns(false);
 
             // Act
-            await service.Public_VoidingSettledTicketsRunJobByEnviromentAsync(true, false, false, setting, "UAT");
+            await service.Public_VoidingSettledTicketsRunJobByEnvironmentAsync(true, false, false, setting, "UAT");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForVoidingSettledTickets);
@@ -713,7 +713,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(false, true, false, setting, "LIVE");
+            await service.Public_ProblemsAccountRunJobByEnvironmentAsync(false, true, false, setting, "LIVE");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -735,7 +735,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_ProblemsAccountRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -757,7 +757,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_ProblemsAccountRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_ProblemsAccount);
@@ -779,7 +779,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
+            await service.Public_ProblemsAccountRunJobByEnvironmentAsync(false, true, true, setting, "LIVE");
 
             // Assert
             logService.Received().LogInformation("Update  status and return service problems account.");
@@ -802,7 +802,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(false, false, false, setting, "LIVE");
+            await service.Public_ProblemsAccountRunJobByEnvironmentAsync(false, false, false, setting, "LIVE");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForProblemsAccount);
@@ -826,7 +826,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ProblemsAcccountRunJobByEnviromentAsync(true, false, false, setting, "UAT");
+            await service.Public_ProblemsAccountRunJobByEnvironmentAsync(true, false, false, setting, "UAT");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForProblemsAccount);
@@ -871,7 +871,7 @@
         }
 
         [Fact]
-        public async Task SynchronizeNewLicenseeOICExecuteJobAsync_ImportDataIsNotSuccessfull_ExpectedWriteLog()
+        public async Task SynchronizeNewLicenseeOICExecuteJobAsync_ImportDataIsNotSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var service = GetService();
@@ -888,7 +888,7 @@
         }
 
         [Fact]
-        public async Task SynchronizeNewLicenseeOICExecuteJobAsync_ImportDataIsSuccessfull_DoNothing()
+        public async Task SynchronizeNewLicenseeOICExecuteJobAsync_ImportDataIsSuccessful_DoNothing()
         {
             // Arrange
             var service = GetService();
@@ -979,7 +979,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ResultAmendmentRunJobByEnviromentAsync(false, true, false, setting, "LIVE");
+            await service.Public_ResultAmendmentRunJobByEnvironmentAsync(false, true, false, setting, "LIVE");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
@@ -1000,14 +1000,14 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackAmendmentNotiFB).Returns(false);
 
             // Act
-            await service.Public_ResultAmendmentRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_ResultAmendmentRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), BackgroundJobConstants.ServiceName_AmendmentNotiFB);
         }
 
         [Fact]
-        public async Task ResultAmendmentRunJobByEnviromentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
+        public async Task ResultAmendmentRunJobByEnvironmentAsync_EnvironmentIsUATAndJobIsRunningAndLastRuntimeIsLowerThanNow_DoNothing()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -1022,14 +1022,14 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ResultAmendmentRunJobByEnviromentAsync(true, true, false, setting, "UAT");
+            await service.Public_ResultAmendmentRunJobByEnvironmentAsync(true, true, false, setting, "UAT");
 
             // Assert
             await systemSettingService.DidNotReceive().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>());
         }
 
         [Fact]
-        public async Task ResultAmendmentRunJobByEnviromentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
+        public async Task ResultAmendmentRunJobByEnvironmentAsync_EnvironmentIsLIVEAndJobIsRunningAndLastRuntimeIsGreaterThanNow_CallExactFunction()
         {
             // Arrange
             var setting = new AmendmentNotiFbSetting
@@ -1044,7 +1044,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackAmendmentNotiFB).Returns(false);
 
             // Act
-            await service.Public_ResultAmendmentRunJobByEnviromentAsync(false, true, true, setting, "LIVE");
+            await service.Public_ResultAmendmentRunJobByEnvironmentAsync(false, true, true, setting, "LIVE");
 
             // Assert
             logService.Received().LogInformation("Update  status and return service result amendment.");
@@ -1067,7 +1067,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackForProblemsAccount).Returns(false);
 
             // Act
-            await service.Public_ResultAmendmentRunJobByEnviromentAsync(false, false, false, setting, "LIVE");
+            await service.Public_ResultAmendmentRunJobByEnvironmentAsync(false, false, false, setting, "LIVE");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackAmendmentNotiFB);
@@ -1091,7 +1091,7 @@
             jobRunningChecker.IsRunning(JobName.CreateFeedbackAmendmentNotiFB).Returns(false);
 
             // Act
-            await service.Public_ResultAmendmentRunJobByEnviromentAsync(true, false, false, setting, "UAT");
+            await service.Public_ResultAmendmentRunJobByEnvironmentAsync(true, false, false, setting, "UAT");
 
             // Assert
             await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackAmendmentNotiFB);
@@ -1126,18 +1126,18 @@
             var messageContent = fixture.Create<ValueTuple<IEnumerable<MessageRefundSettledTicket>, IEnumerable<MessageVoidSettled>>>();
             var commandResult = new CommandResult { Code = 1 };
             var criteria = fixture.Create<ImportRefundSettledTicketCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportRefundSettledTicketCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportRefundSettledTicketCommand>(commandResult, criteria);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_RefundSettledTickets, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             refundSettledTicketService.GetMessageRefundSettledTicketAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(messageContent);
-            refundSettledTicketService.ImportRefundSettledTicketAsync(messageContent.Item1, messageContent.Item2, BackgroundJobConstants.DefaultEnvironment).Returns(valueTupe);
+            refundSettledTicketService.ImportRefundSettledTicketAsync(messageContent.Item1, messageContent.Item2, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
             // Act
             await service.RefundSettledTicketJobAsync();
 
             // Assert
-            logService.Received().LogInformation(valueTupe.Item1.Message);
-            await logService.Received().ErrorAsync(valueTupe.Item1, valueTupe.Item2);
+            logService.Received().LogInformation(valueTuple.Item1.Message);
+            await logService.Received().ErrorAsync(valueTuple.Item1, valueTuple.Item2);
         }
 
         [Fact]
@@ -1148,11 +1148,11 @@
             var messageContent = fixture.Create<ValueTuple<IEnumerable<MessageRefundSettledTicket>, IEnumerable<MessageVoidSettled>>>();
             var commandResult = new CommandResult { Code = 0 };
             var criteria = fixture.Create<ImportRefundSettledTicketCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportRefundSettledTicketCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportRefundSettledTicketCommand>(commandResult, criteria);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_RefundSettledTickets, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             refundSettledTicketService.GetMessageRefundSettledTicketAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(messageContent);
-            refundSettledTicketService.ImportRefundSettledTicketAsync(messageContent.Item1, messageContent.Item2, BackgroundJobConstants.DefaultEnvironment).Returns(valueTupe);
+            refundSettledTicketService.ImportRefundSettledTicketAsync(messageContent.Item1, messageContent.Item2, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
             // Act
             await service.RefundSettledTicketJobAsync();
@@ -1189,19 +1189,19 @@
             var cleanMessages = fixture.Create<ValueTuple<IEnumerable<MessageInfoID>, int>>();
             var commandResult = new CommandResult { Code = 1 };
             var criteria = fixture.Create<ImportVoidBetIDCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportVoidBetIDCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportVoidBetIDCommand>(commandResult, criteria);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoVoidBetID, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             voidingBetIDService.GetMessageVoidBetIDAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(messages);
             voidingBetIDService.CleanMessageVoidBetIDAsync(messages).Returns(cleanMessages);
-            voidingBetIDService.ImportVoidBetIDAsync(cleanMessages.Item1, BackgroundJobConstants.DefaultEnvironment, cleanMessages.Item2).Returns(valueTupe);
+            voidingBetIDService.ImportVoidBetIDAsync(cleanMessages.Item1, BackgroundJobConstants.DefaultEnvironment, cleanMessages.Item2).Returns(valueTuple);
 
             // Act
             await service.VoidingBetIDExecuteJobAsync();
 
             // Assert
-            logService.Received().LogInformation(valueTupe.Item1.Message);
-            await logService.Received().ErrorAsync(valueTupe.Item1, valueTupe.Item2);
+            logService.Received().LogInformation(valueTuple.Item1.Message);
+            await logService.Received().ErrorAsync(valueTuple.Item1, valueTuple.Item2);
         }
 
         [Fact]
@@ -1213,12 +1213,12 @@
             var cleanMessages = fixture.Create<ValueTuple<IEnumerable<MessageInfoID>, int>>();
             var commandResult = new CommandResult { Code = 0 };
             var criteria = fixture.Create<ImportVoidBetIDCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportVoidBetIDCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportVoidBetIDCommand>(commandResult, criteria);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoVoidBetID, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             voidingBetIDService.GetMessageVoidBetIDAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(messages);
             voidingBetIDService.CleanMessageVoidBetIDAsync(messages).Returns(cleanMessages);
-            voidingBetIDService.ImportVoidBetIDAsync(cleanMessages.Item1, BackgroundJobConstants.DefaultEnvironment, cleanMessages.Item2).Returns(valueTupe);
+            voidingBetIDService.ImportVoidBetIDAsync(cleanMessages.Item1, BackgroundJobConstants.DefaultEnvironment, cleanMessages.Item2).Returns(valueTuple);
 
             // Act
             await service.VoidingBetIDExecuteJobAsync();
@@ -1255,19 +1255,19 @@
             var messages = fixture.Create<IEnumerable<MessageAbnormalBet>>();
             var commandResult = new CommandResult { Code = 1 };
             var criteria = fixture.Create<ImportAbnormalBetCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportAbnormalBetCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportAbnormalBetCommand>(commandResult, criteria);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoAbnormalBets, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             abnormalBetService.GetVoidedInfoAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(voidedInfo);
             abnormalBetService.GetMessageAbnormalBetAsync(voidedInfo.Item2).Returns(messages);
-            abnormalBetService.ImportAbnormalBetsAsync(messages, voidedInfo.Item1, BackgroundJobConstants.DefaultEnvironment, voidedInfo.Item3).Returns(valueTupe);
+            abnormalBetService.ImportAbnormalBetsAsync(messages, voidedInfo.Item1, BackgroundJobConstants.DefaultEnvironment, voidedInfo.Item3).Returns(valueTuple);
 
             // Act
             await service.AbnormalBetsExecuteJobAsync();
 
             // Assert
-            logService.Received().LogInformation(valueTupe.Item1.Message);
-            await logService.Received().ErrorAsync(valueTupe.Item1, valueTupe.Item2);
+            logService.Received().LogInformation(valueTuple.Item1.Message);
+            await logService.Received().ErrorAsync(valueTuple.Item1, valueTuple.Item2);
         }
 
         [Fact]
@@ -1279,12 +1279,12 @@
             var messages = fixture.Create<IEnumerable<MessageAbnormalBet>>();
             var commandResult = new CommandResult { Code = 0 };
             var criteria = fixture.Create<ImportAbnormalBetCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportAbnormalBetCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, ImportAbnormalBetCommand>(commandResult, criteria);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoAbnormalBets, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             abnormalBetService.GetVoidedInfoAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(voidedInfo);
             abnormalBetService.GetMessageAbnormalBetAsync(voidedInfo.Item2).Returns(messages);
-            abnormalBetService.ImportAbnormalBetsAsync(messages, voidedInfo.Item1, BackgroundJobConstants.DefaultEnvironment, voidedInfo.Item3).Returns(valueTupe);
+            abnormalBetService.ImportAbnormalBetsAsync(messages, voidedInfo.Item1, BackgroundJobConstants.DefaultEnvironment, voidedInfo.Item3).Returns(valueTuple);
 
             // Act
             await service.AbnormalBetsExecuteJobAsync();
@@ -1320,18 +1320,18 @@
             var messageInfoID = fixture.Create<IEnumerable<MessageInfoID>>();
             var commandResult = new CommandResult { Code = 1 };
             var command = fixture.Create<ImportMessageNotificationCenterCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportMessageNotificationCenterCommand>(commandResult, command);
+            var valueTuple = new ValueTuple<CommandResult, ImportMessageNotificationCenterCommand>(commandResult, command);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoMessageNotificationCenter, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             autoFbMessageNotificationCenterService.GetMsgInfoMessageNotificationAsync(setting.LastMsgTargetId, setting.BatchSize).Returns(messageInfoID);
-            autoFbMessageNotificationCenterService.ImportMessageNotificationAsync(messageInfoID, BackgroundJobConstants.DefaultEnvironment).Returns(valueTupe);
+            autoFbMessageNotificationCenterService.ImportMessageNotificationAsync(messageInfoID, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
             // Act
             await service.MessageNotificationCenterExecuteJobAsync();
 
             // Assert
-            logService.Received().LogInformation(valueTupe.Item1.Message);
-            await logService.Received().ErrorAsync(valueTupe.Item1, valueTupe.Item2);
+            logService.Received().LogInformation(valueTuple.Item1.Message);
+            await logService.Received().ErrorAsync(valueTuple.Item1, valueTuple.Item2);
         }
 
         [Fact]
@@ -1342,11 +1342,11 @@
             var messageInfoID = fixture.Create<IEnumerable<MessageInfoID>>();
             var commandResult = new CommandResult { Code = 0 };
             var command = fixture.Create<ImportMessageNotificationCenterCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportMessageNotificationCenterCommand>(commandResult, command);
+            var valueTuple = new ValueTuple<CommandResult, ImportMessageNotificationCenterCommand>(commandResult, command);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoMessageNotificationCenter, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             autoFbMessageNotificationCenterService.GetMsgInfoMessageNotificationAsync(setting.LastMsgTargetId, setting.BatchSize).Returns(messageInfoID);
-            autoFbMessageNotificationCenterService.ImportMessageNotificationAsync(messageInfoID, BackgroundJobConstants.DefaultEnvironment).Returns(valueTupe);
+            autoFbMessageNotificationCenterService.ImportMessageNotificationAsync(messageInfoID, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
             // Act
             await service.MessageNotificationCenterExecuteJobAsync();
@@ -1383,18 +1383,18 @@
             var newLogSIDs = "123";
             var commandResult = new CommandResult { Code = 1 };
             var command = fixture.Create<ImportAutoFbRebateRetentionCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportAutoFbRebateRetentionCommand>(commandResult, command);
+            var valueTuple = new ValueTuple<CommandResult, ImportAutoFbRebateRetentionCommand>(commandResult, command);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoRebateRetention, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             autoFbRebateRetentionService.GetRebateRetentionInfoAsync(setting.LastLogSId).Returns((rrMessages, newLogSIDs));
-            autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTupe);
+            autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
             // Act
             await service.RebateRetentionExecuteJobAsync();
 
             // Assert
-            logService.Received().LogInformation(valueTupe.Item1.Message);
-            await logService.Received().ErrorAsync(valueTupe.Item1, valueTupe.Item2);
+            logService.Received().LogInformation(valueTuple.Item1.Message);
+            await logService.Received().ErrorAsync(valueTuple.Item1, valueTuple.Item2);
         }
 
         [Fact]
@@ -1406,11 +1406,11 @@
             var newLogSIDs = "123";
             var commandResult = new CommandResult { Code = 0 };
             var command = fixture.Create<ImportAutoFbRebateRetentionCommand>();
-            var valueTupe = new ValueTuple<CommandResult, ImportAutoFbRebateRetentionCommand>(commandResult, command);
+            var valueTuple = new ValueTuple<CommandResult, ImportAutoFbRebateRetentionCommand>(commandResult, command);
             var service = GetService();
             systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoRebateRetention, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
             autoFbRebateRetentionService.GetRebateRetentionInfoAsync(setting.LastLogSId).Returns((rrMessages, newLogSIDs));
-            autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTupe);
+            autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
             // Act
             await service.RebateRetentionExecuteJobAsync();

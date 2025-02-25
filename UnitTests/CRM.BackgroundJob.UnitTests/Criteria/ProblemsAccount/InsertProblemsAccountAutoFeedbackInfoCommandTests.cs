@@ -3,7 +3,7 @@
     using CRM.BackgroundJob.Criteria.ProblemsAccount;
     using Xunit;
 
-    public class InsertProblemsAccountAutoFeedbackInforCommandTests
+    public class InsertProblemsAccountAutoFeedbackInfoCommandTests
     {
         [Fact]
         public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
@@ -39,7 +39,6 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-
         public void IsValid_ParamIsInvalid_ReturnFalse(string xml)
         {
             // Arrange

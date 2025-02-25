@@ -60,20 +60,20 @@
             // Arrange
             var fixture = new Fixture();
             var voidingSettledTicketSetting = fixture.Create<AmendmentNotiFbSetting>();
-            var voidSettleds = fixture.Create<List<MessageVoidSettled>>();
+            var voidSettles = fixture.Create<List<MessageVoidSettled>>();
             var expected = fixture.Create<ValueTuple<IEnumerable<VoidingTicketEventInfo>, IEnumerable<MsgTarget>>>();
             var service = GetVoidingSettledService();
             baseService.FetchMultipleAsync<VoidingTicketEventInfo, MsgTarget>(Arg.Any<GetAutoVoidingTicketCriteria>()).Returns(expected);
 
             // Act
-            var actual = await service.GetAutoVoidingTicketAsync(voidingSettledTicketSetting, voidSettleds, "LIVE");
+            var actual = await service.GetAutoVoidingTicketAsync(voidingSettledTicketSetting, voidSettles, "LIVE");
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public async Task GetFailVoidingMessageAsyncc_WhenCalled_ReturnExpectedFailMessages()
+        public async Task GetFailVoidingMessageAsync_WhenCalled_ReturnExpectedFailMessages()
         {
             // Arrange
             var fixture = new Fixture();
@@ -110,29 +110,29 @@
             // Arrange
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<MessageVoidSettled>>();
-            var messageVoidSettleds = fixture.Create<IEnumerable<MessageVoidSettled>>();
+            var messageVoidSettles = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var service = GetVoidingSettledService();
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<VoidingGetSettledTicketMessageCriteria>()).Returns(expected);
 
             // Act
-            var actual = await service.VoidingMessageGetSettledTicketAsync(messageVoidSettleds);
+            var actual = await service.VoidingMessageGetSettledTicketAsync(messageVoidSettles);
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public async Task GetVoidingMessasgeCheckAsync_WhenCalled_ReturnExpectedMessages()
+        public async Task GetVoidingMessageCheckAsync_WhenCalled_ReturnExpectedMessages()
         {
             // Arrange
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<MessageVoidSettled>>();
-            var messageVoidSettleds = fixture.Create<IEnumerable<MessageVoidSettled>>();
+            var messageVoidSettles = fixture.Create<IEnumerable<MessageVoidSettled>>();
             var service = GetVoidingSettledService();
             baseService.GetDataAsync<MessageVoidSettled>(Arg.Any<GetChatbotVoidingMessageCheck>()).Returns(expected);
 
             // Act
-            var actual = await service.GetVoidingMessageCheckAsync(messageVoidSettleds, "LIVE");
+            var actual = await service.GetVoidingMessageCheckAsync(messageVoidSettles, "LIVE");
 
             // Assert
             Assert.Equal(expected, actual);
@@ -188,7 +188,7 @@
             baseService.ExecuteNonQueryAsync(Arg.Do<VoidingAutoFeedbackInfoBatchUpdCommand>(x => _ = x)).Returns(expected);
 
             // Act
-            var actual = await service.UpdateVoidingAutoFeedbackInfoBatchAsync(1, "status", "desctiption", "LIVE");
+            var actual = await service.UpdateVoidingAutoFeedbackInfoBatchAsync(1, "status", "description", "LIVE");
 
             // Assert
             Assert.Equal(expected, actual);

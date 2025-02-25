@@ -11,7 +11,7 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class AutoFbProblemAccountWokerTests
+    public class AutoFbProblemAccountWorkerTests
     {
         private IAutoFeedbackService autoFeedbackService;
         private IMaintenanceService maintenanceService;

@@ -20,7 +20,7 @@
         private ICommonFeedback commonFeedback;
 
         [Fact]
-        public async Task GetChatbotCTOSettingInfoAsync_WhenCalled_ReturnTOReachInfor()
+        public async Task GetChatbotCTOSettingInfoAsync_WhenCalled_ReturnTOReachInfo()
         {
             // Arrange
             var fixture = new Fixture();
@@ -41,7 +41,7 @@
             // Arrange
             var fixture = new Fixture();
             var expected = fixture.Create<IEnumerable<TurnoverSMAInfo>>();
-            var tOReachInfors = new List<TOReachInfo>
+            var tOReachInfo = new List<TOReachInfo>
             {
                 new() { MatchId = 1, CustId = 1, LogId = 1}
             };
@@ -49,7 +49,7 @@
             baseService.GetDataAsync<TurnoverSMAInfo>(Arg.Any<GetTOControlSMAInfoCriteria>()).Returns(expected);
 
             // Act
-            var actual = await service.GetChatbotCTOSMAInfoAsync(tOReachInfors);
+            var actual = await service.GetChatbotCTOSMAInfoAsync(tOReachInfo);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -61,7 +61,7 @@
             // Arrange
             var fixture = new Fixture();
             var service = GetService();
-            var tOSMAInfors = new List<TurnoverSMAInfo>
+            var tOSMAInfo = new List<TurnoverSMAInfo>
             {
                 fixture.Create<TurnoverSMAInfo>()
             };
@@ -76,40 +76,40 @@
                 " Outstanding='{27}'> </r>";
 
             var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
-            var smaInfor = tOSMAInfors[0];
-            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.en_US).Returns("sportNameEN");
-            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.zh_CN).Returns("sportNameSC");
-            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.th_TH).Returns("sportNameTH");
-            commonFeedback.GetSportName(smaInfor.SportType.ToString(), Language.vi_VN).Returns("sportNameYN");
+            var smaInfo = tOSMAInfo[0];
+            commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.en_US).Returns("sportNameEN");
+            commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.zh_CN).Returns("sportNameSC");
+            commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.th_TH).Returns("sportNameTH");
+            commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.vi_VN).Returns("sportNameYN");
 
-            commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.en_US).Returns("leagueNameEN");
-            commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.zh_CN).Returns("leagueNameSC");
-            commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.th_TH).Returns("leagueNameTH");
-            commonFeedback.GetLeagueName(smaInfor.LeagueId.ToString(), Language.vi_VN).Returns("leagueNameYN");
+            commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.en_US).Returns("leagueNameEN");
+            commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.zh_CN).Returns("leagueNameSC");
+            commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.th_TH).Returns("leagueNameTH");
+            commonFeedback.GetLeagueName(smaInfo.LeagueId.ToString(), Language.vi_VN).Returns("leagueNameYN");
 
-            commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.en_US).Returns("homeNameEN");
-            commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.zh_CN).Returns("homeNameSC");
-            commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.th_TH).Returns("homeNameTH");
-            commonFeedback.GetTeamName(smaInfor.HomeId.ToString(), Language.vi_VN).Returns("homeNameYN");
+            commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.en_US).Returns("homeNameEN");
+            commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.zh_CN).Returns("homeNameSC");
+            commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.th_TH).Returns("homeNameTH");
+            commonFeedback.GetTeamName(smaInfo.HomeId.ToString(), Language.vi_VN).Returns("homeNameYN");
 
-            commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.en_US).Returns("awayNameEN");
-            commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.zh_CN).Returns("awayNameSC");
-            commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.th_TH).Returns("awayNameTH");
-            commonFeedback.GetTeamName(smaInfor.AwayId.ToString(), Language.vi_VN).Returns("awayNameYN");
+            commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.en_US).Returns("awayNameEN");
+            commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.zh_CN).Returns("awayNameSC");
+            commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.th_TH).Returns("awayNameTH");
+            commonFeedback.GetTeamName(smaInfo.AwayId.ToString(), Language.vi_VN).Returns("awayNameYN");
 
-            var smaLevelYN = service.Protected("GetSMALevel", smaInfor.RoleId, Language.en_US);
-            var smaLevelEN = service.Protected("GetSMALevel", smaInfor.RoleId, Language.en_US);
-            var smaLevelSC = service.Protected("GetSMALevel", smaInfor.RoleId, Language.zh_CN);
-            var smaLevelTH = service.Protected("GetSMALevel", smaInfor.RoleId, Language.th_TH);
+            var smaLevelYN = service.Protected("GetSMALevel", smaInfo.RoleId, Language.en_US);
+            var smaLevelEN = service.Protected("GetSMALevel", smaInfo.RoleId, Language.en_US);
+            var smaLevelSC = service.Protected("GetSMALevel", smaInfo.RoleId, Language.zh_CN);
+            var smaLevelTH = service.Protected("GetSMALevel", smaInfo.RoleId, Language.th_TH);
 
             stringBuilder.AppendFormat(XmlTemplate,
-                    smaInfor.LogId,
-                    smaInfor.CustId,
-                    smaInfor.UserName,
-                    smaInfor.Recommend,
-                    smaInfor.Mrecommend,
-                    smaInfor.Srecommend,
-                    smaInfor.CurrencyName,
+                    smaInfo.LogId,
+                    smaInfo.CustId,
+                    smaInfo.UserName,
+                    smaInfo.Recommend,
+                    smaInfo.Mrecommend,
+                    smaInfo.Srecommend,
+                    smaInfo.CurrencyName,
                     smaLevelEN,
                     smaLevelSC,
                     smaLevelTH,
@@ -130,7 +130,7 @@
                     "awayNameSC",
                     "awayNameTH",
                     "awayNameYN",
-                    smaInfor.Outstanding
+                    smaInfo.Outstanding
                 );
 
             stringBuilder.Append(BackgroundJobConstants.EndRootTag.ToLowerInvariant());
@@ -138,13 +138,13 @@
 
             var commandResult = fixture.Create<CommandResult>();
             baseService.ExecuteNonQueryAsync(Arg.Do<TOControlImportCommand>(x => criteria = x)).Returns(commandResult);
-            var valueTupe = new ValueTuple<CommandResult, TOControlImportCommand>(commandResult, criteria);
+            var valueTuple = new ValueTuple<CommandResult, TOControlImportCommand>(commandResult, criteria);
 
             // Act
-            var actual = await service.ImportTOSMAInfoAsync(tOSMAInfors);
+            var actual = await service.ImportTOSMAInfoAsync(tOSMAInfo);
 
             // Assert
-            Assert.Equal(valueTupe.Item1, actual.Item1);
+            Assert.Equal(valueTuple.Item1, actual.Item1);
             Assert.Equal(stringBuilder.ToString(), criteria.XmlData);
         }
 

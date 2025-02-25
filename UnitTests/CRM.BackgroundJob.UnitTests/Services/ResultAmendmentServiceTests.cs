@@ -32,7 +32,7 @@
         #region CreateFeedbackForAmendmentNotiFbAsync
 
         [Fact]
-        public async Task CreateFeedbackForAmendmentNotiFbAsync_isAnyNotCompeleteStatusIsTrue_EditSystemSettingAsyncCalled()
+        public async Task CreateFeedbackForAmendmentNotiFbAsync_isAnyNotCompleteStatusIsTrue_EditSystemSettingAsyncCalled()
         {
             // Arrange
             var service = MockService();
@@ -65,7 +65,7 @@
         }
 
         [Fact]
-        public async Task CreateFeedbackForAmendmentNotiFbAsync_InserAmendmentNotiAutoFeedbackCreateUnSuccessfull_ExpectedWriteLog()
+        public async Task CreateFeedbackForAmendmentNotiFbAsync_InsertAmendmentNotiAutoFeedbackCreateUnSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var service = MockService();
@@ -101,7 +101,7 @@
         }
 
         [Fact]
-        public async Task CreateFeedbackForAmendmentNotiFbAsync_InserAmendmentNotiAutoFeedbackCreateSuccessfull_ExpectedWriteLogAndUpdate()
+        public async Task CreateFeedbackForAmendmentNotiFbAsync_InsertAmendmentNotiAutoFeedbackCreateSuccessful_ExpectedWriteLogAndUpdate()
         {
             // Arrange
             var service = MockService();
@@ -119,9 +119,9 @@
                     Status = "Completed"
                 }
             };
-            var amendmentAutoFeedbackInfors = fixture.Create<IEnumerable<AmendmentAutoFeedbackInfo>>();
+            var amendmentAutoFeedbackInfo = fixture.Create<IEnumerable<AmendmentAutoFeedbackInfo>>();
             customerService.GetListResultAmendmentNotificationAsync(resultAmendmentSetting).Returns(custNotifications);
-            transactionService.GetAmendmentNotiAutoFeedbackInfo(resultAmendmentSetting.BatchSize).Returns(amendmentAutoFeedbackInfors);
+            transactionService.GetAmendmentNotiAutoFeedbackInfo(resultAmendmentSetting.BatchSize).Returns(amendmentAutoFeedbackInfo);
 
             var commandResult = new CommandResult { Code = 0, Message = "" };
             transactionService.InsertAmendmentNotiAutoFeedback(custNotifications, "LIVE").Returns(commandResult);
@@ -142,7 +142,7 @@
         }
 
         [Fact]
-        public async Task CreateFeedbackForAmendmentNotiFbAsync_InserAmendmentNotiAutoFeedbackThrowException_ExpectedWriteLogAndUpdateStatus()
+        public async Task CreateFeedbackForAmendmentNotiFbAsync_InsertAmendmentNotiAutoFeedbackThrowException_ExpectedWriteLogAndUpdateStatus()
         {
             // Arrange
             var service = MockService();
@@ -158,9 +158,9 @@
                     Status = "Completed"
                 }
             };
-            var amendmentAutoFeedbackInfors = fixture.Create<IEnumerable<AmendmentAutoFeedbackInfo>>();
+            var amendmentAutoFeedbackInfo = fixture.Create<IEnumerable<AmendmentAutoFeedbackInfo>>();
             customerService.GetListResultAmendmentNotificationAsync(resultAmendmentSetting).Returns(custNotifications);
-            transactionService.GetAmendmentNotiAutoFeedbackInfo(resultAmendmentSetting.BatchSize).Returns(amendmentAutoFeedbackInfors);
+            transactionService.GetAmendmentNotiAutoFeedbackInfo(resultAmendmentSetting.BatchSize).Returns(amendmentAutoFeedbackInfo);
 
             var exception = fixture.Create<Exception>();
             transactionService.When(x => x.InsertAmendmentNotiAutoFeedback(custNotifications, "LIVE")).Throw(exception);
@@ -277,7 +277,7 @@
         #region CheckValidAmendmentParamsAndInsertFeedbackAsync
 
         [Fact]
-        public async Task CheckValidAmendmentParamsAndInsertFeedbackAsync_CreateSuccessfull_ExpectedWriteLog()
+        public async Task CheckValidAmendmentParamsAndInsertFeedbackAsync_CreateSuccessful_ExpectedWriteLog()
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
@@ -310,7 +310,7 @@
         }
 
         [Fact]
-        public async Task CheckValidAmendmentParamsAndInsertFeedbackAsync_CreateUnSuccessfull_ExpectedWriteLogAndUpdateStatus()
+        public async Task CheckValidAmendmentParamsAndInsertFeedbackAsync_CreateUnSuccessful_ExpectedWriteLogAndUpdateStatus()
         {
             var amendment = new AmendmentAutoFeedbackInfo
             {
@@ -476,7 +476,7 @@
         #region GetAmenmentProduct
 
         [Fact]
-        public void GetAmenmentProduct_NotExistProductId_ReturnDefaultProduct()
+        public void GetAmendmentProduct_NotExistProductId_ReturnDefaultProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
@@ -492,14 +492,14 @@
             commonFeedback.GetProductName("1", Language.en_US).Returns("2");
 
             // Act
-            var actual = service.Public_GetAmenmentProduct(setting, settingMappings, 1);
+            var actual = service.Public_GetAmendmentProduct(setting, settingMappings, 1);
 
             // Assert
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.SettingId);
         }
 
         [Fact]
-        public void GetAmenmentProduct_SettingNotEqualProductMapping_ReturnDefaultProduct()
+        public void GetAmendmentProduct_SettingNotEqualProductMapping_ReturnDefaultProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
@@ -515,14 +515,14 @@
             commonFeedback.GetProductName("1", Language.en_US).Returns("1");
 
             // Act
-            var actual = service.Public_GetAmenmentProduct(setting, settingMappings, 1);
+            var actual = service.Public_GetAmendmentProduct(setting, settingMappings, 1);
 
             // Assert
             Assert.Equal(BackgroundJobConstants.ProductNA, actual.SettingId);
         }
 
         [Fact]
-        public void GetAmenmentProduct_SettingEqualProductMapping_ReturnProduct()
+        public void GetAmendmentProduct_SettingEqualProductMapping_ReturnProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
@@ -538,7 +538,7 @@
             commonFeedback.GetProductName("1", Language.en_US).Returns("1");
 
             // Act
-            var actual = service.Public_GetAmenmentProduct(setting, settingMappings, 1);
+            var actual = service.Public_GetAmendmentProduct(setting, settingMappings, 1);
 
             // Assert
             Assert.Equal(1, actual.SettingId);
@@ -549,7 +549,7 @@
         #region GetAmendmentSubProduct
 
         [Fact]
-        public void GetAmendmentSubProduct_NotExistsportName_ReturnDefaultSubProduct()
+        public void GetAmendmentSubProduct_NotExistedSportName_ReturnDefaultSubProduct()
         {
             // Arrange
             var setting = new List<SettingItem>
@@ -749,7 +749,7 @@
         }
 
         [Fact]
-        public void GetCategorySubCategoryResultAmendment_NotExistsettingValueName_ReturnDefaultMainCategoryXML()
+        public void GetCategorySubCategoryResultAmendment_NotExistedSettingValueName_ReturnDefaultMainCategoryXML()
         {
             // Arrange
             var settings = new List<SettingItem>
@@ -872,7 +872,7 @@
         #region GetAmendmentDescription
 
         [Fact]
-        public void GetAmendmentDescription_ProducIsNotExpected_ReturnDefaultTemplate()
+        public void GetAmendmentDescription_ProductIsNotExpected_ReturnDefaultTemplate()
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
@@ -1101,7 +1101,7 @@
         }
 
         [Fact]
-        public void GetAmendmentDescription_ProducIsVirtualSports2_ReturnExactTemplate()
+        public void GetAmendmentDescription_ProductIsVirtualSports2_ReturnExactTemplate()
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
@@ -1160,7 +1160,7 @@
         }
 
         [Fact]
-        public void GetAmendmentDescription_ProducIsVirtualSports5_ReturnExactTemplate()
+        public void GetAmendmentDescription_ProductIsVirtualSports5_ReturnExactTemplate()
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
@@ -1219,7 +1219,7 @@
         }
 
         [Fact]
-        public void GetAmendmentDescription_ProducIsVirtualSports_ReturnExactTemplate()
+        public void GetAmendmentDescription_ProductIsVirtualSports_ReturnExactTemplate()
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
@@ -1280,7 +1280,7 @@
         }
 
         [Fact]
-        public void GetAmendmentDescription_ProducIsNumberGame_ReturnExactTemplate()
+        public void GetAmendmentDescription_ProductIsNumberGame_ReturnExactTemplate()
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
@@ -1354,12 +1354,12 @@
         [InlineData(181, "test VirtualSports181To185")]
         [InlineData(182, "test VirtualSports181To185")]
         [InlineData(185, "test VirtualSports181To185")]
-        public void GetAmendmentDescriptionVirtualSports_DependsSporttype_ReturnTempateForVirtualSports(byte Sporttype, string template)
+        public void GetAmendmentDescriptionVirtualSports_DependsSportType_ReturnTemplateForVirtualSports(byte sportType, string template)
         {
             // Arrange
             var amendment = new AmendmentAutoFeedbackInfo
             {
-                SportType = Sporttype,
+                SportType = sportType,
                 EventDate = DateTime.Parse("2021-02-24 19:59:00.000")
             };
             var amendmentDescTemplate = new AmendmentDescriptionTemplate
@@ -1395,7 +1395,7 @@
             // Arrange
             var amendmentDescTemplate = new AmendmentDescriptionTemplate
             {
-                NumberGame = "test numbergame"
+                NumberGame = "test number game"
             };
             var amendment = new AmendmentAutoFeedbackInfo
             {
@@ -1453,7 +1453,7 @@
         #region GetAmenmendSolution
 
         [Fact]
-        public void GetAmenmendSolution_WhenCalled_ReturnExactTemplate()
+        public void GetAmendmentSolution_WhenCalled_ReturnExactTemplate()
         {
             // Arrange
             var service = MockService();
@@ -1470,7 +1470,7 @@
             stringBuilder.Append(solutionTemplateSC);
 
             // Act
-            var actual = service.Public_GetAmenmendSolution(amendment, messageContent, false);
+            var actual = service.Public_GetAmendmentSolution(amendment, messageContent, false);
 
             // Assert
             Assert.Equal(stringBuilder.ToString(), actual);
@@ -1479,7 +1479,7 @@
         [Theory]
         [InlineData(false, "789y", "NoResultENSC")]
         [InlineData(true, "789y", "NoResultENYN")]
-        public void GetAmenmendSolution_IsNoResultTemplate_ReturnExactTemplate(bool isVip, string site, string expected)
+        public void GetAmendmentSolution_IsNoResultTemplate_ReturnExactTemplate(bool isVip, string site, string expected)
         {
             // Arrange
             var service = MockService();
@@ -1495,7 +1495,7 @@
             stringBuilder.Append(expected);
 
             // Act
-            var actual = service.Public_GetAmenmendSolution(amendment, messageContent, true);
+            var actual = service.Public_GetAmendmentSolution(amendment, messageContent, true);
 
             // Assert
             Assert.Equal(stringBuilder.ToString(), actual);
@@ -1857,7 +1857,7 @@
                 amendmentSolTemplate,
                 isVipCust,
                 "leagueNameYN",
-                "Eventdate",
+                "EventDate",
                 "leagueNameSC");
 
             // Assert

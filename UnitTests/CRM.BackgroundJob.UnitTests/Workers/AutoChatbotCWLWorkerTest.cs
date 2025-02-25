@@ -1,17 +1,18 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Workers
+﻿
+namespace CRM.BackgroundJob.UnitTests.Workers
 {
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
-    using CRM.BackgroundJob.Workers;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using CRM.Services;
+    using CRM.BackgroundJob.Models;
+    using CRM.BackgroundJob.Workers;
+    using CRM.BackgroundJob.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Xunit;
 
-    public class AutoChatbotArchivingDAWokerTests
+    public class AutoChatbotCWLWorkerTest
     {
         private IChatBotJobService chatBotJobService;
         private IMaintenanceService maintenanceService;
@@ -28,16 +29,15 @@
             await service.ExecuteJobAsync();
 
             // Assert
-            await chatBotJobService.Received().PullMessageArchivingDAAndSendNotificationToHeadlineAsync();
+            await chatBotJobService.Received().PullMessageCWLAndSendNotificationToHeadlineAsync();
         }
-
-        private AutoChatbotArchivingDAWorker GetService()
+        private AutoChatbotCWLWorker GetService()
         {
             appSettings =
             [
                 new JobSetting
                 {
-                    JobName = "CreateFeedbackAmendmentNotiFB",
+                    JobName = "PullMessageCWLForChatBot",
                     IsEnabled = true,
                     HasCheckUM = false,
                     TimeInterval = 60
@@ -49,7 +49,7 @@
             maintenanceService = Substitute.For<IMaintenanceService>();
             logService = Substitute.For<ICrmLogService>();
 
-            return new AutoChatbotArchivingDAWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
+            return new AutoChatbotCWLWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
         }
     }
 }

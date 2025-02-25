@@ -32,7 +32,7 @@
         public async Task ErrorAsync_Command_WillCallsFanexLogErrorWithExpectedMessage()
         {
             // Arrange
-            var command = new CommandResult { Code = 1, Message = "This is error messgae" };
+            var command = new CommandResult { Code = 1, Message = "This is error message" };
             var criteria = Substitute.For<ICriteria>();
             var logMessage = new LogMessage($"{command.Code}: {command.Message}")
                        .AddMessage(JsonConvert.SerializeObject(criteria, Formatting.Indented))

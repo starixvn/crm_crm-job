@@ -1,20 +1,19 @@
-﻿
-namespace CRM.BackgroundJob.UnitTests.Workers
+﻿namespace CRM.BackgroundJob.UnitTests.Workers
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Workers;
     using CRM.BackgroundJob.Services;
+    using CRM.BackgroundJob.Workers;
+    using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
-    public class AutoChatbotResultAmendmentWokerTests
+    public class AutoFbArchivingDAWorkerTests
     {
-        private IChatBotJobService chatBotJobService;
+        private IAutoFeedbackService autoFeedbackService;
         private IMaintenanceService maintenanceService;
         private ICrmLogService logService;
         private List<JobSetting> appSettings;
@@ -29,15 +28,16 @@ namespace CRM.BackgroundJob.UnitTests.Workers
             await service.ExecuteJobAsync();
 
             // Assert
-            await chatBotJobService.Received().PullMessageResultAmendmentAndSendNotificationToHeadlineAsync();
+            await autoFeedbackService.Received().ArchivingDAExecuteJobAsync();
         }
-        private AutoChatbotResultAmendmentWorker GetService()
+
+        private AutoFbArchivingDAWorker GetService()
         {
             appSettings =
             [
                 new JobSetting
                 {
-                    JobName = "PullMessageResultAmendmentForChatBot",
+                    JobName = "CreateFeedbackForArchivingDA",
                     IsEnabled = true,
                     HasCheckUM = false,
                     TimeInterval = 60
@@ -45,11 +45,11 @@ namespace CRM.BackgroundJob.UnitTests.Workers
             ];
             var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
             appJobSettings.Value.Returns(appSettings);
-            chatBotJobService = Substitute.For<IChatBotJobService>();
+            autoFeedbackService = Substitute.For<IAutoFeedbackService>();
             maintenanceService = Substitute.For<IMaintenanceService>();
             logService = Substitute.For<ICrmLogService>();
 
-            return new AutoChatbotResultAmendmentWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
+            return new AutoFbArchivingDAWorker(autoFeedbackService, maintenanceService, appJobSettings, logService);
         }
     }
 }
