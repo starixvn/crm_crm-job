@@ -187,14 +187,17 @@ public class ArchivingDAService(
         {
             var messageInvalid = "Invalid Params: " + checkValidParamBeforeInsert.Item2;
             logService.LogInformation(
-                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
+                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} " +
+                $"@StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} " +
+                $"@StationID:{criteria.StationId}");
             await feedbackTransactionService.EditArchivingDAAutoFeedback(archivingAutoFbInfo.LogFeedbackId, CreateFeedbackJobStatus.Fail, messageInvalid);
             return;
         }
         try
         {
             logService.LogInformation(
-                $"Begin insert archiving DA feedback : HeadlineId {archivingAutoFbInfo.HeadlineID} HeadlineName:{archivingAutoFbInfo.HeadlineName} CustName: {archivingAutoFbInfo.AffectedName} CustId: {archivingAutoFbInfo.AffectedId}");
+                $"Begin insert archiving DA feedback : HeadlineId {archivingAutoFbInfo.HeadlineID} HeadlineName:{archivingAutoFbInfo.HeadlineName}" +
+                $" CustName: {archivingAutoFbInfo.AffectedName} CustId: {archivingAutoFbInfo.AffectedId}");
 
             var commandResult = await baseService.ExecuteNonQueryAsync(criteria);
             if (commandResult.IsSuccessful)

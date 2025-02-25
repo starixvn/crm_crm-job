@@ -28,11 +28,11 @@ public class ChatBotArchivingDAService(IBaseService baseService) : IChatBotArchi
         return await baseService.GetDataAsync<ChatbotArchivingDAInfo>(criteria);
     }
 
-    public async Task<ValueTuple<CommandResult, ImportArchivedAccountsCommand>> ImportArchivedAccountsAsync(IEnumerable<ChatbotArchivingDAInfo> archivingDAInfors, string environment)
+    public async Task<ValueTuple<CommandResult, ImportArchivedAccountsCommand>> ImportArchivedAccountsAsync(IEnumerable<ChatbotArchivingDAInfo> archivingDAInfo, string environment)
     {
         var command = new ImportArchivedAccountsCommand
         {
-            XmlData = archivingDAInfors.ToXML("root").ToString(),
+            XmlData = archivingDAInfo.ToXML("root").ToString(),
             Environment = environment
         };
         var commandResult = await baseService.ExecuteNonQueryAsync(command);

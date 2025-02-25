@@ -16,8 +16,8 @@ using System.Threading.Tasks;
 public interface IFeedbackService
 {
     Task CreateFeedbackForVoidingAbnormalBetAsync(AbnormalBetSystemSetting setting, bool isUAT,
-        DateTime LastRuntimeEnv, string LastRuntimeNameEnv,
-        string JobStatusNameEnv, string Environment);
+        DateTime lastRuntimeEnv, string lastRuntimeNameEnv,
+        string jobStatusNameEnv, string environment);
 }
 
 public class FeedbackService(
@@ -106,9 +106,9 @@ public class FeedbackService(
 
         IEnumerable<MatchInfo> matchInfos = matchInfo.Where(x => transactionTicketsCombine.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId)).ToList();
         IEnumerable<MatchInfo> matchInfosDuplicate = matchInfo.Where(x => duplicateTicketDetails.Any(y => x.VoidingHistoryCollectionId == y.VoidingHistoryCollectionId)).ToList();
-        var matchInfosCombine = matchInfos.Concat(matchInfosDuplicate);
+        var matchInfoCombine = matchInfos.Concat(matchInfosDuplicate);
 
-        if (!matchInfosCombine.Any())
+        if (!matchInfoCombine.Any())
         {
             logService.LogInformation("Abnormal Bet - import do not have any ticket");
             await messageService.EditStatusVoidingMessageAsync(messagesImportCombineDistinct, environment);
@@ -125,7 +125,7 @@ public class FeedbackService(
 
         await CreateFeedbackForCreditDepositSiteAsync(
             messages,
-            matchInfosCombine,
+            matchInfoCombine,
             transactionTicketsCombine,
             messagesImportCombineDistinct,
             isUAT,
@@ -137,7 +137,7 @@ public class FeedbackService(
     protected internal virtual async Task CreateFeedbackForCreditDepositSiteAsync(
         IEnumerable<Message> messages,
         IEnumerable<MatchInfo> matchInfos,
-        IEnumerable<TransactionInfo> transactionInfos,
+        IEnumerable<TransactionInfo> transactionInfo,
         IEnumerable<VoidingMessageUserName> messagesImportCombineDistinct,
         bool isUAT,
         AbnormalBetSystemSetting setting,
@@ -149,14 +149,14 @@ public class FeedbackService(
         var settingMappings = await settingService.GetSystemSettingMappingAsync(settingNames);
         var siteSettingMappings = await settingService.GetSiteSettingMappingAsync();
         var licenseeInfo = (await customerService.GetCustomerInfoAsync(appSettings.LicenseeUsername, true)) ?? new CustomerInfo();
-        var custIds = transactionInfos.Where(x => !x.IsDeposit).Select(x => x.CustId).Distinct();
+        var custIds = transactionInfo.Where(x => !x.IsDeposit).Select(x => x.CustId).Distinct();
         var headlines = await customerService.GetGroupHeadlineVipAsync(custIds);
-        var transactionByHeadline = transactionInfos.Where(x => headlines.Any(y => y.CustId == x.CustId));
+        var transactionByHeadline = transactionInfo.Where(x => headlines.Any(y => y.CustId == x.CustId));
 
         var (newMatchInfos, newTransactionInfos) = await ticketVoidingService.ImportTicketVoidingInfoAsync(
             messagesImportCombineDistinct,
             matchInfos,
-            transactionInfos,
+            transactionInfo,
             siteSettingMappings,
             headlines,
             licenseeInfo);
@@ -197,10 +197,17 @@ public class FeedbackService(
         }
         logService.LogInformation("Abnormal Bet - Update job and time");
         logService.LogInformation("end CreateFeedbackForCreditDepositSiteAsync!!!");
-        var voidingHistoryCollectionId = isUAT ? setting.MaxVoidingHistoryCollectionIdUAT : setting.MaxVoidingHistoryCollectionId;
-        var maxVoidingHistoryCollectionId = transactionInfos.Any() ? transactionInfos.Max(x => x.VoidingHistoryCollectionId) : voidingHistoryCollectionId;
+        var maxVoidingHistoryCollectionId = CalculateMaxVoidingHistoryCollectionId(isUAT, setting, transactionInfo);
 
         await UpdateSystemSetting(isUAT, setting, maxVoidingHistoryCollectionId);
+    }
+
+    private static int CalculateMaxVoidingHistoryCollectionId(bool isUAT, AbnormalBetSystemSetting setting,
+        IEnumerable<TransactionInfo> transactionInfo)
+    {
+        var voidingHistoryCollectionId = isUAT ? setting.MaxVoidingHistoryCollectionIdUAT : setting.MaxVoidingHistoryCollectionId;
+        var maxVoidingHistoryCollectionId = transactionInfo.Any() ? transactionInfo.Max(x => x.VoidingHistoryCollectionId) : voidingHistoryCollectionId;
+        return maxVoidingHistoryCollectionId;
     }
 
     protected internal virtual async Task UpdateSystemSetting(bool isUAT, AbnormalBetSystemSetting setting, int maxVoidingHistoryCollectionId)
@@ -294,7 +301,8 @@ public class FeedbackService(
             var batch = relatedCustomerIds.Skip(i * itemEachBatch).Take(itemEachBatch).ToList();
 
             logService.LogInformation(
-                $"Abnormal Bet - Begin mapping setting for VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
+                $"Abnormal Bet - Begin mapping setting for VoidingHistoryCollectionId: " +
+                $"{matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
 
             var transactions = transactionInfos.Where(x => batch.Exists(y => y == x.CustId));
             var isVip = headline.IsVip && headline.SiteLabel == "789y";
@@ -309,7 +317,9 @@ public class FeedbackService(
             criteria.ListOrigCustIds = string.Join(",", batch);
 
             logService.LogInformation(
-                $"Abnormal Bet - End mapping setting for VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
+                $"Abnormal Bet - End mapping setting for VoidingHistoryCollectionId: " +
+                $"{matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}" +
+                $"\n\rRelatedCustIds: {string.Join(",", batch)}");
             IEnumerable<int> requestIds = transactions.Select(x => x.RequestId).Distinct().ToList();
             criteria.RequestIds = string.Join(",", requestIds);
             var description = isMixParlay ? GetDescriptionMixParlayForCreditSite(string.Join(",", messages.Select(x => x.MessageId)), criteria.RequestIds, matchInfo)
@@ -318,17 +328,20 @@ public class FeedbackService(
             try
             {
                 logService.LogInformation(
-                    $"Abnormal Bet - Begin create feedback for VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
+                    $"Abnormal Bet - Begin create feedback for VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}" +
+                    $"\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
                 var commandResult = await baseService.ExecuteNonQueryAsync(criteria);
                 if (commandResult.IsSuccessful)
                 {
                     logService.LogInformation(
-                        $"Abnormal Bet - Create feedback successfully. VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
+                        $"Abnormal Bet - Create feedback successfully. VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}" +
+                        $"\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
                 }
                 else
                 {
                     logService.LogInformation(
-                        $"Abnormal Bet - {commandResult.Message}. VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
+                        $"Abnormal Bet - {commandResult.Message}. VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\r" +
+                        $"HeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
                     await ticketVoidingService.EditFeedbackInfoAsync(messageJoin, requestIds, batch, CreateFeedbackJobStatus.Fail, commandResult.Message);
                     await logService.ErrorAsync(commandResult, criteria);
                 }
@@ -336,7 +349,8 @@ public class FeedbackService(
             catch (Exception ex)
             {
                 logService.LogInformation(
-                    $"Abnormal Bet - {ex.Message}. VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\rHeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
+                    $"Abnormal Bet - {ex.Message}. VoidingHistoryCollectionId: {matchInfo.VoidingHistoryCollectionId}\n\r" +
+                    $"HeadlineId: {headline.HeadlineId}\n\rRelatedCustIds: {string.Join(",", batch)}");
                 await ticketVoidingService.EditFeedbackInfoAsync(messageJoin, requestIds, batch, CreateFeedbackJobStatus.Fail, ex.Message);
                 await logService.ErrorAsync(ex);
             }
@@ -446,17 +460,20 @@ public class FeedbackService(
             try
             {
                 logService.LogInformation(
-                    $"Abnormal Bet - Begin create feedback for MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
+                    $"Abnormal Bet - Begin create feedback for MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}" +
+                    $"\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
                 var commandResult = await baseService.ExecuteNonQueryAsync(criteria);
                 if (commandResult.IsSuccessful)
                 {
                     logService.LogInformation(
-                        $"Abnormal Bet - Create feedback successfully. MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
+                        $"Abnormal Bet - Create feedback successfully. MessageId: {joinMessageString}\n\r" +
+                        $"HeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
                 }
                 else
                 {
                     logService.LogInformation(
-                        $"Abnormal Bet - {commandResult.Message}. MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
+                        $"Abnormal Bet - {commandResult.Message}. MessageId: {joinMessageString}\n\r" +
+                        $"HeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
                     await ticketVoidingService.EditFeedbackInfoAsync(joinMessageString, requestIds, custIds, CreateFeedbackJobStatus.Fail, commandResult.Message);
                     await logService.ErrorAsync(commandResult, criteria);
                 }
@@ -464,7 +481,8 @@ public class FeedbackService(
             catch (Exception ex)
             {
                 logService.LogInformation(
-                    $"{ex.Message}. MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}\n\rCustIds: {string.Join(",", custIds)}");
+                    $"{ex.Message}. MessageId: {joinMessageString}\n\rHeadlineId: {criteria.CustId}\n\rRelatedCustIds: {string.Join(",", batch)}" +
+                    $"\n\rCustIds: {string.Join(",", custIds)}");
                 await ticketVoidingService.EditFeedbackInfoAsync(joinMessageString, requestIds, custIds, CreateFeedbackJobStatus.Fail, ex.Message);
                 await logService.ErrorAsync(ex);
             }
@@ -615,7 +633,8 @@ public class FeedbackService(
         var subProducts = isMixParlay ? settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                             && x.SettingValue.Equals("Multiple Sports", StringComparison.OrdinalIgnoreCase)).ToList() :
             settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
-                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent)) && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
+                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent))
+                                      && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
         logService.LogInformation("End mapping sub-product.");
 
@@ -839,7 +858,7 @@ public class FeedbackService(
         return subCategory;
     }
 
-    protected internal virtual Tuple<int, int, string> GetCategorySubCategory(IEnumerable<SettingItem> settings, int IssueTypeId)
+    protected internal virtual Tuple<int, int, string> GetCategorySubCategory(IEnumerable<SettingItem> settings, int issueTypeId)
     {
         var category = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.MainCategory, StringComparison.OrdinalIgnoreCase)
                                                     && x.SettingValue.Equals("Special Notification", StringComparison.OrdinalIgnoreCase));
@@ -847,16 +866,21 @@ public class FeedbackService(
 
         if (category != null)
         {
-            var subCategory = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
-                                                           && x.ParentIds.Any(y => y == category.SettingId)
-                                                           && x.SettingValue.Equals(GetSubCategorySettingValue(IssueTypeId), StringComparison.OrdinalIgnoreCase));
-            subCategoryId = subCategory?.SettingId ?? 0;
+            subCategoryId = CalculateSubCategoryId(settings, category, issueTypeId);
         }
 
         return new Tuple<int, int, string>(
             category?.SettingId ?? 0,
             subCategoryId,
             $"<ROOT><Category MainCategoryID='{category?.SettingId ?? 0}' SubCategoryID='{subCategoryId}' /></ROOT>");
+    }
+
+    private static int CalculateSubCategoryId(IEnumerable<SettingItem> settings, SettingItem category, int issueTypeId)
+    {
+        var subCategory = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
+                                                       && x.ParentIds.Any(y => y == category.SettingId)
+                                                       && x.SettingValue.Equals(GetSubCategorySettingValue(issueTypeId), StringComparison.OrdinalIgnoreCase));
+        return subCategory?.SettingId ?? 0;
     }
 
     protected internal virtual string GetRelatedCustomerXml(int headlineId, IEnumerable<TransactionInfo> transactionInfos, int IssueTypeId)

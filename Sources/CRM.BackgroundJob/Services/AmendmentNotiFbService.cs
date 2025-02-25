@@ -19,8 +19,6 @@ public interface IAmendmentNotiFbService
         string JobStatusNameEnv, string Environment);
 }
 
-#pragma warning disable S1541 // Methods and properties should not be too complex
-
 public class AmendmentNotiFbService(
     IOptions<AppJobSettings> appSettings,
     IBaseService baseService,
@@ -85,7 +83,9 @@ public class AmendmentNotiFbService(
         if (!amendmentAutoFeedbackInfo.Any())
         {
             logService.LogInformation(
-                $"Import Amendment Auto Feedback Info doesn't have any data with custId: {string.Join(",", custAmendmentNotifications.Select(x => x.CustId))} TicketId: {string.Join(",", custAmendmentNotifications.Select(x => x.TicketId))}!");
+                $"Import Amendment Auto Feedback Info doesn't have any data with custId: " +
+                $"{string.Join(",", custAmendmentNotifications.Select(x => x.CustId))}" +
+                $" TicketId: {string.Join(",", custAmendmentNotifications.Select(x => x.TicketId))}!");
             await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
             return;
         }
@@ -194,7 +194,9 @@ public class AmendmentNotiFbService(
         {
             var messageInvalid = "Invalid Params: " + checkValidParamBeforeInsert.Item2;
             logService.LogInformation(
-                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
+                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml}" +
+                $" @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} " +
+                $"@ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
             await transactionService.EditAmendmentNotiAutoFeedback(amendment.LogId, CreateFeedbackJobStatus.Fail, messageInvalid);
             return;
         }

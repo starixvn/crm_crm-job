@@ -34,7 +34,7 @@ public class ChatBotCWLService(IBaseService baseService, IRemotingRefService rem
     }
 
     public async Task<ValueTuple<CommandResult, ImportCWLLogInfoCommand>> ImportCWLLogInfoAsync(
-        IEnumerable<ChatBotCWLInfo> cwlInfors,
+        IEnumerable<ChatBotCWLInfo> cwlInfo,
         string Environment = BackgroundJobConstants.DefaultEnvironment)
     {
         const string XmlTemplate = "<r LogId='{0}' CustId='{1}' CurrencyName='{2}' " +
@@ -42,7 +42,7 @@ public class ChatBotCWLService(IBaseService baseService, IRemotingRefService rem
                                    "Winloss='{7}' ProductNameEN='{8}' ProductNameSC='{9}' ProductNameTH='{10}' " +
                                    "ProductNameVN='{11}' LevelId='{12}' GroupId='{13}'/>";
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
-        foreach (var cwl in cwlInfors)
+        foreach (var cwl in cwlInfo)
         {
             var productEN = GetProductName(cwl.ProductId.ToString(), "en-US");
             var productSC = GetProductName(cwl.ProductId.ToString(), "zh-CN");

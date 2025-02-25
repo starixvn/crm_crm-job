@@ -23,18 +23,6 @@ public static class XmlIO
         return new XElement(rootName, source.Select(lambda).ToArray<object>());
     }
 
-    //public static IList<T> Deserialize<T>(string xml)
-    //{
-    //    if (string.IsNullOrEmpty(xml))
-    //    {
-    //        return new List<T>();
-    //    }
-
-    //    using var stringReader = new StringReader(xml);
-    //    var serializer = XmlCacheCreate(typeof(List<T>), new XmlRootAttribute("ROOT"));
-    //    return (List<T>)serializer.Deserialize(stringReader);
-    //}
-
     public static T DeserializeXMLFileToObject<T>(string XmlFilename)
     {
         if (string.IsNullOrEmpty(XmlFilename))

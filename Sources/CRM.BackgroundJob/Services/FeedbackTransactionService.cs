@@ -227,12 +227,12 @@ public class FeedbackTransactionService(IBaseService baseService) : IFeedbackTra
 
     public async Task<IEnumerable<ProblemsAccountAutoFeedbackInfo>> ImportProblemsAccountFeedbackInfoAsync(
         IEnumerable<GroupHeadline> headlines,
-        IEnumerable<CustCategoryInfo> custCatogorys,
+        IEnumerable<CustCategoryInfo> custCatogories,
         string Environment)
     {
         const string XmlTemplate = "<r logid='{0}' custid='{1}' hl='{2}' hlname='{3}' related='{4}' catid='{5}'/>";
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
-        foreach (var custCategory in custCatogorys)
+        foreach (var custCategory in custCatogories)
         {
             var headline = headlines.FirstOrDefault(x => x.CustId == custCategory.CustID);
             var headlineId = headline?.HeadlineId ?? 0;
@@ -375,12 +375,12 @@ public class FeedbackTransactionService(IBaseService baseService) : IFeedbackTra
         return await baseService.GetDataAsync<ArchivingAutoFbInfo>(command);
     }
 
-    public async Task<CommandResult> ArchivingImportDirectAccountAsync(string achivedList, DateTime archivedDate)
+    public async Task<CommandResult> ArchivingImportDirectAccountAsync(string archivedList, DateTime archivedDate)
     {
         var command = new ArchivingImportDirectAccountCommand
         {
             ArchivedDate = archivedDate,
-            ArchivedList = achivedList
+            ArchivedList = archivedList
         };
         return await baseService.ExecuteNonQueryAsync(command);
     }

@@ -37,16 +37,16 @@ public class ChatBotCTOService(
         return await baseService.GetDataAsync<TOReachInfo>(criteria);
     }
 
-    public async Task<IEnumerable<TurnoverSMAInfo>> GetChatbotCTOSMAInfoAsync(IEnumerable<TOReachInfo> tOReachInfors)
+    public async Task<IEnumerable<TurnoverSMAInfo>> GetChatbotCTOSMAInfoAsync(IEnumerable<TOReachInfo> tOReachInfo)
     {
         var criteria = new GetTOControlSMAInfoCriteria
         {
-            XML = tOReachInfors.ToXML("root").ToString()
+            XML = tOReachInfo.ToXML("root").ToString()
         };
         return await baseService.GetDataAsync<TurnoverSMAInfo>(criteria);
     }
 
-    public async Task<ValueTuple<CommandResult, TOControlImportCommand>> ImportTOSMAInfoAsync(IEnumerable<TurnoverSMAInfo> tOSMAInfors,
+    public async Task<ValueTuple<CommandResult, TOControlImportCommand>> ImportTOSMAInfoAsync(IEnumerable<TurnoverSMAInfo> tOSMAInfo,
         string Environment = BackgroundJobConstants.DefaultEnvironment)
     {
         const string XmlTemplate = "<r LogId='{0}' CustId='{1}' Username='{2}' Recommend='{3}'" +
@@ -59,7 +59,7 @@ public class ChatBotCTOService(
                                    " Outstanding='{27}'> </r>";
 
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
-        foreach (var smaInfo in tOSMAInfors)
+        foreach (var smaInfo in tOSMAInfo)
         {
             var sportNameEN = commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.en_US);
             var sportNameSC = commonFeedback.GetSportName(smaInfo.SportType.ToString(), Language.zh_CN);

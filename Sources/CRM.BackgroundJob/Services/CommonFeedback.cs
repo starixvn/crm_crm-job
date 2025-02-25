@@ -195,9 +195,7 @@ public class CommonFeedback(
 
         if (category != null)
         {
-            var subCategory = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
-                                                           && x.ParentIds.Any(y => y == category.SettingId)
-                                                           && x.SettingValue.Equals(settingValueName, StringComparison.OrdinalIgnoreCase));
+            var subCategory = GetSettingItem(settings, category, settingValueName);
             subCategoryId = subCategory?.SettingId ?? 0;
         }
 
@@ -207,6 +205,11 @@ public class CommonFeedback(
                 category?.SettingId ?? 0,
                 subCategoryId));
     }
+
+    private static SettingItem GetSettingItem(IEnumerable<SettingItem> settings, SettingItem category, string settingValueName)
+        => settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase)
+                                        && x.ParentIds.Any(y => y == category.SettingId)
+                                        && x.SettingValue.Equals(settingValueName, StringComparison.OrdinalIgnoreCase));
 
     public ValueTuple<bool, string> CheckFeedbackValidParams(CreateMultipleFeedbackCommand criteria)
     {

@@ -901,7 +901,7 @@
             await service.SynchronizeNewLicenseeOICExecuteJobAsync();
 
             // Act
-            logService.DidNotReceive();
+            logService.DidNotReceive().LogInformation(Arg.Any<string>());
         }
 
         #endregion SynchronizeNewLicenseeOICExecuteJobAsync
