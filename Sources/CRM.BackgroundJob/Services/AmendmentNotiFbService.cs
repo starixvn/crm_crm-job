@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 public interface IAmendmentNotiFbService
 {
     Task CreateFeedbackForAmendmentNotiFbAsync(AmendmentNotiFbSetting resultAmendmentSetting, bool isUAT,
-        DateTime LastRuntimeEnv, string LastRuntimeNameEnv,
-        string JobStatusNameEnv, string Environment);
+        DateTime lastRuntimeEnv, string lastRuntimeNameEnv,
+        string jobStatusNameEnv, string environment);
 }
 
 public class AmendmentNotiFbService(
@@ -613,8 +613,9 @@ public class AmendmentNotiFbService(
         var eventDate = amendment.EventDate.ToString(DefaultValue.DateMonthFormant);
         var matchCodeReplace = commonFeedback.GetMatchCodeFormat(amendment.MatchCode, Language.en_US);
         var matchCodeVirtualSport = commonFeedback.GetMatchCodeVirtualSportFormat(amendment.MatchCode, Language.en_US);
-        var outRightMessageEn = messageContent?.FirstOrDefault()?.Content_en;
-        var numberGameEnGame = amendment.SportType == SportType161 ? leagueName : sportName;
+        var outRightMessageEn = GetOutRightMessageEn(messageContent);
+        var numberGameEnGame = GetNumberGameEngName(amendment.SportType, leagueName, sportName);
+
         switch (productName)
         {
             case "Sportsbook":
@@ -686,6 +687,11 @@ public class AmendmentNotiFbService(
         }
         return stringBuilder;
     }
+
+    private static string GetOutRightMessageEn(IEnumerable<Message> messageContent) => messageContent?.FirstOrDefault()?.Content_en;
+
+    private static string GetNumberGameEngName(byte sportType, string leagueName, string sportName)
+        => sportType == SportType161 ? leagueName : sportName;
 
     protected internal virtual StringBuilder GetAmendmentSolutionTemplateYNSC(
         AmendmentAutoFeedbackInfo amendment,

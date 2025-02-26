@@ -413,27 +413,41 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
             : [new SystemSettingMapping { SettingId = BackgroundJobConstants.BettypeNA }];
     }
 
-    protected internal virtual Tuple<int, int, string> GetCategorySubCategoryVoidingSettledTicket(IEnumerable<SettingItem> settings, string settingValueName, int issueTypeId)
+    protected internal virtual Tuple<int, int, string> GetCategorySubCategoryVoidingSettledTicket(IEnumerable<SettingItem> settings,
+        string settingValueName, int issueTypeId)
     {
-        var settingName = issueTypeId == DuplicateTicketIssueTypeId ? "Special Notification" : settingValueName;
-        var category = settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.MainCategory, StringComparison.OrdinalIgnoreCase)
-                                                    && x.SettingValue.Equals(settingName, StringComparison.OrdinalIgnoreCase));
         var subCategoryId = 0;
+        var categoryId = 0;
+        var category = GetSystemSetting(issueTypeId, settings, settingValueName);
 
         if (category != null)
         {
-            var subCategories = settings.Where(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase));
-            var subCategory = issueTypeId == DuplicateTicketIssueTypeId ?
-                subCategories.FirstOrDefault(x => x.ParentIds.Any(y => y == category.SettingId) && x.SettingValue.Equals("Duplicate Tickets", StringComparison.OrdinalIgnoreCase)) :
-                subCategories.FirstOrDefault(x => x.SettingId == 4029);
-            subCategoryId = subCategory?.SettingId ?? 0;
+            categoryId = category.SettingId;
+            subCategoryId = CalculateSubCategoryId(category, settings, issueTypeId);
         }
 
         return new Tuple<int, int, string>(
-            category?.SettingId ?? 0, subCategoryId,
+            categoryId, subCategoryId,
             string.Format(DefaultValue.CategoryXml,
                 category?.SettingId ?? 0,
                 subCategoryId));
+    }
+
+    private static int CalculateSubCategoryId(SettingItem category, IEnumerable<SettingItem> settings, int issueTypeId)
+    {
+        var subCategories = settings.Where(x => x.SettingName.Equals(SettingName.SubCategory, StringComparison.OrdinalIgnoreCase));
+        var subCategory = issueTypeId == DuplicateTicketIssueTypeId ?
+            subCategories.FirstOrDefault(x => x.ParentIds.Any(y => y == category.SettingId) && x.SettingValue.Equals("Duplicate Tickets", StringComparison.OrdinalIgnoreCase)) :
+            subCategories.FirstOrDefault(x => x.SettingId == 4029);
+
+        return subCategory?.SettingId ?? 0;
+    }
+
+    private static SettingItem GetSystemSetting(int issueTypeId, IEnumerable<SettingItem> settings, string settingValueName)
+    {
+        var settingName = issueTypeId == DuplicateTicketIssueTypeId ? "Special Notification" : settingValueName;
+        return settings.FirstOrDefault(x => x.SettingName.Equals(SettingName.MainCategory, StringComparison.OrdinalIgnoreCase)
+                                            && x.SettingValue.Equals(settingName, StringComparison.OrdinalIgnoreCase));
     }
 
     protected internal virtual string GetRelatedCustomerXml(VoidingAutoFeedbackInfo feedbackInfo)
