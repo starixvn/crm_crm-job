@@ -1,7 +1,5 @@
 ﻿namespace CRM.UnitTests.Services.Common
 {
-    using CRM.Models;
-    using CRM.Services;
     using Fanex.Data.Repository;
     using Fanex.Logging.Extensions;
     using Newtonsoft.Json;

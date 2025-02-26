@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CRM.BackgroundJob.Extensions;
 using CRM.BackgroundJob.Models;
 using CRM.Models.Common;
-using CRM.Services;
 using CRM.Services.AutoFeedback;
 using CRM.Services.Common;
 using Microsoft.Extensions.Options;

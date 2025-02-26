@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
-    using CRM.Services;
     using CRM.Services.Common;
     using CRM.Services.NotificationCenter;
     using Microsoft.Extensions.Options;

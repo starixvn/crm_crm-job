@@ -1,17 +1,17 @@
 ﻿namespace CRM.Services.AutoFeedback;
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CRM.Criteria.AutoFbMessageNotificationCenter;
 using CRM.Extensions.Xml;
 using CRM.Models.Common;
 using CRM.Services.Common;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public interface IAutoFbMessageNotificationCenterService
 {
     Task<IEnumerable<MessageInfoID>> GetMsgInfoMessageNotificationAsync(int lastMsgTargetId, int batchSize);
 
-    Task<(CRM.Models.Common.CommandResult commandResult, ImportMessageNotificationCenterCommand command)> ImportMessageNotificationAsync(IEnumerable<MessageInfoID> messages, string environment);
+    Task<(CommandResult commandResult, ImportMessageNotificationCenterCommand command)> ImportMessageNotificationAsync(IEnumerable<MessageInfoID> messages, string environment);
 }
 
 public class AutoFbMessageNotificationCenterService(IBaseService baseService) : IAutoFbMessageNotificationCenterService
@@ -26,7 +26,8 @@ public class AutoFbMessageNotificationCenterService(IBaseService baseService) : 
         return await baseService.GetDataAsync<MessageInfoID>(criteria);
     }
 
-    public async Task<(CRM.Models.Common.CommandResult commandResult, ImportMessageNotificationCenterCommand command)> ImportMessageNotificationAsync(IEnumerable<MessageInfoID> messages, string environment)
+    public async Task<(CommandResult commandResult, ImportMessageNotificationCenterCommand command)> ImportMessageNotificationAsync
+        (IEnumerable<MessageInfoID> messages, string environment)
     {
         var command = new ImportMessageNotificationCenterCommand
         {

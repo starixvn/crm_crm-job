@@ -2,14 +2,13 @@
 
 using CRM.BackgroundJob.Extensions;
 using CRM.BackgroundJob.Models;
-using CRM.Services;
+using CRM.Models.Common;
+using CRM.Services.AutoChatBotMessage;
+using CRM.Services.Common;
 using Microsoft.Extensions.Options;
 using ONEbook.UM.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CRM.Models.Common;
-using CRM.Services.AutoChatBotMessage;
-using CRM.Services.Common;
 
 public class AutoChatbotArchivingDAWorker : BaseWorker
 {

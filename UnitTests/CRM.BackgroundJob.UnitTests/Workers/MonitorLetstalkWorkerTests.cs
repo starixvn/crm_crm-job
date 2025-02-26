@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
     using CRM.Services.AutoChatBotMessage;

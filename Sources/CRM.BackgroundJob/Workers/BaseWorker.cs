@@ -1,7 +1,6 @@
 ﻿namespace CRM.BackgroundJob.Workers;
 
 using CRM.BackgroundJob.Models;
-using CRM.Services;
 using Microsoft.Extensions.Hosting;
 using ONEbook.UM.Services;
 using System;

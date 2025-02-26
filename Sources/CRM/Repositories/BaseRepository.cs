@@ -3,7 +3,6 @@
 using System.Collections;
 using Fanex.Data;
 using Fanex.Data.Repository;
-using Models;
 
 public interface IBaseRepository
 {

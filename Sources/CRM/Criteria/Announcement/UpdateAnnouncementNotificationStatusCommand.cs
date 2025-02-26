@@ -1,7 +1,5 @@
 ﻿namespace CRM.Criteria.Announcement;
 
-using Models;
-
 public class UpdateAnnouncementNotificationStatusCommand : CRM.Models.Common.BaseNonQueryCommand
 {
     public string XmlData { get; set; }

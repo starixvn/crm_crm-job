@@ -2,7 +2,6 @@
 
 using CRM.BackgroundJob.Extensions;
 using CRM.BackgroundJob.Models;
-using CRM.Services;
 using Microsoft.Extensions.Options;
 using ONEbook.UM.Services;
 using System.Collections.Generic;

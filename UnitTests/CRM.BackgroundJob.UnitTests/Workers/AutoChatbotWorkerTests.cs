@@ -5,7 +5,6 @@ namespace CRM.BackgroundJob.UnitTests.Workers
     using System.Threading.Tasks;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
-    using CRM.Services;
     using CRM.Services.AutoChatBotMessage;
     using CRM.Services.Common;
     using Microsoft.Extensions.Options;

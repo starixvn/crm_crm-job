@@ -2,7 +2,6 @@
 {
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
-    using CRM.Services;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;

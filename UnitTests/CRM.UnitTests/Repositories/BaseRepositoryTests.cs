@@ -1,6 +1,5 @@
 ﻿namespace CRM.UnitTests.Repositories
 {
-    using CRM.Models;
     using CRM.Repositories;
     using Fanex.Data;
     using Fanex.Data.Repository;
