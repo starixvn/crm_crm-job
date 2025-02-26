@@ -41,10 +41,10 @@ public class AmendmentNotiFbService(
     private const int EventType5 = 5;
 
     public async Task CreateFeedbackForAmendmentNotiFbAsync(AmendmentNotiFbSetting resultAmendmentSetting, bool isUAT,
-        DateTime LastRuntimeEnv, string LastRuntimeNameEnv,
-        string JobStatusNameEnv, string Environment)
+        DateTime lastRuntimeEnv, string lastRuntimeNameEnv,
+        string jobStatusNameEnv, string environment)
     {
-        await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
+        await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Running, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
 
         var settingNames = new[] { SettingName.Product, SettingName.SubProduct, SettingName.Bettype };
         var settings = await settingService.GetAllSettingAsync();
@@ -55,18 +55,19 @@ public class AmendmentNotiFbService(
         if (isAnyNotCompleteStatus)
         {
             logService.LogInformation("Data has some status not completed");
-            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
+            await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
             return;
         }
+
         if (custAmendmentNotifications.Any())
         {
             try
             {
-                var commandResultAmendment = await transactionService.InsertAmendmentNotiAutoFeedback(custAmendmentNotifications, Environment);
+                var commandResultAmendment = await transactionService.InsertAmendmentNotiAutoFeedback(custAmendmentNotifications, environment);
                 if (commandResultAmendment.IsSuccessful)
                 {
                     logService.LogInformation("Import Amendment Notification Auto FeedBack Successful!");
-                    await ResultAmendmentUpdateSystemSetting(isUAT, resultAmendmentSetting, custAmendmentNotifications, JobStatusNameEnv);
+                    await ResultAmendmentUpdateSystemSetting(isUAT, resultAmendmentSetting, custAmendmentNotifications, jobStatusNameEnv);
                 }
                 else
                 {
@@ -86,15 +87,13 @@ public class AmendmentNotiFbService(
                 $"Import Amendment Auto Feedback Info doesn't have any data with custId: " +
                 $"{string.Join(",", custAmendmentNotifications.Select(x => x.CustId))}" +
                 $" TicketId: {string.Join(",", custAmendmentNotifications.Select(x => x.TicketId))}!");
-            await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
+            await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
             return;
         }
 
         foreach (var amendment in amendmentAutoFeedbackInfo)
         {
-            var isEventTypeNotIn2And9 = amendment.EventType != EventType2 && amendment.EventType != EventType9;
-            var isBelongProductId = amendment.ProductId == 1 || amendment.ProductId == 27 || amendment.ProductId == 88;
-            var isNoResultTemplate = isEventTypeNotIn2And9 && isBelongProductId && amendment.MessageId != 0;
+            var isNoResultTemplate = IsNoResultTemplate(amendment);
             await CreateResultAmendmentFeedbackCreditAsync(
                 amendment,
                 settings,
@@ -102,8 +101,16 @@ public class AmendmentNotiFbService(
                 isNoResultTemplate);
         }
 
-        await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
+        await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
         logService.LogInformation("end service result amendment service!");
+    }
+
+    private static bool IsNoResultTemplate(AmendmentAutoFeedbackInfo amendment)
+    {
+        var isEventTypeNotIn2And9 = amendment.EventType != EventType2 && amendment.EventType != EventType9;
+        var isBelongProductId = amendment.ProductId is 1 or 27 or 88;
+        var isNoResultTemplate = isEventTypeNotIn2And9 && isBelongProductId && amendment.MessageId != 0;
+        return isNoResultTemplate;
     }
 
     protected internal virtual async Task ResultAmendmentUpdateSystemSetting(
@@ -602,7 +609,7 @@ public class AmendmentNotiFbService(
         switch (productName)
         {
             case "Sportsbook":
-                if (amendment.EventType == EventType2 || amendment.EventType == EventType9)
+                if (amendment.EventType is EventType2 or EventType9)
                 {
                     stringBuilder.AppendFormat(amendmentSolTemplate.OutrightEN,
                         outRightMessageEn,
