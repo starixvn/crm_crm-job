@@ -160,7 +160,9 @@ public class WinLossFeedbackService : IWinLossFeedbackService
         {
             var messageInvalid = "Invalid Params: " + checkValidParamBeforeInsert.Item2;
             logService.LogInformation(
-                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
+                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} " +
+                $"@StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} " +
+                $"@ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
             await transactionService.EditFeedbackWinLossInfoAsync(winLimit.LogID, CreateFeedbackJobStatus.Fail, messageInvalid);
             return;
         }
@@ -387,7 +389,9 @@ public class WinLossFeedbackService : IWinLossFeedbackService
         stringBuilder.AppendFormat(betType.Count > numGames ? "{0} ..." : "{0}", numGamesFormat);
         stringBuilder.Append($"<br /> UserName: {winLimit.UserName}, Site: {winLimit.Site} ({winLimit.SiteLabel})");
         stringBuilder.Append(
-            $"<br /> Winning/Losing Limit Amount: {MaxWinLimitSetting} (RM), Winning/Losing Amount in RM: {TotalWinAmt_RM} (RM), Winloss Amount in player currency: {TotalWinAmt} ({winLimit.Currency})");
+            $"<br /> Winning/Losing Limit Amount: {MaxWinLimitSetting} (RM)," +
+            $" Winning/Losing Amount in RM: {TotalWinAmt_RM} (RM), " +
+            $"Winloss Amount in player currency: {TotalWinAmt} ({winLimit.Currency})");
         stringBuilder.Append(
             $"<br />Reached Limit Time: {winLimit.ReachedTime}, Reached Limit Level: {winLimit.Level}");
         stringBuilder.Append(BackgroundJobConstants.LineBreak);

@@ -57,21 +57,21 @@ public class ChatBotResultAmendmentService(IBaseService baseService, ICommonFeed
         return await baseService.FetchMultipleAsync<MessageVoidSettled, MessageVoidSettled>(criteria);
     }
 
-    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettles, string environment)
+    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> voidSettleMessages, string environment)
     {
         var criteria = new GetChatbotVoidingMessageCheck
         {
-            Message = messageVoidSettles.ToXML("root").ToString(),
+            Message = voidSettleMessages.ToXML("root").ToString(),
             Environment = environment
         };
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);
     }
 
-    public async Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> messageVoidSettles, int siteDBGroupId)
+    public async Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> voidSettleMessages, int siteDBGroupId)
     {
         var criteria = new VoidingMessageGetSettledTicket
         {
-            Message = messageVoidSettles.ToXML("root").ToString(),
+            Message = voidSettleMessages.ToXML("root").ToString(),
             SiteDBGroupId = siteDBGroupId
         };
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);

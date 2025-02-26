@@ -169,7 +169,9 @@ public class TOControlFeedbackService : ITOControlFeedbackService
         {
             var messageInvalid = "Invalid Params: " + checkValidParamBeforeInsert.Item2;
             logService.LogInformation(
-                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
+                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml}" +
+                $" @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} " +
+                $"@ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
             await transactionService.EditTOControlFeedbackInfoAsync(ToInfo.LogID.ToString(), CreateFeedbackJobStatus.Fail, messageInvalid);
             return;
         }

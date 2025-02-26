@@ -88,29 +88,59 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
                 return;
             }
         }
+
         var voidingMessages = await voidingSettledTicketsService.GetAutoVoidingMessageAsync(voidingSettledTicketSetting, environment);
         var failVoidingMessages = await voidingSettledTicketsService.GetFailVoidingMessageAsync();
         var voidingMessageDistinct = voidingMessages.Concat(failVoidingMessages).Distinct().ToList();
         logService.LogInformation("before GetAutoVoidingTicketAsync!!!");
-        var (voidingTickets, msgTargets) = await voidingSettledTicketsService.GetAutoVoidingTicketAsync(voidingSettledTicketSetting, voidingMessageDistinct, environment);
+        var (voidingTickets, msgTargets) = await voidingSettledTicketsService.GetAutoVoidingTicketAsync(voidingSettledTicketSetting,
+                                        voidingMessageDistinct, environment);
         logService.LogInformation("end GetAutoVoidingTicketAsync!!!");
 
         logService.LogInformation(
-            $"GetAutoVoidingTicketAsync Item1: {string.Join(",", voidingTickets?.Select(x => x.MessageId) ?? Array.Empty<int>())}, {string.Join(",", voidingTickets?.Select(x => x.TransId) ?? Array.Empty<long>())}"
+            $"GetAutoVoidingTicketAsync Item1: {string.Join(",", voidingTickets.Select(x => x.MessageId).ToArray())}, " +
+            $"{string.Join(",", voidingTickets.Select(x => x.TransId).ToArray())}"
         );
 
         if (msgTargets.Any())
         {
             await voidingSettledTicketsService.UpdateAutoVoidingMessageAsync(msgTargets, environment);
         }
-        if (voidingTickets is null || !voidingTickets.Any())
+        if (!voidingTickets.Any())
         {
             await commonFeedback.EditSystemSettingAsyncByEnvFormatDate(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoVoidFB);
             logService.LogInformation("Do not have any data set1, return voiding settled tickets!!!");
             return;
         }
         await voidingSettledTicketsService.ImportVoidingAutoFeedbackInfoAsync(voidingTickets, environment);
-        var (feedbackInfo, eventVoiding) = await voidingSettledTicketsService.GetVoidingAutoFeedbackInfoAsync(voidingSettledTicketSetting.BatchSize);
+        var (feedbackInfo, eventVoiding) = await CalculateVoidingAutoFeedbackInfo(voidingSettledTicketSetting.BatchSize);
+
+        await GroupAndCreateFeedback(feedbackInfo, eventVoiding, settings, settingMappings, environment);
+
+        await commonFeedback.EditSystemSettingAsyncByEnvFormatDate(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoVoidFB);
+        logService.LogInformation("end service voiding settled!!!");
+    }
+
+    private async Task GroupAndCreateFeedback(IEnumerable<VoidingAutoFeedbackInfo> feedbackInfo,
+        IEnumerable<AutoVoidingEventDetails> eventVoiding,
+        IEnumerable<SettingItem> settings,
+        IEnumerable<SystemSettingMapping> settingMappings,
+        string environment)
+    {
+        var groupFeedbackByMsgId = feedbackInfo.GroupBy(x => new { x.HeadlineId, x.MessageId }).Select(y => y.ToList());
+
+        foreach (var feedback in groupFeedbackByMsgId)
+        {
+            var feedbackInfoFirst = feedback[0];
+            var eventDetails = eventVoiding.Where(x => x.LogVoidingID == feedbackInfoFirst.LogVoidingID);
+            var messages = await feedbackTransaction.GetMessageContentInfoAsync(feedbackInfoFirst.MessageId);
+            await CreateVoidingSettledTicketsAsync(feedbackInfoFirst, eventDetails, messages, settings, settingMappings, environment);
+        }
+    }
+
+    private async Task<(IEnumerable<VoidingAutoFeedbackInfo>, IEnumerable<AutoVoidingEventDetails>)> CalculateVoidingAutoFeedbackInfo(int batchSize)
+    {
+        var (feedbackInfo, eventVoiding) = await voidingSettledTicketsService.GetVoidingAutoFeedbackInfoAsync(batchSize);
 
         var messageIssueTypes = await baseService.GetDataAsync<MsgIssueType>(new GetAutoVoidingIssueTypeCriteria { VoidingMessages = feedbackInfo.Select(i => i.MessageId).ToList() });
         foreach (var fb in feedbackInfo)
@@ -121,19 +151,7 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
                 fb.IssueTypeId = msg.IssueTypeId;
             }
         }
-
-        var groupFeedbackByMsgId = feedbackInfo.GroupBy(x => new { x.HeadlineId, x.MessageId }).Select(y => y.ToList());
-
-        foreach (var feedback in groupFeedbackByMsgId)
-        {
-            var feedbackInfoFirst = feedback[0];
-            var eventDetails = eventVoiding.Where(x => x.LogVoidingID == feedbackInfoFirst.LogVoidingID);
-            var messages = await feedbackTransaction.GetMessageContentInfoAsync(feedbackInfoFirst.MessageId);
-            await CreateVoidingSettledTicketsAsync(feedbackInfoFirst, eventDetails, messages, settings, settingMappings, environment);
-        }
-
-        await commonFeedback.EditSystemSettingAsyncByEnvFormatDate(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AutoVoidFB);
-        logService.LogInformation("end service voiding settled!!!");
+        return (feedbackInfo, eventVoiding);
     }
 
     protected internal virtual async Task CreateVoidingSettledTicketsAsync(
@@ -202,7 +220,9 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         {
             var messageInvalid = "Invalid Params: " + checkValidParamBeforeInsert.Item2;
             logService.LogInformation(
-                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} @StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} @ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
+                $"Invalid Params. @Categorystr: {criteria.CategoryIds} @Category: {criteria.CategoryXml} @Product: {criteria.ProductXml} " +
+                $"@StatusID: {criteria.StatusId} @SubCategorystr:{criteria.SubCategoryIds} " +
+                $"@ResponseID:{criteria.ResponseId} @StationID:{criteria.StationId}");
             await voidingSettledTicketsService.UpdateVoidingAutoFeedbackInfoBatchAsync(feedbackInfo.LogVoidingID, CreateFeedbackJobStatus.Fail, messageInvalid, environment);
             return;
         }
@@ -340,20 +360,18 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         IEnumerable<SystemSettingMapping> settingMappings)
     {
         logService.LogInformation("Begin mapping sub-product.");
-        var sportNames = new List<string>();
-        foreach (var sportTypeId in sportTypeIds)
-        {
-            var sportName = commonFeedback.GetSportName(sportTypeId.ToString(), Language.en_US);
-            sportNames.Add(sportName);
-        }
+        var sportNames = sportTypeIds.Select(sportTypeId => commonFeedback.GetSportName(sportTypeId.ToString(), Language.en_US)).ToList();
+
         var mappings = settingMappings.Where(mapping => mapping.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
                                                         && !string.IsNullOrWhiteSpace(mapping.SettingSource)
                                                         && sportNames.Exists(sportName => mapping.SettingSource.Equals(sportName, StringComparison.OrdinalIgnoreCase))).ToList();
 
-        var subProducts = isMixParlay ? settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
-                                                            && x.SettingValue.Equals("Multiple Sports", StringComparison.OrdinalIgnoreCase)).ToList() :
+        var subProducts = isMixParlay ?
+            settings.Where(x => x.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
+                                  && x.SettingValue.Equals("Multiple Sports", StringComparison.OrdinalIgnoreCase)).ToList() :
             settings.Where(sub => sub.SettingName.Equals(SettingName.SubProduct, StringComparison.OrdinalIgnoreCase)
-                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent)) && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
+                                  && sub.ParentIds.Any(parent => productSettingIds.Any(productName => productName == parent))
+                                  && mappings.Exists(mapping => mapping.SettingId == sub.SettingId)).ToList();
 
         logService.LogInformation("End mapping sub-product.");
 

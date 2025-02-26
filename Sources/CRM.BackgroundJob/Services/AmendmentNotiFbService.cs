@@ -61,23 +61,8 @@ public class AmendmentNotiFbService(
 
         if (custAmendmentNotifications.Any())
         {
-            try
-            {
-                var commandResultAmendment = await transactionService.InsertAmendmentNotiAutoFeedback(custAmendmentNotifications, environment);
-                if (commandResultAmendment.IsSuccessful)
-                {
-                    logService.LogInformation("Import Amendment Notification Auto FeedBack Successful!");
-                    await ResultAmendmentUpdateSystemSetting(isUAT, resultAmendmentSetting, custAmendmentNotifications, jobStatusNameEnv);
-                }
-                else
-                {
-                    logService.LogInformation("Import Amendment Notification Auto FeedBack Fail!");
-                }
-            }
-            catch (Exception ex)
-            {
-                await logService.ErrorAsync(ex);
-            }
+            await InsertAmendmentNotificationFeedback(custAmendmentNotifications, environment,
+                isUAT, resultAmendmentSetting, jobStatusNameEnv);
         }
 
         var amendmentAutoFeedbackInfo = await transactionService.GetAmendmentNotiAutoFeedbackInfo(resultAmendmentSetting.BatchSize);
@@ -103,6 +88,30 @@ public class AmendmentNotiFbService(
 
         await commonFeedback.EditSystemSettingAsyncByEnv(jobStatusNameEnv, lastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_AmendmentNotiFB);
         logService.LogInformation("end service result amendment service!");
+    }
+
+    private async Task InsertAmendmentNotificationFeedback(IEnumerable<CusReachAmendmentNotification> custAmendmentNotifications, string environment,
+        bool isUAT, AmendmentNotiFbSetting resultAmendmentSetting, string jobStatusNameEnv)
+    {
+        try
+        {
+            var commandResultAmendment =
+                await transactionService.InsertAmendmentNotiAutoFeedback(custAmendmentNotifications, environment);
+            if (commandResultAmendment.IsSuccessful)
+            {
+                logService.LogInformation("Import Amendment Notification Auto FeedBack Successful!");
+                await ResultAmendmentUpdateSystemSetting(isUAT, resultAmendmentSetting, custAmendmentNotifications,
+                    jobStatusNameEnv);
+            }
+            else
+            {
+                logService.LogInformation("Import Amendment Notification Auto FeedBack Fail!");
+            }
+        }
+        catch (Exception ex)
+        {
+            await logService.ErrorAsync(ex);
+        }
     }
 
     private static bool IsNoResultTemplate(AmendmentAutoFeedbackInfo amendment)

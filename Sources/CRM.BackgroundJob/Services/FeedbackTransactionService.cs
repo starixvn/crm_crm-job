@@ -1,17 +1,16 @@
-﻿using CRM.BackgroundJob.Criteria.TurnoverControl;
-using CRM.BackgroundJob.Models.TurnoverControl;
-
-namespace CRM.BackgroundJob.Services;
+﻿namespace CRM.BackgroundJob.Services;
 
 using Constants;
 using Criteria.AutoFeedback;
 using CRM.BackgroundJob.Criteria.AmendmentNotiFB;
 using CRM.BackgroundJob.Criteria.ArchivingDA;
 using CRM.BackgroundJob.Criteria.ProblemsAccount;
+using CRM.BackgroundJob.Criteria.TurnoverControl;
 using CRM.BackgroundJob.Criteria.WinLossLimit;
 using CRM.BackgroundJob.Models.AmendmentNotiFB;
 using CRM.BackgroundJob.Models.ArchivingDA;
 using CRM.BackgroundJob.Models.ProblemsAccount;
+using CRM.BackgroundJob.Models.TurnoverControl;
 using CRM.BackgroundJob.Models.WinLossLimit;
 using CRM.Models;
 using CRM.Services;
@@ -227,12 +226,12 @@ public class FeedbackTransactionService(IBaseService baseService) : IFeedbackTra
 
     public async Task<IEnumerable<ProblemsAccountAutoFeedbackInfo>> ImportProblemsAccountFeedbackInfoAsync(
         IEnumerable<GroupHeadline> headlines,
-        IEnumerable<CustCategoryInfo> custCatogories,
+        IEnumerable<CustCategoryInfo> custCategories,
         string Environment)
     {
         const string XmlTemplate = "<r logid='{0}' custid='{1}' hl='{2}' hlname='{3}' related='{4}' catid='{5}'/>";
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
-        foreach (var custCategory in custCatogories)
+        foreach (var custCategory in custCategories)
         {
             var headline = headlines.FirstOrDefault(x => x.CustId == custCategory.CustID);
             var headlineId = headline?.HeadlineId ?? 0;

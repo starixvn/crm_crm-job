@@ -46,7 +46,8 @@ public class ProblemsAccountFeedbackService(
         if (!problemsAccountInfo.Any())
         {
             logService.LogInformation(
-                $"Import problems account doesn't have any data with custId: {string.Join(",", headlines.Select(x => x.HeadlineId))} headlineName: {string.Join(",", headlines.Select(x => x.HeadlineName))}!");
+                $"Import problems account doesn't have any data with custId: {string.Join(",", headlines.Select(x => x.HeadlineId))} " +
+                $"headlineName: {string.Join(",", headlines.Select(x => x.HeadlineName))}!");
             await commonFeedback.EditSystemSettingAsyncByEnv(JobStatusNameEnv, LastRuntimeNameEnv, JobStatus.Completed, BackgroundJobConstants.ServiceName_ProblemsAccount);
             return;
         }
@@ -184,12 +185,14 @@ public class ProblemsAccountFeedbackService(
             if (commandResult.IsSuccessful)
             {
                 logService.LogInformation(
-                    $"Insert feedback problems account successfully. HeadlineId: {string.Join(",", problemsAccounts.Select(x => x.HeadlineID))} logID:{string.Join(",", problemsAccounts.Select(x => x.LogID))}");
+                    $"Insert feedback problems account successfully. HeadlineId: {string.Join(",", problemsAccounts.Select(x => x.HeadlineID))} " +
+                    $"logID:{string.Join(",", problemsAccounts.Select(x => x.LogID))}");
             }
             else
             {
                 logService.LogInformation(
-                    $"Insert feedback failed problems account. HeadlineId: {string.Join(",", problemsAccounts.Select(x => x.HeadlineID))} logID:{string.Join(",", problemsAccounts.Select(x => x.LogID))}");
+                    $"Insert feedback failed problems account. HeadlineId: {string.Join(",", problemsAccounts.Select(x => x.HeadlineID))} " +
+                    $"logID:{string.Join(",", problemsAccounts.Select(x => x.LogID))}");
 
                 await transactionService.EditProblemsAccountFeedbackInfoAsync(string.Join(",", problemsAccounts.Select(x => x.LogID)), CreateFeedbackJobStatus.Fail, commandResult.Message);
                 await logService.ErrorAsync(commandResult, criteria);

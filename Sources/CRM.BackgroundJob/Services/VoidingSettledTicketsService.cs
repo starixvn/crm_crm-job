@@ -61,12 +61,12 @@ public class VoidingSettledTicketsService(IBaseService baseService, ICrmLogServi
     }
 
     public async Task<ValueTuple<IEnumerable<VoidingTicketEventInfo>, IEnumerable<MsgTarget>>> GetAutoVoidingTicketAsync(
-        AmendmentNotiFbSetting voidingSettledTicketSetting, List<MessageVoidSettled> voidSettleds, string environment
+        AmendmentNotiFbSetting voidingSettledTicketSetting, List<MessageVoidSettled> voidSettles, string environment
     )
     {
         var criteria = new GetAutoVoidingTicketCriteria
         {
-            MessageIDs = voidSettleds.ToXML("ROOT").ToString(),
+            MessageIDs = voidSettles.ToXML("ROOT").ToString(),
             Environment = environment,
             ConfigUAT = voidingSettledTicketSetting.ConfigUAT,
             ConfigPRO = voidingSettledTicketSetting.ConfigPRO
@@ -83,21 +83,21 @@ public class VoidingSettledTicketsService(IBaseService baseService, ICrmLogServi
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);
     }
 
-    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds, string environment)
+    public async Task<IEnumerable<MessageVoidSettled>> GetVoidingMessageCheckAsync(IEnumerable<MessageVoidSettled> messageVoidSettles, string environment)
     {
         var criteria = new GetChatbotVoidingMessageCheck
         {
-            Message = messageVoidSettleds.ToXML("root").ToString(),
+            Message = messageVoidSettles.ToXML("root").ToString(),
             Environment = environment
         };
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);
     }
 
-    public async Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> messageVoidSettleds)
+    public async Task<IEnumerable<MessageVoidSettled>> VoidingMessageGetSettledTicketAsync(IEnumerable<MessageVoidSettled> messageVoidSettles)
     {
         var criteria = new VoidingGetSettledTicketMessageCriteria
         {
-            Message = messageVoidSettleds.ToXML("root").ToString()
+            Message = messageVoidSettles.ToXML("root").ToString()
         };
         return await baseService.GetDataAsync<MessageVoidSettled>(criteria);
     }
