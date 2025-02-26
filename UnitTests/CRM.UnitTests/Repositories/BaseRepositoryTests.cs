@@ -80,9 +80,9 @@
             };
         }
 
-        private CommandResult GetSuccessResult()
+        private CRM.Models.Common.CommandResult GetSuccessResult()
         {
-            return new CommandResult
+            return new CRM.Models.Common.CommandResult
             {
                 Code = 0,
                 Message = string.Empty

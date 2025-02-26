@@ -2,7 +2,7 @@
 
 using Models;
 
-public class UpdateAnnouncementNotificationStatusCommand : BaseNonQueryCommand
+public class UpdateAnnouncementNotificationStatusCommand : CRM.Models.Common.BaseNonQueryCommand
 {
     public string XmlData { get; set; }
 

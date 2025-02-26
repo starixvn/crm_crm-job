@@ -5,7 +5,8 @@
     using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
-    using CRM.BackgroundJob.Services;
+    using CRM.Services.AutoFeedback;
+    using CRM.Services.Common;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;

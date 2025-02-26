@@ -4,8 +4,9 @@
     using System.Threading.Tasks;
     using CRM.Services;
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.Workers;
+    using CRM.Services.Common;
+    using CRM.Services.NotificationCenter;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;

@@ -7,12 +7,12 @@ using Models;
 
 public interface IBaseRepository
 {
-    Task<CommandResult> ExecuteNonQueryAsync(INonQueryCommand command);
+    Task<CRM.Models.Common.CommandResult> ExecuteNonQueryAsync(INonQueryCommand command);
 }
 
 public class BaseRepository : IBaseRepository
 {
-    public async Task<CommandResult> ExecuteNonQueryAsync(INonQueryCommand command)
+    public async Task<CRM.Models.Common.CommandResult> ExecuteNonQueryAsync(INonQueryCommand command)
     {
         using var db = ObjectDbFactory.CreateInstance(command.GetSettingKey());
         await db.ExecuteNonQueryAsync(command);
@@ -21,12 +21,12 @@ public class BaseRepository : IBaseRepository
         return commandResult;
     }
 
-    private static CommandResult GetCommandResult(Hashtable hash)
+    private static CRM.Models.Common.CommandResult GetCommandResult(Hashtable hash)
     {
         var errCode = hash["errCode"];
         var errMsg = hash["errMsg"];
 
-        return new CommandResult
+        return new CRM.Models.Common.CommandResult
         {
             Code = errCode is DBNull ? 0 : Convert.ToInt32(errCode),
             Message = errMsg is DBNull ? string.Empty : Convert.ToString(errMsg)

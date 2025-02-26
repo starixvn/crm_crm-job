@@ -13,12 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\BackgroundServiceTests.cs" />
-    <Compile Remove="Services\CustomWebHostServiceTests.cs" />
-    <Compile Remove="Testable\CustomWebHostServiceTestable.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Format_Templates\AutoCreateFeedback\TestTemplate.xml" />
   </ItemGroup>
 
@@ -47,10 +41,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sources\CRM.BackgroundJob\CRM.BackgroundJob.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

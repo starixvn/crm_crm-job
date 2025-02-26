@@ -2,13 +2,14 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Constants;
 using CRM.BackgroundJob.Extensions;
 using CRM.BackgroundJob.Models;
+using CRM.Models.Common;
 using CRM.Services;
+using CRM.Services.AutoFeedback;
+using CRM.Services.Common;
 using Microsoft.Extensions.Options;
 using ONEbook.UM.Services;
-using Services;
 
 public class AutoFbAbnormalBetsWorker : BaseWorker
 {

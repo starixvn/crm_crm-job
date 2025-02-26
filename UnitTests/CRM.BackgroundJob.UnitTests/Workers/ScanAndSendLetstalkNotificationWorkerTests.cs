@@ -2,13 +2,14 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CRM.Services;
     using CRM.BackgroundJob.Models;
     using CRM.BackgroundJob.Workers;
+    using CRM.Services.Common;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using ONEbook.UM.Services;
     using Xunit;
+    using CRM.Services.SendNotification;
 
     public class ScanAndSendLetstalkNotificationWorkerTests
     {

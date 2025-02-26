@@ -6,11 +6,15 @@ using System.Collections.Generic;
 namespace CRM.BackgroundJob.DependencyInjection;
 
 using CRM.BackgroundJob.Models;
-using CRM.BackgroundJob.Models.HealthCheck;
-using CRM.BackgroundJob.Services;
 using CRM.BackgroundJob.Workers;
 using CRM.Models.BotServices;
-using CRM.Services;
+using CRM.Models.Common;
+using CRM.Models.HealthCheck;
+using CRM.Services.AutoChatBotMessage;
+using CRM.Services.AutoFeedback;
+using CRM.Services.Bot;
+using CRM.Services.Common;
+using CRM.Services.SendNotification;
 using Fanex.BotService.Client.Core.Services;
 using Fanex.BotService.Client.Core.Services.Interfaces;
 using Fanex.Caching;
@@ -19,6 +23,7 @@ using Fanex.Logging;
 using Fanex.RemotingRef;
 using Microsoft.AspNetCore.Http;
 using Repositories;
+using Services.NotificationCenter;
 
 public static class ServiceCollectionExtensions
 {

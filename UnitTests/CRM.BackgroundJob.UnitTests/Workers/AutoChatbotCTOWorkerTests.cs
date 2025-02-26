@@ -1,7 +1,6 @@
 ﻿namespace CRM.BackgroundJob.UnitTests.Workers
 {
     using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Services;
     using CRM.BackgroundJob.Workers;
     using CRM.Services;
     using Microsoft.Extensions.Options;
@@ -9,6 +8,8 @@
     using ONEbook.UM.Services;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using CRM.Services.AutoChatBotMessage;
+    using CRM.Services.Common;
     using Xunit;
 
     public class AutoChatbotCTOWorkerTests

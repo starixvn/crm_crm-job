@@ -1,0 +1,12 @@
+﻿namespace CRM.Criteria.ChatBot;
+
+using CRM.Criteria.Common;
+
+public class GetChatBotAbnormalAccountGetUsernameListCriteria : SiteDbBaseCriteria
+{
+    public string Messages { get; set; }
+
+    public override string GetSettingKey() => "Acc_CRM_ChatBot_AbnormalAccount_GetUsernameList";
+
+    public override bool IsValid() => !string.IsNullOrWhiteSpace(Messages) && SiteDBGroupID >= 0;
+}

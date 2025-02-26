@@ -7,6 +7,7 @@ using ONEbook.UM.Services;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CRM.Services.Common;
 
 public abstract class BaseWorker(
     IMaintenanceService maintenanceService,
