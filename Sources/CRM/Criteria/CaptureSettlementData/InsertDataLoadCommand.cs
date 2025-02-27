@@ -1,6 +1,8 @@
 ﻿namespace CRM.Criteria.CaptureSettlementData;
 
-public class InsertDataLoadCommand : CRM.Models.Common.BaseNonQueryCommand
+using Models.Common;
+
+public class InsertDataLoadCommand : BaseNonQueryCommand
 {
     public string Environment { get; set; }
 

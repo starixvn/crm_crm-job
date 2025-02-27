@@ -68,7 +68,7 @@ public class MessageNotificationCenterService(
 
                     if (sessionResultHistory != null)
                     {
-                        await captureSettlementDataService.InsertDataLoadAsync(sessionResultHistory.Environment, sessionResultHistory.JSSettleResultHist);
+                        await captureSettlementDataService.InsertDataLoadAsync(sessionResultHistory.Environment, sessionResultHistory.JSSettlResultHist);
                     }
                 }
             }

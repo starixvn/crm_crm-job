@@ -43,7 +43,7 @@
             };
             var sessionResultHistories = new List<SettleResultHistory>
             {
-                new () { Environment = "dev", JSSettleResultHist = "JSSettleResultHist"}
+                new () { Environment = "dev", JSSettlResultHist = "JSSettleResultHist"}
             };
             systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
             captureSettlementDataService.GetInitialSiteDbConfigsAsync(Arg.Any<string>()).Returns(initSiteDbConfigs);

@@ -3,30 +3,31 @@
 using CRM.Criteria.CaptureSettlementData;
 using CRM.Models.MessageNotificationCenter;
 using CRM.Services.Common;
+using Models.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public interface ICaptureSettlementDataService
 {
-    Task<IEnumerable<CRM.Models.Common.SiteDbConfig>> GetInitialSiteDbConfigsAsync(string environment);
+    Task<IEnumerable<SiteDbConfig>> GetInitialSiteDbConfigsAsync(string environment);
 
-    Task<IEnumerable<SettleResultHistory>> GetSessionByDateAsync(CRM.Models.Common.SiteDbConfig siteDbConfig);
+    Task<IEnumerable<SettleResultHistory>> GetSessionByDateAsync(SiteDbConfig siteDbConfig);
 
-    Task InsertDataLoadAsync(string environment, string JSSettlResultHist);
+    Task InsertDataLoadAsync(string environment, string jsonSettleResultHistory);
 }
 
 public class CaptureSettlementDataService(IBaseService baseService) : ICaptureSettlementDataService
 {
-    public async Task<IEnumerable<CRM.Models.Common.SiteDbConfig>> GetInitialSiteDbConfigsAsync(string environment)
+    public async Task<IEnumerable<SiteDbConfig>> GetInitialSiteDbConfigsAsync(string environment)
     {
         var criteria = new GetInitialSiteDBConfigCriteria
         {
             Environment = environment
         };
-        return await baseService.GetDataAsync<CRM.Models.Common.SiteDbConfig>(criteria);
+        return await baseService.GetDataAsync<SiteDbConfig>(criteria);
     }
 
-    public async Task<IEnumerable<SettleResultHistory>> GetSessionByDateAsync(CRM.Models.Common.SiteDbConfig siteDbConfig)
+    public async Task<IEnumerable<SettleResultHistory>> GetSessionByDateAsync(SiteDbConfig siteDbConfig)
     {
         var criteria = new GetSessionByDateCriteria
         {
@@ -37,12 +38,12 @@ public class CaptureSettlementDataService(IBaseService baseService) : ICaptureSe
         return await baseService.GetDataByIpConfigAsync<SettleResultHistory>(siteDbConfig.AGIP, siteDbConfig.LinkedServerName, criteria);
     }
 
-    public async Task InsertDataLoadAsync(string environment, string JSSettlResultHist)
+    public async Task InsertDataLoadAsync(string environment, string jsonSettleResultHistory)
     {
         var command = new InsertDataLoadCommand
         {
             Environment = environment,
-            JSSettlResultHist = JSSettlResultHist
+            JSSettlResultHist = jsonSettleResultHistory
         };
         await baseService.ExecuteNonQueryAsync(command);
     }
