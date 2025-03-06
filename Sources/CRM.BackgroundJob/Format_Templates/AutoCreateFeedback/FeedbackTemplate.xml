@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+    <Feedback>
+        <RNGTemplateENYN>
+            Dear Sir, Customer Support would like to inform that member "{0}", has currently won the Jackpot amount of "{1} ({2})" in RNG Casino Baccarat Progressive Jackpot. Thank you for your kind attention! {3}
+            Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thành viên "{0}", hiện tại số tiền thắng tại Jackpot lên tới "{1} ({2})" trong RNG Casino Baccarat Progressive Jackpot. Xin cám ơn quý khách! {3}
+        </RNGTemplateENYN>
+        <RNGTemplateENSC>
+            Dear Sir, Customer Support would like to inform that member "{0}", has currently won the Jackpot amount of "{1} ({2})" in RNG Casino Baccarat Progressive Jackpot. Thank you for your kind attention! {3}
+            您好，客服部在此通知 会员 "{0}" 目前在 娱乐城赢了百家乐聚宝奖金 为 “{1} ({2})”。 谢谢您的关注与支持! {3}
+        </RNGTemplateENSC>
+        <JackpotPrizeTemplateENYN>
+            Dear Sir, Customer Support would like to inform that member "{0}", has currently won the Jackpot amount of "{1} ({2})" in Pragmatic Play. Thank you for your kind attention! {3}
+            Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thành viên "{0}", hiện tại số tiền thắng tại Jackpot lên tới "{1} ({2})" trong Pragmatic Play. Xin cám ơn quý khách! {3}
+        </JackpotPrizeTemplateENYN>
+        <JackpotPrizeTemplateENSC>
+            Dear Sir, Customer Support would like to inform that member "{0}", has currently won the Jackpot amount of "{1} ({2})" in Pragmatic Play. Thank you for your kind attention! {3}
+            您好，客服部在此通知 会员 "{0}" 目前在Pragmatic Play 赢了聚宝奖金为 "{1} ({2})"。 谢谢您的关注与支持! {3}
+        </JackpotPrizeTemplateENSC>
+        <YellowTemplateENYN>
+            Dear Sir, Customer Support would like to inform that member "{0}", currently has won amounted to "{1} ({2})" in {3}. Thank you for your kind attention! {5}
+            Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thành viên "{0}", hiện tại số tiền thắng lên tới "{1} ({2})" trong {4}. Xin cám ơn quý khách! {5}
+        </YellowTemplateENYN>
+        <YellowTemplateENSC>
+            Dear Sir, Customer Support would like to inform that member "{0}", currently has won amounted to "{1} ({2})" in {3}. Thank you for your kind attention! {5}
+            您好, 客服部在此通知 会员 "{0}" 目前在{4} 赢了 "{1} ({2})"。谢谢您的关注与支持! {5}
+        </YellowTemplateENSC>
+        <RedTemplateENYN>
+            Dear Sir, Customer Support would like to inform that there is [BIG Winner] under your line. Member username is "{0}", currently has won amount of "{1} ({2})" in {3}. Kindly take note, thank you! {5}
+            Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo có [Người Thắng Lớn] trong hệ thống của quý khách. Tên đăng nhập của thành viên là  "{0}", hiện tại số tiền thắng đã lên tới "{1} ({2})" trong {4}. Xin vui lòng lưu ý, cám ơn quý khách! {5}
+        </RedTemplateENYN>
+        <RedTemplateENSC>
+            Dear Sir, Customer Support would like to inform that there is [BIG Winner] under your line. Member username is "{0}", currently has won amount of "{1} ({2})" in {3}. Kindly take note, thank you! {5}
+            您好，客服部在此通知 会员 "{0}" 目前已达到 [赢取金额上限] 数目为 "{1} ({2})" 在 {4}. 请您留意 谢谢! {5}
+        </RedTemplateENSC>
+        <GreyTemplateENYN>
+            Dear Sir, Customer Support would like to inform that member "{0}", currently has loss amounted to "{1} ({2})" in {3}. Thank you for your kind attention! {5}
+            Xin chào quý khách, Bộ phận chăm sóc khách hàng xin thông báo thành viên  "{0}", hiện tại số tiền thua lên tới "{1} ({2})" trong {4}. Xin cám ơn quý khách! {5}
+        </GreyTemplateENYN>
+        <GreyTemplateENSC>
+            Dear Sir, Customer Support would like to inform that member "{0}", currently has loss amounted to "{1} ({2})" in {3}. Thank you for your kind attention! {5}
+            您好, 客服部在此通知 会员 "{0}" 目前在{4} 输了 "{1} ({2})"。谢谢您的关注与支持! {5}
+        </GreyTemplateENSC>
+        <BlackTemplateYN>
+            Dear Sir, Customer Support would like to draw your attention towards member "{0}" has [hit Max Lose Limit] amounted to "{1} ({2})" in {3}. Kindly take note, thank you! {5}
+            Xin chào quý khách, Bộ phận chăm sóc khách hàng xin quý khách lưu ý tới thành viên "{0}", đã đạt giới hạn thua tối đa lên tới "{1} ({2})" trong {4}. Xin cám ơn quý khách đã lưu tâm! {5}
+        </BlackTemplateYN>
+        <BlackTemplateSC>
+            Dear Sir, Customer Support would like to draw your attention towards member "{0}" has [hit Max Lose Limit] amounted to "{1} ({2})" in {3}. Kindly take note, thank you! {5}
+            您好，客服部在此通知 会员 "{0}" 目前已达到 [最高输额上限] 数目为"{1} ({2})" 在{4}. 请您留意 谢谢! {5}
+        </BlackTemplateSC>
+    </Feedback>
+</ROOT>

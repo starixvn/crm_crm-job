@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+    <PropertyGroup>
+        <PublishProtocol>FileSystem</PublishProtocol>
+        <Configuration>Release</Configuration>
+        <Platform>Any CPU</Platform>
+        <TargetFramework>net9.0</TargetFramework>
+        <PublishDir>D:\Deploy\CRM.Service</PublishDir>
+        <UserSecretsId>c6191107-6326-45fb-b4bb-3f2d9239f558</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="Filters\**" />
+      <Compile Remove="Views\**" />
+      <Content Remove="Filters\**" />
+      <Content Remove="Views\**" />
+      <EmbeddedResource Remove="Filters\**" />
+      <EmbeddedResource Remove="Views\**" />
+      <None Remove="Filters\**" />
+      <None Remove="Views\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Remove="appsettings.LOCAL.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="App_Data\SpNames.xml" />
+        <None Remove="Deployment.ignore" />
+        <None Remove="Format_Templates\AutoCreateFeedback\AmendmentDescriptionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\AmendmentSolutionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\ArchivingDATemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\FeedbackDuplicateTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\FeedbackTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\MixParlayTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\TODesctiptionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\TOSolutionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\ProblemsSolutionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\VoidingSettledTicketDescriptionTemplate.xml" />
+        <None Remove="Format_Templates\AutoCreateFeedback\VoidingSettledTicketSolutionTemplate.xml" />
+        <None Remove="logs\log.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="App_Data\SpNames.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Deployment.ignore">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\AmendmentDescriptionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\AmendmentSolutionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\FeedbackDuplicateTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\FeedbackTemplate.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\MixParlayTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\ArchivingDATemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\ProblemsSolutionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\TODesctiptionTemplate.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\TOSolutionTemplate.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\VoidingSettledTicketDescriptionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Format_Templates\AutoCreateFeedback\VoidingSettledTicketSolutionTemplate.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="logs\log.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Fanex.BotService.Client.AspNetCore" Version="1.0.2" />
+        <PackageReference Include="ONEbook.UM" Version="3.2.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="appsettings.LOCAL.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CRM\CRM.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.KLDR.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+</Project>

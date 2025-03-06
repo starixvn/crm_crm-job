@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+    <SportsbookVirtualSports2>
+        Date: {0}{7}
+        Sport: {1}{7}
+        Event Start Time: {2}{7}
+        League: {3} ({6}){7}
+        Match: {4} - vs - {5}{7}
+    </SportsbookVirtualSports2>
+    <SportsbookVirtualSports2Racing>
+        Date: {0}{5}
+        Sport: {1}{5}
+        Event Start Time: {2}{5}
+        League: {3}{5}
+        Match: {4}{5}
+    </SportsbookVirtualSports2Racing>
+    <VirtualSports>
+        Date: {0}{4}
+        Sport: {1}{4}
+        Match: {2} - vs - {3}{4}
+    </VirtualSports>
+    <VirtualSports181185>
+        Date: {0}{3}
+        Sport: {1}{3}
+        Race Time: {2}{3}
+    </VirtualSports181185>
+    <NumberGames>
+        Date: {0}{3}
+        Game: {1}{3}
+        Event No.: #{2}{3}
+    </NumberGames>
+    <Outright>
+        Sport: {0}{4}
+        Event Start Time: {1}{4}
+        League: {2}{4}
+        Bet on team: {3}{4}
+    </Outright>
+</ROOT>      

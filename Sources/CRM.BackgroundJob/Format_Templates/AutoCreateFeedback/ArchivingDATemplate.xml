@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+    <SolutionENSC>
+        Dear Sir, Customer Support would like to inform that some of your Super/Master/Agents were closed due to inactivity in the past 3 months. If you wish them to continue their business, you can reopen these accounts, otherwise you can take back their Given Credit. 1 month after being closed, these accounts will be disabled, and you will not be able to recover the given credit from them, which will result in a shortage of your total credit.{1}
+        *Gentle reminder: Please note that disabled accounts will not be restored. *{2}{1}
+        您好, 客服部在此通知，由于您的一些超级总代理/总代理/代理已长达近三个月无活跃操作，因此账号已被关闭。倘若关闭账号持有者有意继续进行生意，您可重启账号，除此以外也可以取回该账号的信用额。账号将在关闭后的一个月被禁用。您将无法从这些账号取回信用额，这将导致您的信用额度不足。{1}
+        *温馨提醒：请知悉，禁用后的账号将无法重启。*{1}
+        Affected Users / 受影响账号: {0}{1}
+        Thank you.{1}
+        谢谢。
+    </SolutionENSC>
+    <SolutionENYN>
+        Dear sir, Customer Support would like to inform that some of your Super/Master/Agents were closed due to inactivity in the past 3 months. If you wish them to continue their business, you can reopen these accounts, otherwise you can take back their Given Credit. 1 month after being closed, these accounts will be disabled, and you will not be able to recover the given credit from them, which will result in a shortage of your total credit.{1}
+        *Gentle reminder: Please note that disabled accounts will not be restored.{2}{1}
+        Kính gửi quý khách, Bộ phận Hỗ trợ Khách hàng muốn thông báo rằng một số tài khoản Super / Master / Agents của quý khách đã bị đóng do không hoạt động trong 3 tháng qua. Nếu quý khách muốn họ tiếp tục kinh doanh, quý khách có thể mở lại các tài khoản này, nếu không quý khách có thể lấy lại Hạn mức tín dụng của họ. Một tháng sau khi bị đóng, các tài khoản này sẽ bị vô hiệu hóa và quý khách sẽ không thể khôi phục khoản Hạn mức tín dụng đã cho các tài khoản đó, điều này sẽ dẫn đến việc thiếu hụt tổng tín dụng của quý khách.{1}
+        *Xin được nhắc nhở: Xin lưu ý rằng các tài khoản bị vô hiệu hóa sẽ không thể khôi phục.{1}
+        Affected/Người dùng bị ảnh hưởng: {0}{1}
+        Thank you!{1}
+        Xin cám ơn quý khách!
+    </SolutionENYN>
+    <Description>
+        Archiving Unused Credit Accounts - {0} - Stage 1 DONE {3}
+        - Close Inactive S/M/A and Member account.{3}
+        - Inactive/ No bets/ No members created for a period of 3 recent months from {1} to {2}.
+    </Description>
+</ROOT>

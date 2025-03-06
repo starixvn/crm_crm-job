@@ -1,0 +1,12 @@
+﻿namespace CRM.Criteria.ChatBot_CTO;
+
+using Fanex.Data.Repository;
+
+public class GetTOControlSMAInfoCriteria : CriteriaBase
+{
+    public string XML { get; set; }
+
+    public override string GetSettingKey() => "Acc_Chatbot_TOControlSMAInfo_Sel";
+
+    public override bool IsValid() => !string.IsNullOrWhiteSpace(XML);
+}
