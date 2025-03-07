@@ -19,7 +19,6 @@ using Fanex.BotService.Client.Core.Services;
 using Fanex.BotService.Client.Core.Services.Interfaces;
 using Fanex.Caching;
 using Fanex.Data.Repository;
-using Fanex.Logging;
 using Fanex.RemotingRef;
 using Microsoft.AspNetCore.Http;
 using Repositories;
@@ -51,7 +50,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBaseRepository, BaseRepository>();
         services.AddSingleton<IBaseService, BaseService>();
         services.AddSingleton<ICacheService, CacheService>();
-        services.AddSingleton<ILogger, Logger>();
         services.AddSingleton<ICrmLogService, CrmLogService>();
 
         services.AddSingleton<IBotService, BotService>();
