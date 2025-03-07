@@ -12,9 +12,9 @@
     <PackageReference Include="Fanex.Data.SqlServer" Version="4.3.2.1" />
     <PackageReference Include="Fanex.Logging.Extensions.AspNetCore" Version="1.1.0" />
     <PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.1.0" />
-    <PackageReference Include="Fanex.Logging.Sentry" Version="5.0.0" />
     <PackageReference Include="Fanex.RemotingRef" Version="1.5.5.1" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="5.4.0" />
+    <PackageReference Include="Fanex.Logging.Sentry.RavenClient" Version="2.0.2" />
+	  <PackageReference Include="NLog.Web.AspNetCore" Version="5.4.0" />
   </ItemGroup>
 
 </Project>
