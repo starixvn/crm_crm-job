@@ -6,6 +6,7 @@
     using CRM.Services.AutoFeedback;
     using CRM.Services.Common;
     using CRM.Services.NotificationCenter;
+    using Fanex.BotService.Client.Core.Enum;
     using Fanex.BotService.Client.Core.Services.Interfaces;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
@@ -402,14 +403,14 @@
             var service = GetService();
             var conversationConfigs = new List<ConversationConfig>
             {
-                new() { DisplayName = "MNC", ConversationId = "1", IsOnlySendTest = true}
+                new() { BotChannel = "Telegram", DisplayName = "MNC", ConversationId = "1", IsOnlySendTest = true}
             };
 
             // Act
             await service.Public_ProcessSendRealTestMessagesAsync(conversationConfigs, "Content MNC");
 
             // Assert
-            await botService.Received(1).SendSkypeAsync("1", "Content MNC");
+            await botService.Received(1).SendAsync(BotChannel.Telegram, "1", "Content MNC");
         }
 
         [Fact]
@@ -419,14 +420,14 @@
             var service = GetService();
             var conversationConfigs = new List<ConversationConfig>
             {
-                new() { DisplayName = "MNC", ConversationId = "1", IsOnlySendTest = true}
+                new() { BotChannel = "Telegram", DisplayName = "MNC", ConversationId = "1", IsOnlySendTest = true}
             };
 
             // Act
             await service.Public_ProcessSendOnlyTestMessagesAsync(conversationConfigs, "Content MNC");
 
             // Assert
-            await botService.Received(1).SendSkypeAsync("1", "Content MNC");
+            await botService.Received(1).SendAsync(BotChannel.Telegram, "1", "Content MNC");
         }
 
         #region Helpers
