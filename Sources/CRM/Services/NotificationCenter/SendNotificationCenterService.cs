@@ -5,17 +5,19 @@ using System.Threading.Tasks;
 using CRM.Criteria.SendNotificationCenter;
 using CRM.Models.MessageNotificationCenter;
 using CRM.Services.Common;
+using Models.Common;
 
 public interface ISendNotificationCenterService
 {
-    Task<CRM.Models.Common.CommandResult> InsertNotificationAlertAsync(string environment);
+    Task<CommandResult> InsertNotificationAlertAsync(string environment);
 
     Task<IEnumerable<MessageBotInfo>> GetNotificationAlertAsync(string environment);
 }
 
 public class SendNotificationCenterService(IBaseService baseService) : ISendNotificationCenterService
 {
-    public async Task<CRM.Models.Common.CommandResult> InsertNotificationAlertAsync(string environment) {
+    public async Task<CommandResult> InsertNotificationAlertAsync(string environment)
+    {
         var command = new InsertNotificationAlertCommand
         {
             Environment = environment
