@@ -1,57 +1,56 @@
-﻿namespace CRM.UnitTests.Criteria.AutoFeedback
+﻿namespace CRM.UnitTests.Criteria.AutoFeedback;
+
+using AutoFixture;
+using CRM.Criteria.AutoFeedback;
+using Xunit;
+
+public class ImportVoidingMessageCriteriaTests
 {
-    using AutoFixture;
-    using CRM.Criteria.AutoFeedback;
-    using Xunit;
-
-    public class ImportVoidingMessageCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new ImportVoidingMessageCriteria();
+        var expected = "Acc_CRM_VoidingMessageIns";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(null, 0)]
+    [InlineData("", 1)]
+    [InlineData(" ", 1)]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string messageIds, int batchSize)
+    {
+        // Arrange
+        var criteria = new ImportVoidingMessageCriteria
         {
-            // Arrange
-            var criteria = new ImportVoidingMessageCriteria();
-            var expected = "Acc_CRM_VoidingMessageIns";
+            MessageIds = messageIds,
+            BatchSize = batchSize
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.False(actual);
+    }
 
-        [Theory]
-        [InlineData(null, 0)]
-        [InlineData("", 1)]
-        [InlineData(" ", 1)]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string messageIds, int batchSize)
-        {
-            // Arrange
-            var criteria = new ImportVoidingMessageCriteria
-            {
-                MessageIds = messageIds,
-                BatchSize = batchSize
-            };
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var fixture = new Fixture();
+        var criteria = fixture.Create<ImportVoidingMessageCriteria>();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var fixture = new Fixture();
-            var criteria = fixture.Create<ImportVoidingMessageCriteria>();
-
-            // Act
-            var actual = criteria.IsValid();
-
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

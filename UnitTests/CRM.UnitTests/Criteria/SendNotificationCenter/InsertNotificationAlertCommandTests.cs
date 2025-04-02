@@ -1,41 +1,40 @@
-﻿namespace CRM.UnitTests.Criteria.SendNotificationCenter
+﻿namespace CRM.UnitTests.Criteria.SendNotificationCenter;
+
+using CRM.Criteria.SendNotificationCenter;
+using Xunit;
+
+public class InsertNotificationAlertCommandTests
 {
-    using CRM.Criteria.SendNotificationCenter;
-    using Xunit;
-
-    public class InsertNotificationAlertCommandTests
+    [Fact]
+    public void GetSettingKey_ReturnCorrectSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_ReturnCorrectSettingKey()
+        // Arrange
+        var command = new InsertNotificationAlertCommand
         {
-            // Arrange
-            var command = new InsertNotificationAlertCommand
-            {
-                Environment = "dev"
-            };
-            var expected = "MNC_Notification_AlertIns";
+            Environment = "dev"
+        };
+        var expected = "MNC_Notification_AlertIns";
 
-            // Action
-            var actual = command.GetSettingKey();
+        // Action
+        var actual = command.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamsAreValid_ReturnTrue()
+    [Fact]
+    public void IsValid_ParamsAreValid_ReturnTrue()
+    {
+        // Arrange
+        var command = new InsertNotificationAlertCommand
         {
-            // Arrange
-            var command = new InsertNotificationAlertCommand
-            {
-                Environment = "dev"
-            };
+            Environment = "dev"
+        };
 
-            // Act
-            var actual = command.IsValid();
+        // Act
+        var actual = command.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

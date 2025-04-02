@@ -1,56 +1,55 @@
-﻿namespace CRM.UnitTests.Criteria.ArchivingDA
+﻿namespace CRM.UnitTests.Criteria.ArchivingDA;
+
+using AutoFixture;
+using CRM.Criteria.ArchivingDA;
+using Xunit;
+
+public class ArchivingImportDirectAccountCommandTests
 {
-    using AutoFixture;
-    using CRM.Criteria.ArchivingDA;
-    using Xunit;
-
-    public class ArchivingImportDirectAccountCommandTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new ArchivingImportDirectAccountCommand();
+        var expected = "Acc_CRM_ArchivedAccount_SyncData";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string archivedList)
+    {
+        // Arrange
+        var criteria = new ArchivingImportDirectAccountCommand
         {
-            // Arrange
-            var criteria = new ArchivingImportDirectAccountCommand();
-            var expected = "Acc_CRM_ArchivedAccount_SyncData";
+            ArchivedList = archivedList
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.False(actual);
+    }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string archivedList)
-        {
-            // Arrange
-            var criteria = new ArchivingImportDirectAccountCommand
-            {
-                ArchivedList = archivedList
-            };
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var fixture = new Fixture();
 
-            // Act
-            var actual = criteria.IsValid();
+        var criteria = fixture.Create<ArchivingImportDirectAccountCommand>();
 
-            // Assert
-            Assert.False(actual);
-        }
+        // Act
+        var actual = criteria.IsValid();
 
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var fixture = new Fixture();
-
-            var criteria = fixture.Create<ArchivingImportDirectAccountCommand>();
-
-            // Act
-            var actual = criteria.IsValid();
-
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

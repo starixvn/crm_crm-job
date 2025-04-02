@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.PushResultAmendment
+﻿namespace CRM.UnitTests.Criteria.PushResultAmendment;
+
+using CRM.Criteria.PushResultAmendment;
+using Xunit;
+
+public class InsertInfoAdminSiteCommandTests
 {
-    using CRM.Criteria.PushResultAmendment;
-    using Xunit;
-
-    public class InsertInfoAdminSiteCommandTests
+    [Fact]
+    public void GetSettingKey_ReturnCorrectSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_ReturnCorrectSettingKey()
-        {
-            // Arrange
-            var command = new InsertInfoAdminSiteCommand();
-            var expected = "Dot_Admin_message_new_insert";
+        // Arrange
+        var command = new InsertInfoAdminSiteCommand();
+        var expected = "Dot_Admin_message_new_insert";
 
-            // Action
-            var actual = command.GetSettingKey();
+        // Action
+        var actual = command.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamsAreValid_ReturnTrue()
-        {
-            // Arrange
-            var command = new InsertInfoAdminSiteCommand();
+    [Fact]
+    public void IsValid_ParamsAreValid_ReturnTrue()
+    {
+        // Arrange
+        var command = new InsertInfoAdminSiteCommand();
 
-            // Act
-            var actual = command.IsValid();
+        // Act
+        var actual = command.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

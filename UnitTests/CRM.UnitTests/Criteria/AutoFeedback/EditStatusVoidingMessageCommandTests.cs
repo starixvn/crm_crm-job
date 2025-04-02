@@ -1,56 +1,55 @@
-﻿namespace CRM.UnitTests.Criteria.AutoFeedback
+﻿namespace CRM.UnitTests.Criteria.AutoFeedback;
+
+using AutoFixture;
+using CRM.Criteria.AutoFeedback;
+using Xunit;
+
+public class EditStatusVoidingMessageCommandTests
 {
-    using AutoFixture;
-    using CRM.Criteria.AutoFeedback;
-    using Xunit;
-
-    public class EditStatusVoidingMessageCommandTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new EditStatusVoidingMessageCommand();
+        var expected = "Acc_CRM_VoidingMessageBatchUpd";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string messageIds)
+    {
+        // Arrange
+        var criteria = new EditStatusVoidingMessageCommand
         {
-            // Arrange
-            var criteria = new EditStatusVoidingMessageCommand();
-            var expected = "Acc_CRM_VoidingMessageBatchUpd";
+            MessageIds = messageIds
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.False(actual);
+    }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string messageIds)
-        {
-            // Arrange
-            var criteria = new EditStatusVoidingMessageCommand
-            {
-                MessageIds = messageIds
-            };
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var fixture = new Fixture();
+        var criteria = fixture.Create<EditStatusVoidingMessageCommand>();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var fixture = new Fixture();
-            var criteria = fixture.Create<EditStatusVoidingMessageCommand>();
-
-            // Act
-            var actual = criteria.IsValid();
-
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

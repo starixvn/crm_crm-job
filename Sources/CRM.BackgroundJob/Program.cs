@@ -1,5 +1,6 @@
 ﻿using CRM.BackgroundJob;
 using CRM.BackgroundJob.DependencyInjection;
+using CRM.Services.Common;
 using Fanex.BotService.Client.AspNetCore;
 using Fanex.Caching.Redis;
 using Fanex.Data.SqlServer;
@@ -36,8 +37,8 @@ app.MapGet("/", () => "OK");
 
 app.MapGet("/sentry", async () =>
 {
-    var logService = app.Services.GetRequiredService<Fanex.Logging.ILogger>();
-    await logService.ErrorAsync("Test Sentry");
+    var logService = app.Services.GetRequiredService<ICrmLogService>();
+    await logService.ErrorMessageAsync("Test Sentry");
 
     return "Test sentry!";
 });

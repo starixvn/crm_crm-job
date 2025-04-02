@@ -1,63 +1,62 @@
-﻿namespace CRM.UnitTests.Criteria.TurnoverControl
+﻿namespace CRM.UnitTests.Criteria.TurnoverControl;
+
+using CRM.Criteria.TurnoverControl;
+using Xunit;
+
+public class EditTOControlAutoFeedbackInfoUpdCommandTests
 {
-    using CRM.Criteria.TurnoverControl;
-    using Xunit;
-
-    public class EditTOControlAutoFeedbackInfoUpdCommandTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new EditTOControlAutoFeedbackInfoUpdCommand();
+        var expected = "Acc_CRM_TOControl_AutoFeedbackInfoUpd";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void IsValid_ParamIsInvalid_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new EditTOControlAutoFeedbackInfoUpdCommand
         {
-            // Arrange
-            var criteria = new EditTOControlAutoFeedbackInfoUpdCommand();
-            var expected = "Acc_CRM_TOControl_AutoFeedbackInfoUpd";
+            LogID = "1",
+            Status = "1",
+            Description = "test"
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.True(actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamIsInvalid_ReturnTrue()
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData("", "")]
+    [InlineData(" ", " ")]
+    [InlineData("1", "")]
+    [InlineData(" ", "1")]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string LogID, string Status)
+    {
+        // Arrange
+        var criteria = new EditTOControlAutoFeedbackInfoUpdCommand
         {
-            // Arrange
-            var criteria = new EditTOControlAutoFeedbackInfoUpdCommand
-            {
-                LogID = "1",
-                Status = "1",
-                Description = "test"
-            };
+            LogID = LogID,
+            Status = Status,
+            Description = "test"
+        };
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Theory]
-        [InlineData(null, null)]
-        [InlineData("", "")]
-        [InlineData(" ", " ")]
-        [InlineData("1", "")]
-        [InlineData(" ", "1")]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string LogID, string Status)
-        {
-            // Arrange
-            var criteria = new EditTOControlAutoFeedbackInfoUpdCommand
-            {
-                LogID = LogID,
-                Status = Status,
-                Description = "test"
-            };
-
-            // Act
-            var actual = criteria.IsValid();
-
-            // Assert
-            Assert.False(actual);
-        }
+        // Assert
+        Assert.False(actual);
     }
 }

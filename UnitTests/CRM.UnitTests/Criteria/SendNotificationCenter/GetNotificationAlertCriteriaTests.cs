@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.SendNotificationCenter
+﻿namespace CRM.UnitTests.Criteria.SendNotificationCenter;
+
+using CRM.Criteria.SendNotificationCenter;
+using Xunit;
+
+public class GetNotificationAlertCriteriaTests
 {
-    using CRM.Criteria.SendNotificationCenter;
-    using Xunit;
-
-    public class GetNotificationAlertCriteriaTests
+    [Fact]
+    public void GetSettingKey_ReturnCorrectSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_ReturnCorrectSettingKey()
-        {
-            // Arrange
-            var criteria = new GetNotificationAlertCriteria();
-            var expected = "MNC_Notification_AlertSel";
+        // Arrange
+        var criteria = new GetNotificationAlertCriteria();
+        var expected = "MNC_Notification_AlertSel";
 
-            // Action
-            var actual = criteria.GetSettingKey();
+        // Action
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamsAreValid_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetNotificationAlertCriteria();
+    [Fact]
+    public void IsValid_ParamsAreValid_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetNotificationAlertCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

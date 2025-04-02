@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.Common
+﻿namespace CRM.UnitTests.Criteria.Common;
+
+using CRM.Criteria.Common;
+using Xunit;
+
+public class GetNotificationToSendCriteriaTests
 {
-    using CRM.Criteria.Common;
-    using Xunit;
-
-    public class GetNotificationToSendCriteriaTests
+    [Fact]
+    public void GetSettingKey_ReturnCorrectSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_ReturnCorrectSettingKey()
-        {
-            // Arrange
-            var criteria = new GetNotificationToSendCriteria();
-            var expected = "Acc_CRM_Chatbot_SendNotification";
+        // Arrange
+        var criteria = new GetNotificationToSendCriteria();
+        var expected = "Acc_CRM_Chatbot_SendNotification";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_WhenCalled_AlwaysReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetNotificationToSendCriteria();
+    [Fact]
+    public void IsValid_WhenCalled_AlwaysReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetNotificationToSendCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

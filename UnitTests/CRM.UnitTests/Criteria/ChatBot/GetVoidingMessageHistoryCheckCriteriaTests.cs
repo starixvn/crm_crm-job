@@ -1,57 +1,56 @@
-﻿namespace CRM.UnitTests.Criteria.ChatBot
+﻿namespace CRM.UnitTests.Criteria.ChatBot;
+
+using CRM.Criteria.ChatBot;
+using Xunit;
+
+public class GetVoidingMessageHistoryCheckCriteriaTests
 {
-    using CRM.Criteria.ChatBot;
-    using Xunit;
-
-    public class GetVoidingMessageHistoryCheckCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new GetVoidingMessageHistoryCheckCriteria();
+        var expected = "Acc_CRM_crmMessageImport_Check";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string messages)
+    {
+        // Arrange
+        var criteria = new GetVoidingMessageHistoryCheckCriteria
         {
-            // Arrange
-            var criteria = new GetVoidingMessageHistoryCheckCriteria();
-            var expected = "Acc_CRM_crmMessageImport_Check";
+            Messages = messages
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.False(actual);
+    }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string messages)
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetVoidingMessageHistoryCheckCriteria
         {
-            // Arrange
-            var criteria = new GetVoidingMessageHistoryCheckCriteria
-            {
-                Messages = messages
-            };
+            Messages = "message"
+        };
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetVoidingMessageHistoryCheckCriteria
-            {
-                Messages = "message"
-            };
-
-            // Act
-            var actual = criteria.IsValid();
-
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

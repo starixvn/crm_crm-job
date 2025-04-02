@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.AbnormalBet
+﻿namespace CRM.UnitTests.Criteria.AbnormalBet;
+
+using CRM.Criteria.AbnormalBet;
+using Xunit;
+
+public class GetAbnormalBetMessageCriteriaTests
 {
-    using CRM.Criteria.AbnormalBet;
-    using Xunit;
-
-    public class GetAbnormalBetMessageCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
-        {
-            // Arrange
-            var criteria = new GetAbnormalBetMessageCriteria();
-            var expected = "Acc_CRM_AutoFB_AbnormalBets_GetMessage";
+        // Arrange
+        var criteria = new GetAbnormalBetMessageCriteria();
+        var expected = "Acc_CRM_AutoFB_AbnormalBets_GetMessage";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_WhenCalled_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetAbnormalBetMessageCriteria();
+    [Fact]
+    public void IsValid_WhenCalled_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetAbnormalBetMessageCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

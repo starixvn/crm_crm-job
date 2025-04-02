@@ -1,38 +1,37 @@
-﻿namespace CRM.UnitTests.Criteria.ArchivingDA
+﻿namespace CRM.UnitTests.Criteria.ArchivingDA;
+
+using AutoFixture;
+using CRM.Criteria.ArchivingDA;
+using Xunit;
+
+public class ArchivingAutoFeedbackInfoInsCommandTests
 {
-    using AutoFixture;
-    using CRM.Criteria.ArchivingDA;
-    using Xunit;
-
-    public class ArchivingAutoFeedbackInfoInsCommandTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
-        {
-            // Arrange
-            var criteria = new ArchivingAutoFeedbackInfoInsCommand();
-            var expected = "Acc_CRM_ArchivedAccount_AutoFBInfoIns";
+        // Arrange
+        var criteria = new ArchivingAutoFeedbackInfoInsCommand();
+        var expected = "Acc_CRM_ArchivedAccount_AutoFBInfoIns";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var fixture = new Fixture();
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var fixture = new Fixture();
 
-            var command = fixture.Create<ArchivingAutoFeedbackInfoInsCommand>();
+        var command = fixture.Create<ArchivingAutoFeedbackInfoInsCommand>();
 
-            // Act
-            var actual = command.IsValid();
+        // Act
+        var actual = command.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

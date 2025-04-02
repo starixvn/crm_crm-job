@@ -1,41 +1,40 @@
-﻿namespace CRM.UnitTests.Criteria.VoidingSettledTickets
+﻿namespace CRM.UnitTests.Criteria.VoidingSettledTickets;
+
+using System;
+using CRM.Criteria.VoidingSettledTickets;
+using Xunit;
+
+public class GetAutoVoidingMessageCriteriaTests
 {
-    using System;
-    using CRM.Criteria.VoidingSettledTickets;
-    using Xunit;
-
-    public class GetAutoVoidingMessageCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new GetAutoVoidingMessageCriteria
         {
-            // Arrange
-            var criteria = new GetAutoVoidingMessageCriteria
-            {
-                BatchSize = 10,
-                Environment = "LIVE",
-                LastDateUAT = new DateTime()
-            };
-            var expected = "Acc_CRM_AutoVoidingMessageSel";
+            BatchSize = 10,
+            Environment = "LIVE",
+            LastDateUAT = new DateTime()
+        };
+        var expected = "Acc_CRM_AutoVoidingMessageSel";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_WhenCalled_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetAutoVoidingMessageCriteria();
+    [Fact]
+    public void IsValid_WhenCalled_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetAutoVoidingMessageCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

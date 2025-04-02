@@ -1,55 +1,54 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Workers
+﻿namespace CRM.BackgroundJob.UnitTests.Workers;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CRM.BackgroundJob.Models;
+using CRM.BackgroundJob.Workers;
+using CRM.Services.Common;
+using Microsoft.Extensions.Options;
+using NSubstitute;
+using ONEbook.UM.Services;
+using Xunit;
+using CRM.Services.SendNotification;
+
+public class ScanAndSendLetstalkNotificationWorkerTests
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Workers;
-    using CRM.Services.Common;
-    using Microsoft.Extensions.Options;
-    using NSubstitute;
-    using ONEbook.UM.Services;
-    using Xunit;
-    using CRM.Services.SendNotification;
+    private ISendNotificationService sendNotificationService;
+    private IMaintenanceService maintenanceService;
+    private ICrmLogService logService;
+    private List<JobSetting> appSettings;
 
-    public class ScanAndSendLetstalkNotificationWorkerTests
+    [Fact]
+    public async Task ExecuteJobAsync_Override_CallExactFunction()
     {
-        private ISendNotificationService sendNotificationService;
-        private IMaintenanceService maintenanceService;
-        private ICrmLogService logService;
-        private List<JobSetting> appSettings;
+        //Arrange
+        var service = GetService();
 
-        [Fact]
-        public async Task ExecuteJobAsync_Override_CallExactFunction()
-        {
-            //Arrange
-            var service = GetService();
+        // Act
+        await service.ExecuteJobAsync();
 
-            // Act
-            await service.ExecuteJobAsync();
+        // Assert
+        await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
+    }
 
-            // Assert
-            await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
-        }
+    private ScanAndSendLetstalkNotificationWorker GetService()
+    {
+        appSettings =
+        [
+            new JobSetting
+            {
+                JobName = "Test",
+                IsEnabled = true,
+                HasCheckUM = false,
+                TimeInterval = 60
+            }
+        ];
+        var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
+        appJobSettings.Value.Returns(appSettings);
+        sendNotificationService = Substitute.For<ISendNotificationService>();
+        maintenanceService = Substitute.For<IMaintenanceService>();
+        logService = Substitute.For<ICrmLogService>();
 
-        private ScanAndSendLetstalkNotificationWorker GetService()
-        {
-            appSettings =
-            [
-                new JobSetting
-                {
-                    JobName = "Test",
-                    IsEnabled = true,
-                    HasCheckUM = false,
-                    TimeInterval = 60
-                }
-            ];
-            var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
-            appJobSettings.Value.Returns(appSettings);
-            sendNotificationService = Substitute.For<ISendNotificationService>();
-            maintenanceService = Substitute.For<IMaintenanceService>();
-            logService = Substitute.For<ICrmLogService>();
-
-            return new ScanAndSendLetstalkNotificationWorker(sendNotificationService, maintenanceService, appJobSettings, logService);
-        }
+        return new ScanAndSendLetstalkNotificationWorker(sendNotificationService, maintenanceService, appJobSettings, logService);
     }
 }
