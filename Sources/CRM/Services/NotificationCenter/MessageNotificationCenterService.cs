@@ -254,7 +254,7 @@ public class MessageNotificationCenterService(
             }
             else
             {
-                await botService.SendSkypeAsync(conversationConfig.ConversationId, content);
+                await botService.SendAsync(conversationConfig.BotChannel, conversationConfig.ConversationId, content);
             }
         }
     }
@@ -265,7 +265,7 @@ public class MessageNotificationCenterService(
         {
             if (conversationConfig.IsOnlySendTest)
             {
-                await botService.SendSkypeAsync(conversationConfig.ConversationId, content);
+                await botService.SendAsync(conversationConfig.BotChannel, conversationConfig.ConversationId, content);
             }
         }
     }

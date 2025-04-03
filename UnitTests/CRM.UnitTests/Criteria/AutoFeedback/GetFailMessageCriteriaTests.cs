@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.AutoFeedback
+﻿namespace CRM.UnitTests.Criteria.AutoFeedback;
+
+using CRM.Criteria.AutoFeedback;
+using Xunit;
+
+public class GetFailMessageCriteriaTests
 {
-    using CRM.Criteria.AutoFeedback;
-    using Xunit;
-
-    public class GetFailMessageCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
-        {
-            // Arrange
-            var criteria = new GetFailMessageCriteria();
-            var expected = "Acc_CRM_FailMessageSel";
+        // Arrange
+        var criteria = new GetFailMessageCriteria();
+        var expected = "Acc_CRM_FailMessageSel";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_WhenCalled_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetFailMessageCriteria();
+    [Fact]
+    public void IsValid_WhenCalled_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetFailMessageCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

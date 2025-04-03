@@ -1,55 +1,54 @@
-﻿namespace CRM.BackgroundJob.UnitTests.Workers
+﻿namespace CRM.BackgroundJob.UnitTests.Workers;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CRM.BackgroundJob.Models;
+using CRM.BackgroundJob.Workers;
+using CRM.Services.AutoChatBotMessage;
+using CRM.Services.Common;
+using Microsoft.Extensions.Options;
+using NSubstitute;
+using ONEbook.UM.Services;
+using Xunit;
+
+public class AutoChatbotRebateRetentionWorkerTests
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using CRM.BackgroundJob.Models;
-    using CRM.BackgroundJob.Workers;
-    using CRM.Services.AutoChatBotMessage;
-    using CRM.Services.Common;
-    using Microsoft.Extensions.Options;
-    using NSubstitute;
-    using ONEbook.UM.Services;
-    using Xunit;
+    private IChatBotJobService chatBotJobService;
+    private IMaintenanceService maintenanceService;
+    private ICrmLogService logService;
+    private List<JobSetting> appSettings;
 
-    public class AutoChatbotRebateRetentionWorkerTests
+    [Fact]
+    public async Task ExecuteJobAsync_Override_CallExactFunction()
     {
-        private IChatBotJobService chatBotJobService;
-        private IMaintenanceService maintenanceService;
-        private ICrmLogService logService;
-        private List<JobSetting> appSettings;
+        //Arrange
+        var service = GetService();
 
-        [Fact]
-        public async Task ExecuteJobAsync_Override_CallExactFunction()
-        {
-            //Arrange
-            var service = GetService();
+        // Act
+        await service.ExecuteJobAsync();
 
-            // Act
-            await service.ExecuteJobAsync();
+        // Assert
+        await chatBotJobService.Received().PullMessageRebateRetentionAsync();
+    }
 
-            // Assert
-            await chatBotJobService.Received().PullMessageRebateRetentionAsync();
-        }
+    private AutoChatbotRebateRetentionWorker GetService()
+    {
+        appSettings =
+        [
+            new JobSetting
+            {
+                JobName = "PullMessageRebateRetentionForChatBot",
+                IsEnabled = true,
+                HasCheckUM = false,
+                TimeInterval = 60
+            }
+        ];
+        var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
+        appJobSettings.Value.Returns(appSettings);
+        chatBotJobService = Substitute.For<IChatBotJobService>();
+        maintenanceService = Substitute.For<IMaintenanceService>();
+        logService = Substitute.For<ICrmLogService>();
 
-        private AutoChatbotRebateRetentionWorker GetService()
-        {
-            appSettings =
-            [
-                new JobSetting
-                {
-                    JobName = "PullMessageRebateRetentionForChatBot",
-                    IsEnabled = true,
-                    HasCheckUM = false,
-                    TimeInterval = 60
-                }
-            ];
-            var appJobSettings = Substitute.For<IOptions<List<JobSetting>>>();
-            appJobSettings.Value.Returns(appSettings);
-            chatBotJobService = Substitute.For<IChatBotJobService>();
-            maintenanceService = Substitute.For<IMaintenanceService>();
-            logService = Substitute.For<ICrmLogService>();
-
-            return new AutoChatbotRebateRetentionWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
-        }
+        return new AutoChatbotRebateRetentionWorker(chatBotJobService, maintenanceService, appJobSettings, logService);
     }
 }

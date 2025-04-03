@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.GenerateResultAmendment
+﻿namespace CRM.UnitTests.Criteria.GenerateResultAmendment;
+
+using CRM.Criteria.GenerateResultAmendment;
+using Xunit;
+
+public class InsertGenResultAmendmentCommandTests
 {
-    using CRM.Criteria.GenerateResultAmendment;
-    using Xunit;
-
-    public class InsertGenResultAmendmentCommandTests
+    [Fact]
+    public void GetSettingKey_ReturnCorrectSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_ReturnCorrectSettingKey()
-        {
-            // Arrange
-            var command = new InsertGenResultAmendmentCommand();
-            var expected = "MNC_ResultAmendment_GenNotification";
+        // Arrange
+        var command = new InsertGenResultAmendmentCommand();
+        var expected = "MNC_ResultAmendment_GenNotification";
 
-            // Action
-            var actual = command.GetSettingKey();
+        // Action
+        var actual = command.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamsAreValid_ReturnTrue()
-        {
-            // Arrange
-            var command = new InsertGenResultAmendmentCommand();
+    [Fact]
+    public void IsValid_ParamsAreValid_ReturnTrue()
+    {
+        // Arrange
+        var command = new InsertGenResultAmendmentCommand();
 
-            // Act
-            var actual = command.IsValid();
+        // Act
+        var actual = command.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

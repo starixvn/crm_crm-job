@@ -1,57 +1,56 @@
-﻿namespace CRM.UnitTests.Criteria.ChatBot
+﻿namespace CRM.UnitTests.Criteria.ChatBot;
+
+using CRM.Criteria.ChatBot;
+using Xunit;
+
+public class GetChatBotMessageInfoCriteriaTests
 {
-    using CRM.Criteria.ChatBot;
-    using Xunit;
-
-    public class GetChatBotMessageInfoCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new GetChatBotMessageInfoCriteria();
+        var expected = "Acc_CRM_Chatbot_AbnormalBets_Message_Sel";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string messages)
+    {
+        // Arrange
+        var criteria = new GetChatBotMessageInfoCriteria
         {
-            // Arrange
-            var criteria = new GetChatBotMessageInfoCriteria();
-            var expected = "Acc_CRM_Chatbot_AbnormalBets_Message_Sel";
+            Messages = messages
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.False(actual);
+    }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string messages)
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetChatBotMessageInfoCriteria
         {
-            // Arrange
-            var criteria = new GetChatBotMessageInfoCriteria
-            {
-                Messages = messages
-            };
+            Messages = "message"
+        };
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetChatBotMessageInfoCriteria
-            {
-                Messages = "message"
-            };
-
-            // Act
-            var actual = criteria.IsValid();
-
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

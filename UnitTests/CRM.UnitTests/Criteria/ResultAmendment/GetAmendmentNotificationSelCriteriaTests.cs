@@ -1,46 +1,45 @@
-﻿namespace CRM.UnitTests.Criteria.ResultAmendment
+﻿namespace CRM.UnitTests.Criteria.ResultAmendment;
+
+using System;
+using CRM.Criteria.AmendmentNotiFB;
+using Xunit;
+
+public class GetAmendmentNotificationSelCriteriaTests
 {
-    using System;
-    using CRM.Criteria.AmendmentNotiFB;
-    using Xunit;
-
-    public class GetAmendmentNotificationSelCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new GetAmendmentNotificationSelCriteria
         {
-            // Arrange
-            var criteria = new GetAmendmentNotificationSelCriteria
-            {
-                BatchSizeTicket = 1,
-                LastSeq = 1,
-                LastSubmitDate = DateTime.Now,
-                ConfigUAT = true,
-                ConfigPRO = true,
-                IsCredit = true,
-                IsDeposit = true,
-                Environment = "LIVE"
-            };
-            var expected = "Acc_CRM_AmendmentNotificationSel";
+            BatchSizeTicket = 1,
+            LastSeq = 1,
+            LastSubmitDate = DateTime.Now,
+            ConfigUAT = true,
+            ConfigPRO = true,
+            IsCredit = true,
+            IsDeposit = true,
+            Environment = "LIVE"
+        };
+        var expected = "Acc_CRM_AmendmentNotificationSel";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_WhenCalled_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetAmendmentNotificationSelCriteria();
+    [Fact]
+    public void IsValid_WhenCalled_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetAmendmentNotificationSelCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

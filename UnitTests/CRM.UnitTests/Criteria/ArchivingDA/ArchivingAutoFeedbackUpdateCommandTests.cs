@@ -1,58 +1,57 @@
-﻿namespace CRM.UnitTests.Criteria.ArchivingDA
+﻿namespace CRM.UnitTests.Criteria.ArchivingDA;
+
+using AutoFixture;
+using CRM.Criteria.ArchivingDA;
+using Xunit;
+
+public class ArchivingAutoFeedbackUpdateCommandTests
 {
-    using AutoFixture;
-    using CRM.Criteria.ArchivingDA;
-    using Xunit;
-
-    public class ArchivingAutoFeedbackUpdateCommandTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
+        // Arrange
+        var criteria = new ArchivingAutoFeedbackUpdateCommand();
+        var expected = "Acc_CRM_ArchivedAccount_AutoFBInfoUpd";
+
+        // Act
+        var actual = criteria.GetSettingKey();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(null, 1)]
+    [InlineData("", 1)]
+    [InlineData("Status", 0)]
+    public void IsValid_ParamIsInvalid_ReturnFalse(string status, int logFeedbackId)
+    {
+        // Arrange
+        var criteria = new ArchivingAutoFeedbackUpdateCommand
         {
-            // Arrange
-            var criteria = new ArchivingAutoFeedbackUpdateCommand();
-            var expected = "Acc_CRM_ArchivedAccount_AutoFBInfoUpd";
+            Status = status,
+            LogFeedbackId = logFeedbackId
+        };
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.False(actual);
+    }
 
-        [Theory]
-        [InlineData(null, 1)]
-        [InlineData("", 1)]
-        [InlineData("Status", 0)]
-        public void IsValid_ParamIsInvalid_ReturnFalse(string status, int logFeedbackId)
-        {
-            // Arrange
-            var criteria = new ArchivingAutoFeedbackUpdateCommand
-            {
-                Status = status,
-                LogFeedbackId = logFeedbackId
-            };
+    [Fact]
+    public void IsValid_ParamIsValid_ReturnTrue()
+    {
+        // Arrange
+        var fixture = new Fixture();
 
-            // Act
-            var actual = criteria.IsValid();
+        var command = fixture.Create<ArchivingAutoFeedbackUpdateCommand>();
 
-            // Assert
-            Assert.False(actual);
-        }
+        // Act
+        var actual = command.IsValid();
 
-        [Fact]
-        public void IsValid_ParamIsValid_ReturnTrue()
-        {
-            // Arrange
-            var fixture = new Fixture();
-
-            var command = fixture.Create<ArchivingAutoFeedbackUpdateCommand>();
-
-            // Act
-            var actual = command.IsValid();
-
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

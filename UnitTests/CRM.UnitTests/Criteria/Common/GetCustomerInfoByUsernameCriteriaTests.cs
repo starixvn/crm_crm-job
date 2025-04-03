@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.Common
+﻿namespace CRM.UnitTests.Criteria.Common;
+
+using CRM.Criteria.Common;
+using Xunit;
+
+public class GetCustomerInfoByUsernameCriteriaTests
 {
-    using CRM.Criteria.Common;
-    using Xunit;
-
-    public class GetCustomerInfoByUsernameCriteriaTests
+    [Fact]
+    public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_WhenCalled_ReturnExpectedSettingKey()
-        {
-            // Arrange
-            var criteria = new GetCustomerInfoByUsernameCriteria();
-            var expected = "Acc_CRM_CustomerSearch";
+        // Arrange
+        var criteria = new GetCustomerInfoByUsernameCriteria();
+        var expected = "Acc_CRM_CustomerSearch";
 
-            // Act
-            var actual = criteria.GetSettingKey();
+        // Act
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_WhenCalled_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetCustomerInfoByUsernameCriteria();
+    [Fact]
+    public void IsValid_WhenCalled_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetCustomerInfoByUsernameCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }

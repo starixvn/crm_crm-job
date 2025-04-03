@@ -1,35 +1,34 @@
-﻿namespace CRM.UnitTests.Criteria.GenerateResultAmendment
+﻿namespace CRM.UnitTests.Criteria.GenerateResultAmendment;
+
+using CRM.Criteria.GenerateResultAmendment;
+using Xunit;
+
+public class GetPrepareGenNotificationCriteriaTests
 {
-    using CRM.Criteria.GenerateResultAmendment;
-    using Xunit;
-
-    public class GetPrepareGenNotificationCriteriaTests
+    [Fact]
+    public void GetSettingKey_ReturnCorrectSettingKey()
     {
-        [Fact]
-        public void GetSettingKey_ReturnCorrectSettingKey()
-        {
-            // Arrange
-            var criteria = new GetPrepareGenNotificationCriteria();
-            var expected = "MNC_ResultAmendment_PrepareGen";
+        // Arrange
+        var criteria = new GetPrepareGenNotificationCriteria();
+        var expected = "MNC_ResultAmendment_PrepareGen";
 
-            // Action
-            var actual = criteria.GetSettingKey();
+        // Action
+        var actual = criteria.GetSettingKey();
 
-            // Assert
-            Assert.Equal(expected, actual);
-        }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void IsValid_ParamsAreValid_ReturnTrue()
-        {
-            // Arrange
-            var criteria = new GetPrepareGenNotificationCriteria();
+    [Fact]
+    public void IsValid_ParamsAreValid_ReturnTrue()
+    {
+        // Arrange
+        var criteria = new GetPrepareGenNotificationCriteria();
 
-            // Act
-            var actual = criteria.IsValid();
+        // Act
+        var actual = criteria.IsValid();
 
-            // Assert
-            Assert.True(actual);
-        }
+        // Assert
+        Assert.True(actual);
     }
 }
