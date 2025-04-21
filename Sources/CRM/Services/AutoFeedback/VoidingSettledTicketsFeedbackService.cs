@@ -634,20 +634,24 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
 
     protected string GetLeagueName(string productName, string leagueName, string sportName, AutoVoidingEventDetails eventDetail)
     {
-        if (productName.Equals("Virtual Sports 2", StringComparison.OrdinalIgnoreCase) ||
-            productName.Equals("Virtual Sports 3", StringComparison.OrdinalIgnoreCase) ||
-            productName.Equals("Virtual Sports 4", StringComparison.OrdinalIgnoreCase) ||
-            productName.Equals("Virtual Sports 7", StringComparison.OrdinalIgnoreCase))
+        var useSportNameProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Virtual Sports 2",
+            "Virtual Sports 3",
+            "Virtual Sports 4",
+            "Virtual Sports 7"
+        };
+
+        if (useSportNameProducts.Contains(productName))
         {
             return sportName;
         }
-        else if (productName.Equals("Virtual Sports 5", StringComparison.OrdinalIgnoreCase))
+
+        if (productName.Equals("Virtual Sports 5", StringComparison.OrdinalIgnoreCase))
         {
             return commonFeedback.GetLeagueName3rd(eventDetail.LeagueId.ToString(), Language.en_US);
         }
-        else
-        {
-            return leagueName;
-        }
+
+        return leagueName;
     }
 }
