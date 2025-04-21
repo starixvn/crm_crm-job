@@ -620,7 +620,8 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         stringBuilder.AppendFormat(line, BackgroundJobConstants.Break);
         var league = GetLeagueName(productName, leagueName, sportName, eventDetail);
 
-        if (productName.Equals("Virtual Sports 2", StringComparison.OrdinalIgnoreCase) && eventDetail.EventType == EventType3)
+        var productVS2Racings = new[] { "Virtual Sports 2", "Virtual Sports 7" };
+        if (productVS2Racings.Contains(productName, StringComparer.OrdinalIgnoreCase) && eventDetail.EventType == EventType3)
         {
             stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2Racing, eventDateGMT4Format, sportName, kO_time, league, eventDetail.VendorMatchId, BackgroundJobConstants.Break);
             return stringBuilder.ToString();
