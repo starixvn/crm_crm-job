@@ -564,9 +564,6 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
         var matchCode = getMatchCodeFunc(eventDetail.MatchCode, Language.en_US);
         var numberGameEnGame = eventDetail.SportType == SportType161 ? leagueName : sportName;
         var productName = commonFeedback.GetProductName(eventDetail.ProductId.ToString(), Language.en_US);
-
-        logService.InfoMessageAsync($"productName: {productName}, eventType: {eventDetail.EventType}");
-
         stringBuilder.Append(GetDescriptionSportBook(eventDetail, productName, kO_time, leagueName, homeName, sportName, awayName, matchCode));
         if (productName == "Virtual Sports" && (eventDetail.SportType == SportType180 || eventDetail.SportType == SportType186))
         {
