@@ -90,6 +90,7 @@ public class MessageNotificationCenterService(
             "ResultSettlement" => commonFeedback.GetResourceByRefIdAndResourceId("ResultSettlement", id, languageCode),
             "ResourceBasketball" => commonFeedback.GetResourceByRefIdAndResourceId("ResourceBasketball", id, languageCode),
             "ResourceESports" => commonFeedback.GetResourceByRefIdAndResourceId("ResourceESports", id, languageCode),
+            "ResourceTennis" => commonFeedback.GetResourceByRefIdAndResourceId("ResourceTennis", id, languageCode),
             _ => string.Empty
         };
     }
