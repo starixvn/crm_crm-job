@@ -609,14 +609,16 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
 #pragma warning disable S121
         if ((productName != "Sportsbook" || eventDetail.EventType == EventType2) &&
             productName != "Virtual Sports 2" && productName != "Virtual Sports 3" &&
-            productName != "Virtual Sports 4" && productName != "Virtual Sports 5") return stringBuilder.ToString();
+            productName != "Virtual Sports 4" && productName != "Virtual Sports 5" &&
+            productName != "Virtual Sports 7") return stringBuilder.ToString();
 #pragma warning restore S1067
 #pragma warning restore S121
 
         stringBuilder.AppendFormat(line, BackgroundJobConstants.Break);
         var league = GetLeagueName(productName, leagueName, sportName, eventDetail);
 
-        if (productName.Equals("Virtual Sports 2", StringComparison.OrdinalIgnoreCase) && eventDetail.EventType == EventType3)
+        var productVS2Racings = new[] { "Virtual Sports 2", "Virtual Sports 7" };
+        if (productVS2Racings.Contains(productName, StringComparer.OrdinalIgnoreCase) && eventDetail.EventType == EventType3)
         {
             stringBuilder.AppendFormat(ticketDescTemplate.SportsbookVirtualSports2Racing, eventDateGMT4Format, sportName, kO_time, league, eventDetail.VendorMatchId, BackgroundJobConstants.Break);
             return stringBuilder.ToString();
@@ -629,19 +631,24 @@ public class VoidingSettledTicketsFeedbackService : IVoidingSettledTicketsFeedba
 
     protected string GetLeagueName(string productName, string leagueName, string sportName, AutoVoidingEventDetails eventDetail)
     {
-        if (productName.Equals("Virtual Sports 2", StringComparison.OrdinalIgnoreCase) ||
-            productName.Equals("Virtual Sports 3", StringComparison.OrdinalIgnoreCase) ||
-            productName.Equals("Virtual Sports 4", StringComparison.OrdinalIgnoreCase))
+        var useSportNameProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Virtual Sports 2",
+            "Virtual Sports 3",
+            "Virtual Sports 4",
+            "Virtual Sports 7"
+        };
+
+        if (useSportNameProducts.Contains(productName))
         {
             return sportName;
         }
-        else if (productName.Equals("Virtual Sports 5", StringComparison.OrdinalIgnoreCase))
+
+        if (productName.Equals("Virtual Sports 5", StringComparison.OrdinalIgnoreCase))
         {
             return commonFeedback.GetLeagueName3rd(eventDetail.LeagueId.ToString(), Language.en_US);
         }
-        else
-        {
-            return leagueName;
-        }
+
+        return leagueName;
     }
 }
