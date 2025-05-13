@@ -79,6 +79,13 @@ public class MessageNotificationCenterService(
         }
     }
 
+    private static readonly HashSet<string> GenericResourceTypes =
+    [
+        "ResourceCricket", "ResultSettlement", "ResourceBasketball", "ResourceESports",
+        "ResourceTennis", "ResourceBadminton", "ResourceTableTennis", "ResourceVolleyball",
+        "ResourceBeachVol"
+    ];
+
     protected string GetResourceRemotingRef(string type, string id, string languageCode)
     {
         return type switch
@@ -86,11 +93,8 @@ public class MessageNotificationCenterService(
             "LeagueID" => commonFeedback.GetLeagueName(id, languageCode),
             "SportType" => commonFeedback.GetSportName(id, languageCode),
             "TeamID" => commonFeedback.GetTeamName(id, languageCode),
-            "ResourceCricket" => commonFeedback.GetResourceByRefIdAndResourceId("ResourceCricket", id, languageCode),
-            "ResultSettlement" => commonFeedback.GetResourceByRefIdAndResourceId("ResultSettlement", id, languageCode),
-            "ResourceBasketball" => commonFeedback.GetResourceByRefIdAndResourceId("ResourceBasketball", id, languageCode),
-            "ResourceESports" => commonFeedback.GetResourceByRefIdAndResourceId("ResourceESports", id, languageCode),
-            _ => string.Empty
+            _ => GenericResourceTypes.Contains(type)
+                ? commonFeedback.GetResourceByRefIdAndResourceId(type, id, languageCode) : string.Empty
         };
     }
 
