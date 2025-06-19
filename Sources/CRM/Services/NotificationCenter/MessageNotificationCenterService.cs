@@ -1,5 +1,9 @@
 ﻿namespace CRM.Services.NotificationCenter;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CRM.Constants;
 using CRM.Criteria.PushResultAmendment;
 using CRM.Models.Common;
@@ -8,10 +12,6 @@ using CRM.Services.AutoFeedback;
 using CRM.Services.Common;
 using Fanex.BotService.Client.Core.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 public interface IMessageNotificationCenterService
 {
@@ -93,6 +93,7 @@ public class MessageNotificationCenterService(
             "LeagueID" => commonFeedback.GetLeagueName(id, languageCode),
             "SportType" => commonFeedback.GetSportName(id, languageCode),
             "TeamID" => commonFeedback.GetTeamName(id, languageCode),
+            "BetTypeName" => commonFeedback.GetBetTypeName(id, languageCode),
             _ => GenericResourceTypes.Contains(type)
                 ? commonFeedback.GetResourceByRefIdAndResourceId(type, id, languageCode) : string.Empty
         };
@@ -181,6 +182,16 @@ public class MessageNotificationCenterService(
             var settlementGenLap = await generateLapNotificationService.GetPrepareGenLapNotificationAsync(Environment);
             if (settlementGenLap.Any())
             {
+                foreach (var item in settlementGenLap)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.GroupName) && item.GroupName.Trim().Equals("RefResource", StringComparison.OrdinalIgnoreCase))
+                    {
+                        item.RefValueEN = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.en_US);
+                        item.RefValueCH = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_TW);
+                        item.RefValueCS = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_CN);
+                        item.RefValueZHCN = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_CHS);
+                    }
+                }
                 await generateLapNotificationService.InsertGenLapResultAmendmentAsync(settlementGenLap, Environment);
             }
         }

@@ -20,7 +20,7 @@ public interface IFeedbackService
         string jobStatusNameEnv, string environment);
 }
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Dependencies required for DI")]
+#pragma warning disable S107
 public class FeedbackService(
     IOptions<AppJobSettings> appSettings,
     IBaseService baseService,
@@ -31,6 +31,7 @@ public class FeedbackService(
     IFeedbackTicketVoidingService ticketVoidingService,
     ICommonFeedback commonFeedback)
     : IFeedbackService
+#pragma warning restore S107
 {
     private readonly AppJobSettings appSettings = appSettings.Value;
 
