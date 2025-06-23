@@ -1,11 +1,5 @@
 ﻿namespace CRM.Services.AutoFeedback;
 
-using CRM.Constants;
-using CRM.Criteria.AutoFeedback;
-using CRM.Extensions.Xml;
-using CRM.Models.Common;
-using Fanex.RemotingRef;
-using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CRM.Constants;
+using CRM.Criteria.AutoFeedback;
+using CRM.Extensions.Xml;
+using CRM.Models.Common;
+using Fanex.RemotingRef;
+using Microsoft.AspNetCore.Hosting;
 
 public interface ICommonFeedback
 {
@@ -56,21 +56,21 @@ public interface ICommonFeedback
 
     Tuple<int, int, string> GetCategorySubCategoryCWL(IEnumerable<SettingItem> settings, string settingValueName);
 
-    Task<CRM.Models.Common.CommandResult> EditFeedbackSystemSettingAsync(long LastLogID, string ServiceName);
+    Task<CommandResult> EditFeedbackSystemSettingAsync(long LastLogID, string ServiceName);
 
-    Task<CRM.Models.Common.CommandResult> EditSystemSettingAsyncByEnv(string JobStatusNameEnv,
+    Task<CommandResult> EditSystemSettingAsyncByEnv(string JobStatusNameEnv,
         string LastRuntimeNameEnv, string JobStatusValue, string serviceName);
 
-    Task<CRM.Models.Common.CommandResult> AutoFbEditSystemSettingAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
+    Task<CommandResult> AutoFbEditSystemSettingAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
         string VoidingHistoryCollectionNameEnv, int MaxVoidingHistoryCollectionId);
 
-    Task<CRM.Models.Common.CommandResult> EditSystemSettingAsyncByEnvFormatDate(string JobStatusNameEnv,
+    Task<CommandResult> EditSystemSettingAsyncByEnvFormatDate(string JobStatusNameEnv,
         string LastRuntimeNameEnv, string JobStatusValue, string serviceName);
 
-    Task<CRM.Models.Common.CommandResult> EditSystemSettingUpdateLastLogIdAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
+    Task<CommandResult> EditSystemSettingUpdateLastLogIdAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
         string lastLogIdName, int maxLastLogId, string serviceName);
 
-    Task<CRM.Models.Common.CommandResult> EditSystemSettingUpdateLastSeqAndLastSubmitDateAsync(
+    Task<CommandResult> EditSystemSettingUpdateLastSeqAndLastSubmitDateAsync(
         string JobStatusNameEnv,
         string lastSeqEnvName,
         int maxSeq,
@@ -78,9 +78,9 @@ public interface ICommonFeedback
         string maxLastSubmitTime,
         string serviceName);
 
-    Task<CRM.Models.Common.CommandResult> EditArchivingDAStatusSettingAsync(string serviceName, string isSyncArchivedAccount);
+    Task<CommandResult> EditArchivingDAStatusSettingAsync(string serviceName, string isSyncArchivedAccount);
 
-    Task<CRM.Models.Common.CommandResult> EditArchivingDAMaxLogIdSettingAsync(string serviceName, string maxLogFBId);
+    Task<CommandResult> EditArchivingDAMaxLogIdSettingAsync(string serviceName, string maxLogFBId);
 }
 
 public class CommonFeedback(
@@ -93,90 +93,92 @@ public class CommonFeedback(
 
     public string GetProductName(string productId, string languageCode)
     {
-        var productName = remotingRefService.GetResourceDataByRefIdAndResourceId("Product", productId, languageCode, string.Empty);
+        var productName = remotingRefService.GetResourceDataByRefIdAndResourceId("Product", productId.Trim(), languageCode, string.Empty);
         return productName;
     }
 
     public string GetSportName(string sportTypeId, string languageCode)
     {
-        var sportName = remotingRefService.GetSportName(sportTypeId, languageCode, string.Empty);
+        var sportName = remotingRefService.GetSportName(sportTypeId.Trim(), languageCode, string.Empty);
         return sportName;
     }
 
     public string GetLeagueName(string leagueId, string languageCode)
     {
-        var leagueName = remotingRefService.GetLeagueName(leagueId, languageCode, string.Empty);
+        var leagueName = remotingRefService.GetLeagueName(leagueId.Trim(), languageCode, string.Empty);
         return leagueName;
     }
 
     public string GetLeagueName(string leagueId, string leagueGroupId, string languageCode)
     {
-        var leagueName = remotingRefService.GetLeagueName(leagueId, leagueGroupId, languageCode, string.Empty);
+        var leagueName = remotingRefService.GetLeagueName(leagueId, leagueGroupId.Trim(), languageCode, string.Empty);
         return leagueName;
     }
 
     public string GetLeagueName3rd(string leagueId, string languageCode)
     {
-        var leagueName = remotingRefService.GetLeagueName3rd(leagueId, languageCode);
+        var leagueName = remotingRefService.GetLeagueName3rd(leagueId.Trim(), languageCode);
         return leagueName;
     }
 
     public string GetLeagueNameBySiteName(string siteName, int leagueId, int leagueGroupId, string languageCode)
     {
-        return siteName == BackgroundJobConstants.SiteLabel777 ? GetLeagueName(leagueId.ToString(), leagueGroupId.ToString(), languageCode) : GetLeagueName(leagueId.ToString(), languageCode);
+        return siteName == BackgroundJobConstants.SiteLabel777 ?
+            GetLeagueName(leagueId.ToString(), leagueGroupId.ToString(), languageCode) :
+            GetLeagueName(leagueId.ToString(), languageCode);
     }
 
     public string GetTeamName(string teamId, string languageCode)
     {
-        var teamName = remotingRefService.GetTeamName(teamId, languageCode, string.Empty);
+        var teamName = remotingRefService.GetTeamName(teamId.Trim(), languageCode, string.Empty);
         return teamName;
     }
 
     public string GetTeamName3rd(string teamId, string languageCode)
     {
-        var teamName3rd = remotingRefService.GetTeamName3rd(teamId, languageCode, string.Empty);
+        var teamName3rd = remotingRefService.GetTeamName3rd(teamId.Trim(), languageCode, string.Empty);
         return teamName3rd;
     }
 
     public string GetBetTypeName(string betTypeId, string languageCode)
     {
-        var betTypeName = remotingRefService.GetBetTypeName(betTypeId, languageCode);
+        var betTypeName = remotingRefService.GetBetTypeName(betTypeId.Trim(), languageCode);
         return betTypeName;
     }
 
     public string GetMatchCode(string matchCode, string languageCode)
     {
-        var betTypeName = remotingRefService.GetBetRadarMatchCodeFormat(matchCode, languageCode);
+        var betTypeName = remotingRefService.GetBetRadarMatchCodeFormat(matchCode.Trim(), languageCode);
         return betTypeName;
     }
 
     public string GetMatchCodeVirtualSport(string matchCode, string languageCode)
     {
-        var betTypeName = remotingRefService.GetVirtualSportMatchCodeFormat(matchCode, "VYVS_MatchCode", languageCode);
+        var betTypeName = remotingRefService.GetVirtualSportMatchCodeFormat(matchCode.Trim(), "VYVS_MatchCode", languageCode);
         return betTypeName;
     }
 
     public string GetCategoryName(string categoryId, string languageCode)
     {
-        var categoryName = remotingRefService.GetResourceDataByRefIdAndResourceId("Category", categoryId, languageCode, string.Empty);
+        var categoryName = remotingRefService.GetResourceDataByRefIdAndResourceId("Category", categoryId.Trim(), languageCode, string.Empty);
         return categoryName;
     }
 
     public string GetResourceCricketName(string resourceCricketId, string languageCode)
     {
-        var resourceCricketName = remotingRefService.GetResourceDataByRefIdAndResourceId("ResourceCricket", resourceCricketId, languageCode, string.Empty);
+        var resourceCricketName = remotingRefService.GetResourceDataByRefIdAndResourceId("ResourceCricket", resourceCricketId.Trim(), languageCode, string.Empty);
         return resourceCricketName;
     }
 
     public string GetResultSettlementName(string resultSettlementId, string languageCode)
     {
-        var resultSettlementName = remotingRefService.GetResourceDataByRefIdAndResourceId("ResultSettlement", resultSettlementId, languageCode, string.Empty);
+        var resultSettlementName = remotingRefService.GetResourceDataByRefIdAndResourceId("ResultSettlement", resultSettlementId.Trim(), languageCode, string.Empty);
         return resultSettlementName;
     }
 
     public string GetResourceByRefIdAndResourceId(string type, string refId, string languageCode)
     {
-        return remotingRefService.GetResourceDataByRefIdAndResourceId(type, refId, languageCode, string.Empty);
+        return remotingRefService.GetResourceDataByRefIdAndResourceId(type.Trim(), refId.Trim(), languageCode, string.Empty);
     }
 
     public T GetFeedbackTemplates<T>(string fileXml)
@@ -228,7 +230,7 @@ public class CommonFeedback(
             new ValueTuple<bool, string>(false, stringBuilder.AppendFormat(invalid, invalidParams).ToString());
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditFeedbackSystemSettingAsync(long LastLogID, string ServiceName)
+    public async Task<CommandResult> EditFeedbackSystemSettingAsync(long LastLogID, string ServiceName)
     {
         var settingJobStatus = new List<SystemSettingItem>
         {
@@ -239,7 +241,7 @@ public class CommonFeedback(
         return await systemSetting.EditSystemSettingAsync(settingJobStatus, ServiceName);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditSystemSettingAsyncByEnv(string JobStatusNameEnv,
+    public async Task<CommandResult> EditSystemSettingAsyncByEnv(string JobStatusNameEnv,
         string LastRuntimeNameEnv, string JobStatusValue, string serviceName)
     {
         var settingJobStatus = new List<SystemSettingItem>
@@ -250,7 +252,7 @@ public class CommonFeedback(
         return await systemSetting.EditSystemSettingAsync(settingJobStatus, serviceName);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> AutoFbEditSystemSettingAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
+    public async Task<CommandResult> AutoFbEditSystemSettingAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
         string VoidingHistoryCollectionNameEnv, int MaxVoidingHistoryCollectionId)
     {
         var settingJobStatus = new List<SystemSettingItem>
@@ -262,7 +264,7 @@ public class CommonFeedback(
         return await systemSetting.EditSystemSettingAsync(settingJobStatus);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditSystemSettingAsyncByEnvFormatDate(string JobStatusNameEnv,
+    public async Task<CommandResult> EditSystemSettingAsyncByEnvFormatDate(string JobStatusNameEnv,
         string LastRuntimeNameEnv, string JobStatusValue, string serviceName)
     {
         var settingJobStatus = new List<SystemSettingItem>
@@ -273,7 +275,7 @@ public class CommonFeedback(
         return await systemSetting.EditSystemSettingAsync(settingJobStatus, serviceName);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditSystemSettingUpdateLastLogIdAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
+    public async Task<CommandResult> EditSystemSettingUpdateLastLogIdAsyncByEnv(string JobStatusNameEnv, string LastRuntimeNameEnv,
         string lastLogIdName, int maxLastLogId, string serviceName)
     {
         var settingJobStatus = new List<SystemSettingItem>
@@ -285,7 +287,7 @@ public class CommonFeedback(
         return await systemSetting.EditSystemSettingAsync(settingJobStatus, serviceName);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditSystemSettingUpdateLastSeqAndLastSubmitDateAsync(
+    public async Task<CommandResult> EditSystemSettingUpdateLastSeqAndLastSubmitDateAsync(
         string JobStatusNameEnv,
         string lastSeqEnvName,
         int maxSeq,
@@ -329,7 +331,7 @@ public class CommonFeedback(
         return FormatMatchCode(matchCode, language, GetMatchCodeVirtualSport);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditArchivingDAStatusSettingAsync(string serviceName, string isSyncArchivedAccount)
+    public async Task<CommandResult> EditArchivingDAStatusSettingAsync(string serviceName, string isSyncArchivedAccount)
     {
         var settingJobStatus = new List<SystemSettingItem>
         {
@@ -338,7 +340,7 @@ public class CommonFeedback(
         return await systemSetting.EditSystemSettingAsync(settingJobStatus, serviceName);
     }
 
-    public async Task<CRM.Models.Common.CommandResult> EditArchivingDAMaxLogIdSettingAsync(string serviceName, string maxLogFBId)
+    public async Task<CommandResult> EditArchivingDAMaxLogIdSettingAsync(string serviceName, string maxLogFBId)
     {
         var settingJobStatus = new List<SystemSettingItem>
         {
