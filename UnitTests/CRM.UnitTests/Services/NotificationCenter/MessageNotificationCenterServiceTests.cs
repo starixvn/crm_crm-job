@@ -91,6 +91,7 @@ public class MessageNotificationCenterServiceTests
     [Theory]
     [InlineData("LeagueID", "1", "EN", "LeagueName")]
     [InlineData("SportType", "1", "EN", "SportName")]
+    [InlineData("BetTypeName", "1", "EN", "BetTypeName")]
     [InlineData("TeamID", "1", "EN", "TeamName")]
     [InlineData("ResourceCricket", "1", "EN", "ResourceCricketName")]
     [InlineData("ResultSettlement", "1", "EN", "ResultSettlementName")]
@@ -103,6 +104,7 @@ public class MessageNotificationCenterServiceTests
         commonFeedback.GetLeagueName(id, languageCode).Returns("LeagueName");
         commonFeedback.GetSportName(id, languageCode).Returns("SportName");
         commonFeedback.GetTeamName(id, languageCode).Returns("TeamName");
+        commonFeedback.GetBetTypeName(id, languageCode).Returns("BetTypeName");
         commonFeedback.GetResourceByRefIdAndResourceId(type, id, languageCode).Returns(expected);
 
         // Act

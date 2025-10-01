@@ -20,7 +20,7 @@ var configuration = builder.Configuration;
 configuration.AddRemotingRef();
 
 services.AddHealthChecks();
-services.AddFanexSql(configuration, false, "FanexConnectionStrings");
+services.AddFanexSql(configuration, connectionStringSection: "FanexConnectionStrings");
 services.AddFanexLogSentry(configuration);
 services.AddOneBookUmForService(configuration);
 services.AddRedisCache(configuration.GetSection("Fanex.Caching.Redis"));

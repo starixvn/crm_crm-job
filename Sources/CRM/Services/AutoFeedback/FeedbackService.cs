@@ -20,6 +20,7 @@ public interface IFeedbackService
         string jobStatusNameEnv, string environment);
 }
 
+#pragma warning disable S107
 public class FeedbackService(
     IOptions<AppJobSettings> appSettings,
     IBaseService baseService,
@@ -30,6 +31,7 @@ public class FeedbackService(
     IFeedbackTicketVoidingService ticketVoidingService,
     ICommonFeedback commonFeedback)
     : IFeedbackService
+#pragma warning restore S107
 {
     private readonly AppJobSettings appSettings = appSettings.Value;
 
