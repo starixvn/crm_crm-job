@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 public interface IWinLossFeedbackService
 {
-    Task CreateFeedbackForWinLossLimitAsync(WinLossSystemSetting setting);
+    Task CreateFeedbackForWinLossLimitAsync(WinLossSystemSetting setting, string environment);
 }
 
 public class WinLossFeedbackService : IWinLossFeedbackService
@@ -54,16 +54,24 @@ public class WinLossFeedbackService : IWinLossFeedbackService
         this.commonFeedback = commonFeedback;
     }
 
-    public async Task CreateFeedbackForWinLossLimitAsync(WinLossSystemSetting setting)
+    public async Task CreateFeedbackForWinLossLimitAsync(WinLossSystemSetting setting, string environment)
     {
-        var settingJobStatus = new List<SystemSettingItem>
-        {
-            new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Running },
-            new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString("yyyy-MM-dd hh:mm:ss.fff tt") }
-        };
-        logService.LogInformation($"Start run WL service with last log ID: {setting.LastLogId}!");
+        var isLive = environment == BackgroundJobConstants.DefaultEnvironment;
+        var lastLogIdEnv = isLive ? setting.LastLogId : setting.LastLogIdUAT;
+        var settingJobStatus = isLive
+            ? new List<SystemSettingItem>
+            {
+                new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Running },
+                new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString(BackgroundJobConstants.FormatDatetimeString) }
+            }
+            : new List<SystemSettingItem>
+            {
+                new() { SettingName = SystemSettingName.JobStatusUAT, Value = JobStatus.Running },
+                new() { SettingName = SystemSettingName.LastRuntimeUAT, Value = DateTimeOffset.Now.DateTime.ToString(BackgroundJobConstants.FormatDatetimeString) }
+            };
+        logService.LogInformation($"Start run WL service with last log ID: {lastLogIdEnv}!");
         await systemSettingService.EditSystemSettingAsync(settingJobStatus, BackgroundJobConstants.ServiceName_WinLimitFB);
-        var cusWinLimit = await customerService.GetListCustReachLimitAsync(setting);
+        var cusWinLimit = await customerService.GetListCustReachLimitAsync(setting, isLive);
         var custIds = cusWinLimit.Select(x => x.CustId).Distinct();
         var headlines = await customerService.GetGroupHeadlineAsync(custIds);
         var settingNames = new[] { SettingName.Product, SettingName.SubProduct, SettingName.Bettype };
@@ -72,14 +80,28 @@ public class WinLossFeedbackService : IWinLossFeedbackService
 
         var winlossInfo = await transactionService.ImportWinLimitFeedbackInfoAsync(
             cusWinLimit,
-            headlines
+            headlines,
+            environment
         );
         if (!winlossInfo.Item1.Any())
         {
             logService.LogInformation(
                 $"Import CWL doesn't have any data with custId: {string.Join(",", headlines.Select(x => x.HeadlineId))} headlineName: {string.Join(",", headlines.Select(x => x.HeadlineName))}!");
-            var lastLogID = cusWinLimit.Any() ? cusWinLimit.Max(x => x.LogID) : setting.LastLogId;
-            await commonFeedback.EditFeedbackSystemSettingAsync(lastLogID, BackgroundJobConstants.ServiceName_WinLimitFB);
+            var lastLogID = cusWinLimit.Any() ? cusWinLimit.Max(x => x.LogID) : lastLogIdEnv;
+            settingJobStatus = isLive
+                ? new List<SystemSettingItem>
+                {
+                    new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Completed },
+                    new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString(BackgroundJobConstants.FormatDatetimeString) },
+                    new() { SettingName = SystemSettingName.LastLogID, Value = lastLogID.ToString() }
+                }
+                : new List<SystemSettingItem>
+                {
+                    new() { SettingName = SystemSettingName.JobStatusUAT, Value = JobStatus.Completed },
+                    new() { SettingName = SystemSettingName.LastRuntimeUAT, Value = DateTimeOffset.Now.DateTime.ToString(BackgroundJobConstants.FormatDatetimeString) },
+                    new() { SettingName = SystemSettingName.LastLogIDUAT, Value = lastLogID.ToString() }
+                };
+            await systemSettingService.EditSystemSettingAsync(settingJobStatus, BackgroundJobConstants.ServiceName_WinLimitFB);
             return;
         }
 
@@ -95,7 +117,20 @@ public class WinLossFeedbackService : IWinLossFeedbackService
                 settingMappings);
         }
         var maxLastLogID = winlossInfo.Item1.Max(x => x.LogID);
-        await commonFeedback.EditFeedbackSystemSettingAsync(maxLastLogID, BackgroundJobConstants.ServiceName_WinLimitFB);
+        settingJobStatus = isLive
+            ? new List<SystemSettingItem>
+            {
+                new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Completed },
+                new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString(BackgroundJobConstants.FormatDatetimeString) },
+                new() { SettingName = SystemSettingName.LastLogID, Value = maxLastLogID.ToString() }
+            }
+            : new List<SystemSettingItem>
+            {
+                new() { SettingName = SystemSettingName.JobStatusUAT, Value = JobStatus.Completed },
+                new() { SettingName = SystemSettingName.LastRuntimeUAT, Value = DateTimeOffset.Now.DateTime.ToString(BackgroundJobConstants.FormatDatetimeString) },
+                new() { SettingName = SystemSettingName.LastLogIDUAT, Value = maxLastLogID.ToString() }
+            };
+        await systemSettingService.EditSystemSettingAsync(settingJobStatus, BackgroundJobConstants.ServiceName_WinLimitFB);
     }
 
     protected internal virtual async Task CreateWinLossFeedbackCreditAsync(

@@ -46,17 +46,15 @@ public class FeedbackTransactionServiceTests
     public async Task ImportWinLimitFeedbackInfoAsync_CustomerLimitNull_ReturnValueTupleNull()
     {
         // Arrange
-
         var winLimitReturn = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(new List<WinLimitFeedBackInfo>(), new List<BettypeInfo>(), new List<SportInfo>());
         var criteria = new ImportWinLossFeedbackInfoCriteria();
         var service = GetFeedbackTransactionService();
         baseService.FetchMultipleAsync<WinLimitFeedBackInfo, BettypeInfo, SportInfo>(Arg.Do<ImportWinLossFeedbackInfoCriteria>(x => criteria = x)).Returns(winLimitReturn);
 
         // Act
-        var actual = await service.ImportWinLimitFeedbackInfoAsync(new List<CustomerWinLimit>(), new List<GroupHeadline>());
+        var actual = await service.ImportWinLimitFeedbackInfoAsync(new List<CustomerWinLimit>(), new List<GroupHeadline>(), "LIVE");
 
         // Assert
-
         Assert.Empty(actual.Item1);
         Assert.Empty(actual.Item2);
         Assert.Equal("<ROOT></ROOT>", criteria.xml);
@@ -91,16 +89,16 @@ public class FeedbackTransactionServiceTests
                 HeadlineName = "1"
             }
         };
+        var environment = "LIVE";
 
         var winLimitReturn = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(new List<WinLimitFeedBackInfo>(), new List<BettypeInfo>(), new List<SportInfo>());
         var service = GetFeedbackTransactionService();
         baseService.FetchMultipleAsync<WinLimitFeedBackInfo, BettypeInfo, SportInfo>(Arg.Do<ImportWinLossFeedbackInfoCriteria>(x => _ = x)).Returns(winLimitReturn);
 
         // Act
-        var actual = await service.ImportWinLimitFeedbackInfoAsync(cusWinLimit, headlines);
+        var actual = await service.ImportWinLimitFeedbackInfoAsync(cusWinLimit, headlines, environment);
 
         // Assert
-
         Assert.Equal(winLimitReturn, actual);
     }
 
@@ -134,13 +132,13 @@ public class FeedbackTransactionServiceTests
                 HeadlineName = "1"
             }
         };
-
+        var environment = "LIVE";
         var winLimitReturn = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(new List<WinLimitFeedBackInfo>(), new List<BettypeInfo>(), new List<SportInfo>());
         var service = GetFeedbackTransactionService();
         baseService.FetchMultipleAsync<WinLimitFeedBackInfo, BettypeInfo, SportInfo>(Arg.Do<ImportWinLossFeedbackInfoCriteria>(x => _ = x)).Returns(winLimitReturn);
 
         // Act
-        var actual = await service.ImportWinLimitFeedbackInfoAsync(cusWinLimit, headlines);
+        var actual = await service.ImportWinLimitFeedbackInfoAsync(cusWinLimit, headlines, environment);
 
         // Assert
 

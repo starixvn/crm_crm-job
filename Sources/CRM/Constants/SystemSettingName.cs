@@ -11,7 +11,7 @@ public static class SystemSettingName
     public const string LastTicketID = "LastTicketID";
     public const string LastNotifiedDate = "LastNotifiedDate";
     public const string JobStatusUAT = "JobStatusUAT";
-    public const string LastLogIdUAT = "LastLogIdUAT";
+    public const string LastLogIDUAT = "LastLogIDUAT";
     public const string LastRuntimeUAT = "LastRuntimeUAT";
     public const string IsSyncArchivedAccount = "IsSyncArchivedAccount";
     public const string MaxLogFBId = "MaxLogFBId";

@@ -124,7 +124,7 @@ public class CustomerServiceTests
         baseService.GetDataAsync<CustomerWinLimit>(Arg.Do<GetListCustomerReachLimitCriteria>(x => criteria = x)).Returns(expected);
 
         // Act
-        var actual = await service.GetListCustReachLimitAsync(setting);
+        var actual = await service.GetListCustReachLimitAsync(setting, true);
 
         // Assert
         Assert.Equal(expected, actual);
@@ -151,6 +151,48 @@ public class CustomerServiceTests
 
         // Assert
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async Task GetListCustReachLimitAsync_WhenIsLiveTrue_AssignCorrectLastLogID()
+    {
+        // Arrange
+        var expected = fixture.Create<IEnumerable<CustomerWinLimit>>();
+        var criteria = new GetListCustomerReachLimitCriteria
+        {
+            LastLogID = 101
+        };
+        var setting = fixture.Create<WinLossSystemSetting>();
+        setting.LastLogId = 101;
+        var service = GetService();
+        baseService.GetDataAsync<CustomerWinLimit>(Arg.Do<GetListCustomerReachLimitCriteria>(x => criteria = x)).Returns(expected);
+
+        // Act
+        var actual = await service.GetListCustReachLimitAsync(setting, true);
+
+        // Assert
+        Assert.Equal(setting.LastLogId, criteria.LastLogID);
+    }
+
+    [Fact]
+    public async Task GetListCustReachLimitAsync_WhenIsLiveFalse_AssignCorrectLastLogID()
+    {
+        // Arrange
+        var expected = fixture.Create<IEnumerable<CustomerWinLimit>>();
+        var criteria = new GetListCustomerReachLimitCriteria
+        {
+            LastLogID = 1002
+        };
+        var setting = fixture.Create<WinLossSystemSetting>();
+        setting.LastLogIdUAT = 1002;
+        var service = GetService();
+        baseService.GetDataAsync<CustomerWinLimit>(Arg.Do<GetListCustomerReachLimitCriteria>(x => criteria = x)).Returns(expected);
+
+        // Act
+        var actual = await service.GetListCustReachLimitAsync(setting, false);
+
+        // Assert
+        Assert.Equal(setting.LastLogIdUAT, criteria.LastLogID);
     }
 
     #region Helpers

@@ -28,7 +28,7 @@ public interface ICustomerService
 
     Task<IEnumerable<GroupHeadline>> GetGroupHeadlineVipAsync(IEnumerable<int> custIds);
 
-    Task<IEnumerable<CustomerWinLimit>> GetListCustReachLimitAsync(WinLossSystemSetting setting);
+    Task<IEnumerable<CustomerWinLimit>> GetListCustReachLimitAsync(WinLossSystemSetting setting, bool isLive);
 
     Task<IEnumerable<TONotification>> GetListSMANotificationAsync(WinLossSystemSetting turnOverSetting);
 
@@ -84,14 +84,14 @@ public class CustomerService(
         return await baseService.GetDataAsync<GroupHeadline>(criteria);
     }
 
-    public async Task<IEnumerable<CustomerWinLimit>> GetListCustReachLimitAsync(WinLossSystemSetting setting)
+    public async Task<IEnumerable<CustomerWinLimit>> GetListCustReachLimitAsync(WinLossSystemSetting setting, bool isLive)
     {
         var criteria = new GetListCustomerReachLimitCriteria
         {
             BatchSize = setting.BatchSize,
             ConfigUAT = setting.ConfigUAT,
             ConfigPRO = setting.ConfigPRO,
-            LastLogID = setting.LastLogId,
+            LastLogID = isLive ? setting.LastLogId : setting.LastLogIdUAT,
             IsCredit = setting.IsCredit,
             IsDeposit = setting.IsDeposit,
             Environment = Environment

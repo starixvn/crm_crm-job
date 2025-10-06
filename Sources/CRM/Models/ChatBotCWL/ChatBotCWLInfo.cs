@@ -23,4 +23,10 @@ public class ChatBotCWLInfo
     public int LevelId { get; set; }
 
     public int GroupId { get; set; }
+
+    public decimal TotalWinAmtRM { get; set; }
+
+    public byte CasinoType { get; set; }
+
+    public bool IsNormalGame { get; set; }
 }

@@ -1,5 +1,9 @@
 ﻿namespace CRM.Services.SendNotification;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Common;
 using Constants;
 using Criteria.Common;
@@ -9,10 +13,6 @@ using Enum;
 using Extensions.Xml;
 using Microsoft.Extensions.Configuration;
 using Models.BotServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 public interface ISendNotificationService
 {
