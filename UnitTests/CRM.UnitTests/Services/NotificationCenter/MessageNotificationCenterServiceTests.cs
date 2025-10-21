@@ -129,6 +129,7 @@ public class MessageNotificationCenterServiceTests
             item.RefValueCH = refLanguage;
             item.RefValueCS = refLanguage;
             item.RefValueZHCN = refLanguage;
+            item.OddsInfo = null;
         }
         generateResultAmendmentService.GetPrepareGenNotificationAsync(Arg.Any<string>()).Returns(settlementRemotingRefInfo);
         systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);

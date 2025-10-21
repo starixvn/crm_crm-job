@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CRM.Constants;
 using CRM.Criteria.PushResultAmendment;
@@ -115,10 +116,22 @@ public class MessageNotificationCenterService(
             {
                 foreach (var item in settlementGen)
                 {
-                    item.RefValueEN = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.en_US);
-                    item.RefValueCH = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_TW);
-                    item.RefValueCS = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_CN);
-                    item.RefValueZHCN = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_CHS);
+                    if (string.IsNullOrWhiteSpace(item.OddsInfo))
+                    {
+                        item.RefValueEN = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.en_US);
+                        item.RefValueCH = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_TW);
+                        item.RefValueCS = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_CN);
+                        item.RefValueZHCN = GetResourceRemotingRef(item.RefId1, item.RefId2, Language.zh_CHS);
+                    }
+                    else
+                    {
+                        var rm = Resources.Resources.ResourceManager;
+                        var model = JsonSerializer.Deserialize<BasketballPlayer>(item.OddsInfo);
+                        item.RefValueEN = model.BuildBetTeam(commonFeedback.GetTeamName, Language.en_US, rm);
+                        item.RefValueCH = model.BuildBetTeam(commonFeedback.GetTeamName, Language.zh_TW, rm);
+                        item.RefValueCS = model.BuildBetTeam(commonFeedback.GetTeamName, Language.zh_CN, rm);
+                        item.RefValueZHCN = model.BuildBetTeam(commonFeedback.GetTeamName, Language.zh_CHS, rm);
+                    }
                 }
                 await generateResultAmendmentService.InsertGenResultAmendmentAsync(Environment, settlementGen);
             }

@@ -10,13 +10,15 @@ public class SettlementRemotingRefInfo
 
     public string RefId1 { get; set; }
 
-    public string RefId2 { get; set;}
+    public string RefId2 { get; set; }
 
-    public string RefValueEN { get; set;}
+    public string RefValueEN { get; set; }
 
-    public string RefValueCH { get; set;}
+    public string RefValueCH { get; set; }
 
-    public string RefValueCS { get; set;}
+    public string RefValueCS { get; set; }
 
     public string RefValueZHCN { get; set; }
+
+    public string OddsInfo { get; set; }
 }
