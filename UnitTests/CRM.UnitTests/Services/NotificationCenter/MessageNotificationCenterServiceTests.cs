@@ -433,6 +433,34 @@ public class MessageNotificationCenterServiceTests
         await botService.Received(1).SendAsync(BotChannel.Telegram, "1", "Content MNC");
     }
 
+    [Fact]
+    public async Task GenerateResultAmendmentAsync_OddsInfo_ExpectedCallExactFunction()
+    {
+        // Arrange
+        var service = GetService();
+        var settlementRemotingRefInfo = fixture.Create<IEnumerable<SettlementRemotingRefInfo>>();
+        var refLanguage = "MNC";
+        foreach (var item in settlementRemotingRefInfo)
+        {
+            item.RefId1 = "LeagueID";
+            item.RefId2 = "1";
+            item.RefValueEN = refLanguage;
+            item.RefValueCH = refLanguage;
+            item.RefValueCS = refLanguage;
+            item.RefValueZHCN = refLanguage;
+            item.OddsInfo = "{\"s\": [{\"t\": \"points\", \"value\": \"25+\"}], \"r\": [{\"t\": \"winner\", \"value\": \"1111\"}], \"pid\": 2111, \"pname\": \"Lebron\", \"isH\": true, \"tid\":1111 }";
+        }
+        generateResultAmendmentService.GetPrepareGenNotificationAsync(Arg.Any<string>()).Returns(settlementRemotingRefInfo);
+        systemSettingService.GetSystemSettingNotificationAsync(Arg.Any<string>()).Returns(true);
+        service.Public_GetResourceRemotingRef("LeagueID", "1", Arg.Any<string>()).Returns(refLanguage);
+
+        // Act
+        await service.GenerateResultAmendmentAsync();
+
+        // Assert
+        await generateResultAmendmentService.Received(1).InsertGenResultAmendmentAsync(Arg.Any<string>(), settlementRemotingRefInfo);
+    }
+
     #region Helpers
 
     private MessageNotificationCenterServiceTestable GetService()
