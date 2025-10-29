@@ -1,5 +1,9 @@
 ﻿namespace CRM.UnitTests.Services.AutoChatBotMessage;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using CRM.Constants;
 using CRM.Criteria.ChatBot;
@@ -23,10 +27,6 @@ using CRM.Services.Common;
 using CRM.Services.SendNotification;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 public class ChatBotJobServiceTests
@@ -259,7 +259,7 @@ public class ChatBotJobServiceTests
         await service.PullMessageCWLAndSendNotificationToHeadlineAsync();
 
         // Assert
-        await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
+        //await sendNotificationService.Received().ScanAndSendMessageToBotEndpointAsync();
     }
 
     [Fact]

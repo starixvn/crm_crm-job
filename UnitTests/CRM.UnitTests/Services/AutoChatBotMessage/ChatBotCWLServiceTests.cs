@@ -50,7 +50,8 @@ public class ChatBotCWLServiceTests
         const string XmlTemplate = "<r LogId='{0}' CustId='{1}' CurrencyName='{2}' " +
                                    "Username='{3}' Recommend='{4}' Mrecommend='{5}' Srecommend='{6}' " +
                                    "Winloss='{7}' ProductNameEN='{8}' ProductNameSC='{9}' ProductNameTH='{10}' " +
-                                   "ProductNameVN='{11}' LevelId='{12}' GroupId='{13}'/>";
+                                   "ProductNameVN='{11}' LevelId='{12}' GroupId='{13}' TotalWinAmtRM='{14}' " +
+                                   "CasinoType='{15}' IsNormalGame='{16}'/>";
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag.ToLowerInvariant());
 
         service.GetProductName(Arg.Any<string>(), "en-US").Returns("a");
@@ -72,7 +73,10 @@ public class ChatBotCWLServiceTests
             "c",
             "d",
             cWLInfo.LevelId,
-            cWLInfo.GroupId);
+            cWLInfo.GroupId,
+            cWLInfo.TotalWinAmtRM,
+            cWLInfo.CasinoType,
+            cWLInfo.IsNormalGame ? 1 : 0);
         stringBuilder.Append(BackgroundJobConstants.EndRootTag.ToLowerInvariant());
         var criteria = new ImportCWLLogInfoCommand();
 

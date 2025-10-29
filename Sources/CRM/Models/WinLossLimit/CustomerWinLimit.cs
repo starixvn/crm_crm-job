@@ -15,4 +15,6 @@ public class CustomerWinLimit
     public double TotalWinAmt_RM { get; set; }
     public DateTime ReachedTime { get; set; }
     public string BettypeIDList { get; set; }
+    public byte CasinoType { get; set; }
+    public bool IsNormalGame { get; set; }
 }

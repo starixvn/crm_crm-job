@@ -26,7 +26,8 @@ public interface IFeedbackTransactionService
 {
     Task<ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>> ImportWinLimitFeedbackInfoAsync(
         IEnumerable<CustomerWinLimit> cusWinLimit,
-        IEnumerable<GroupHeadline> headlines);
+        IEnumerable<GroupHeadline> headlines,
+        string environment);
 
     Task<CRM.Models.Common.CommandResult> EditFeedbackWinLossInfoAsync(int LogID, string status, string description);
 
@@ -67,10 +68,11 @@ public class FeedbackTransactionService(IBaseService baseService) : IFeedbackTra
 {
     public async Task<ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>> ImportWinLimitFeedbackInfoAsync(
         IEnumerable<CustomerWinLimit> cusWinLimit,
-        IEnumerable<GroupHeadline> headlines)
+        IEnumerable<GroupHeadline> headlines,
+        string environment)
     {
         const string XmlTemplate = "<r logid='{0}' custid='{1}' hl='{2}' hlname='{3}' related='{4}' product='{5}' group='{6}' level='{7}' " +
-                                   "limitsetting='{8}' winamount='{9}' winamountRM='{10}' time='{11}' bettype='{12}'/>";
+                                   "limitsetting='{8}' winamount='{9}' winamountRM='{10}' time='{11}' bettype='{12}' casinotype='{13}' isnormalgame='{14}'/>";
         var stringBuilder = new StringBuilder(BackgroundJobConstants.BeginRootTag);
         foreach (var limitInfo in cusWinLimit)
         {
@@ -115,12 +117,15 @@ public class FeedbackTransactionService(IBaseService baseService) : IFeedbackTra
                 TotalWinAmt,
                 TotalWinAmt_RM,
                 limitInfo.ReachedTime,
-                betTypeIdList);
+                betTypeIdList,
+                limitInfo.CasinoType,
+                limitInfo.IsNormalGame ? 1 : 0);
         }
         stringBuilder.Append(BackgroundJobConstants.EndRootTag);
         var criteria = new ImportWinLossFeedbackInfoCriteria
         {
-            xml = stringBuilder.ToString()
+            xml = stringBuilder.ToString(),
+            Environment = environment
         };
         var WinLossInfo = await baseService.FetchMultipleAsync<WinLimitFeedBackInfo, BettypeInfo, SportInfo>(criteria);
         return new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(WinLossInfo.Item1, WinLossInfo.Item2, WinLossInfo.Item3);

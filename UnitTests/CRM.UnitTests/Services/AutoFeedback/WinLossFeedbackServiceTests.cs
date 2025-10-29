@@ -39,29 +39,30 @@ public class WinLossFeedbackServiceTests
         var service = MockService();
         var setting = fixture.Create<WinLossSystemSetting>();
         var cusWinLimit = new List<CustomerWinLimit>
-        {
-            new() { LogID = 1, CustId = 1},
-            new() { LogID = 2, CustId = 1}
-        };
+       {
+           new() { LogID = 1, CustId = 1},
+           new() { LogID = 2, CustId = 1}
+       };
         var betInfo = fixture.Create<IEnumerable<BettypeInfo>>();
         var headlines = new List<GroupHeadline>
-        {
-            new() {CustId = 1, HeadlineId = 1, HeadlineName = "test"}
-        };
+       {
+           new() {CustId = 1, HeadlineId = 1, HeadlineName = "test"}
+       };
+        var environment = "LIVE";
         var sport = new List<SportInfo>
-        {
-            new() {LogID = 1, SportType = 1, SportName = "test"}
-        };
+       {
+           new() {LogID = 1, SportType = 1, SportName = "test"}
+       };
         var winlossInfo = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(new List<WinLimitFeedBackInfo>(), betInfo, sport);
-        customerService.GetListCustReachLimitAsync(setting).Returns(cusWinLimit);
+        customerService.GetListCustReachLimitAsync(setting, Arg.Any<bool>()).Returns(cusWinLimit);
         customerService.GetGroupHeadlineAsync(Arg.Any<IEnumerable<int>>()).Returns(headlines);
-        transactionService.ImportWinLimitFeedbackInfoAsync(Arg.Any<IEnumerable<CustomerWinLimit>>(), headlines).Returns(winlossInfo);
+        transactionService.ImportWinLimitFeedbackInfoAsync(Arg.Any<IEnumerable<CustomerWinLimit>>(), headlines, environment).Returns(winlossInfo);
         // Act
-        await service.CreateFeedbackForWinLossLimitAsync(setting);
+        await service.CreateFeedbackForWinLossLimitAsync(setting, environment);
 
         // Assert
 
-        await commonFeedback.Received().EditFeedbackSystemSettingAsync(2, Arg.Any<string>());
+        await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), Arg.Any<string>());
         service.DidNotReceive().Protected(
             "CreateWinLossFeedbackCreditAsync",
             Arg.Any<bool>(),
@@ -92,14 +93,15 @@ public class WinLossFeedbackServiceTests
             new() {LogID = 1, SportType =1, SportName = "test"}
         };
         var winlossInfo = new ValueTuple<IEnumerable<WinLimitFeedBackInfo>, IEnumerable<BettypeInfo>, IEnumerable<SportInfo>>(winLimit, betInfo, sport);
-        customerService.GetListCustReachLimitAsync(setting).Returns(cusWinLimit);
-        transactionService.ImportWinLimitFeedbackInfoAsync(Arg.Any<IEnumerable<CustomerWinLimit>>(), Arg.Any<IEnumerable<GroupHeadline>>()).Returns(winlossInfo);
+        var environment = "LIVE";
+        customerService.GetListCustReachLimitAsync(setting, Arg.Any<bool>()).Returns(cusWinLimit);
+        transactionService.ImportWinLimitFeedbackInfoAsync(Arg.Any<IEnumerable<CustomerWinLimit>>(), Arg.Any<IEnumerable<GroupHeadline>>(), environment).Returns(winlossInfo);
 
         // Act
-        await service.CreateFeedbackForWinLossLimitAsync(setting);
+        await service.CreateFeedbackForWinLossLimitAsync(setting, environment);
 
         // Assert
-        await commonFeedback.Received().EditFeedbackSystemSettingAsync(Arg.Any<long>(), Arg.Any<string>());
+        await systemSettingService.Received().EditSystemSettingAsync(Arg.Any<IEnumerable<SystemSettingItem>>(), Arg.Any<string>());
         service.Received().Protected(
             "CreateWinLossFeedbackCreditAsync",
             Arg.Any<bool>(),

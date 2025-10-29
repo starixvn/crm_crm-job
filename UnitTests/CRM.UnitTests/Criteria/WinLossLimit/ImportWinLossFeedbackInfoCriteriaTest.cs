@@ -33,4 +33,23 @@ public class ImportWinLossFeedbackInfoCriteriaTest
         // Assert
         Assert.True(actual);
     }
+
+    [Fact]
+    public void New_AssignCorrectProperties()
+    {
+        // Arrange
+        var xml = "<ROOT><IsEnabled>true</IsEnabled></ROOT>";
+        var environment = "UAT";
+
+        // Act
+        var criteria = new ImportWinLossFeedbackInfoCriteria
+        {
+            xml = xml,
+            Environment = environment
+        };
+
+        // Assert
+        Assert.Equal(criteria.xml, xml);
+        Assert.Equal(criteria.Environment, environment);
+    }
 }

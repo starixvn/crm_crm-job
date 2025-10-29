@@ -188,13 +188,15 @@ public class AutoFeedbackService : IAutoFeedbackService
                 return;
             }
 
-            var isRunning = setting.JobStatus.Equals(JobStatus.Running, StringComparison.OrdinalIgnoreCase);
+            var isLive = Environment == DefaultEnvironment;
+            var jobStatusEnv = isLive ? setting.JobStatus : setting.JobStatusUAT;
+            var isRunning = jobStatusEnv.Equals(JobStatus.Running, StringComparison.OrdinalIgnoreCase);
 
             if (!isRunning)
             {
                 await Task.WhenAll(
                     jobRunningChecker.MarkRunning(JobName.CreateFeedbackForWinLossLimit),
-                    winLossService.CreateFeedbackForWinLossLimitAsync(setting)
+                    winLossService.CreateFeedbackForWinLossLimitAsync(setting, Environment)
                 );
                 await jobRunningChecker.ClearRunning(JobName.CreateFeedbackForWinLossLimit);
             }
@@ -204,11 +206,17 @@ public class AutoFeedbackService : IAutoFeedbackService
                 if (!isRunning && setting.LastRuntime.AddMinutes(appSettings.RetryRuntime) < DateTimeOffset.Now.DateTime)
                 {
                     logService.LogInformation("Rerun Company Winloss service.");
-                    var settingJobStatus = new List<SystemSettingItem>
-                    {
-                        new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Completed },
-                        new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString(dateTimeParse) }
-                    };
+                    var settingJobStatus = isLive
+                        ? new List<SystemSettingItem>
+                        {
+                            new() { SettingName = SystemSettingName.JobStatus, Value = JobStatus.Completed },
+                            new() { SettingName = SystemSettingName.LastRuntime, Value = DateTimeOffset.Now.DateTime.ToString(dateTimeParse) }
+                        }
+                        : new List<SystemSettingItem>
+                        {
+                            new() { SettingName = SystemSettingName.JobStatusUAT, Value = JobStatus.Completed },
+                            new() { SettingName = SystemSettingName.LastRuntimeUAT, Value = DateTimeOffset.Now.DateTime.ToString(dateTimeParse) }
+                        };
                     await systemSettingService.EditSystemSettingAsync(settingJobStatus, BackgroundJobConstants.ServiceName_WinLimitFB);
                 }
             }

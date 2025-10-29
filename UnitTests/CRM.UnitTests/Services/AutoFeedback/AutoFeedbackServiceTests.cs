@@ -341,7 +341,7 @@ public class AutoFeedbackServiceTests
         // Assert
         await jobRunningChecker.Received().MarkRunning(JobName.CreateFeedbackForWinLossLimit);
         await jobRunningChecker.Received().ClearRunning(JobName.CreateFeedbackForWinLossLimit);
-        await winLossService.Received().CreateFeedbackForWinLossLimitAsync(setting);
+        await winLossService.Received().CreateFeedbackForWinLossLimitAsync(setting, Arg.Any<string>());
     }
 
     #endregion WinLossExecuteJobAsync
