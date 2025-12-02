@@ -1386,7 +1386,7 @@ public class AutoFeedbackServiceTests
         var valueTuple = new ValueTuple<CRM.Models.Common.CommandResult, ImportAutoFbRebateRetentionCommand>(commandResult, command);
         var service = GetService();
         systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoRebateRetention, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
-        autoFbRebateRetentionService.GetRebateRetentionInfoAsync(setting.LastLogSId).Returns((rrMessages, newLogSIDs));
+        autoFbRebateRetentionService.GetRebateRetentionInfoAsync(setting.LastLogSId, 100).Returns((rrMessages, newLogSIDs));
         autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
         // Act
@@ -1409,7 +1409,7 @@ public class AutoFeedbackServiceTests
         var valueTuple = new ValueTuple<CRM.Models.Common.CommandResult, ImportAutoFbRebateRetentionCommand>(commandResult, command);
         var service = GetService();
         systemSettingService.GetSystemSettingAsync(BackgroundJobConstants.ServiceName_AutoRebateRetention, BackgroundJobConstants.DefaultEnvironment).Returns(setting);
-        autoFbRebateRetentionService.GetRebateRetentionInfoAsync(setting.LastLogSId).Returns((rrMessages, newLogSIDs));
+        autoFbRebateRetentionService.GetRebateRetentionInfoAsync(setting.LastLogSId, 100).Returns((rrMessages, newLogSIDs));
         autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
 
         // Act

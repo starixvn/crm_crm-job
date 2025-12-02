@@ -526,7 +526,7 @@ public class ChatBotJobServiceTests
         var valueTuple = new ValueTuple<CRM.Models.Common.CommandResult, ImportRebateRetentionCommand>(commandResult, command);
         var service = GetService();
         systemSettingService.GetChatBotSystemSettingAsync(BackgroundJobConstants.ServiceName_ChatBot_RebateRetention).Returns(setting);
-        chatBotRebateRetentionService.GetRebateRetentionInfoAsync("1").Returns(rrInfo);
+        chatBotRebateRetentionService.GetRebateRetentionInfoAsync("1", 3000).Returns(rrInfo);
         chatBotRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
         // Act
         await service.PullMessageRebateRetentionAsync();
@@ -548,7 +548,7 @@ public class ChatBotJobServiceTests
         var valueTuple = new ValueTuple<CRM.Models.Common.CommandResult, ImportRebateRetentionCommand>(commandResult, command);
         var service = GetService();
         systemSettingService.GetChatBotSystemSettingAsync(BackgroundJobConstants.ServiceName_ChatBot_RebateRetention).Returns(setting);
-        chatBotRebateRetentionService.GetRebateRetentionInfoAsync("1").Returns(rrInfo);
+        chatBotRebateRetentionService.GetRebateRetentionInfoAsync("1", 3000).Returns(rrInfo);
         chatBotRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, BackgroundJobConstants.DefaultEnvironment).Returns(valueTuple);
         // Act
         await service.PullMessageRebateRetentionAsync();

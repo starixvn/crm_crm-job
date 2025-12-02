@@ -21,13 +21,13 @@ public class AutoFbRebateRetentionServiceTests
         // Arrange
         var fixture = new Fixture();
         var rrInfos = fixture.Create<IEnumerable<ChatBotRebateRetentionInfo>>();
-        var criteria = new GetRebateRetentionInfoCriteria();
+        var criteria = new GetRebateRetentionInfoCriteria { BatchSize = 50 };
         var expected = (rrInfos, criteria.NewLogSID);
         var service = GetService();
         baseService.GetDataAsync<ChatBotRebateRetentionInfo>(Arg.Do<GetRebateRetentionInfoCriteria>(x => criteria = x)).Returns(rrInfos);
 
         // Act
-        var actual = await service.GetRebateRetentionInfoAsync("1");
+        var actual = await service.GetRebateRetentionInfoAsync("1", 50);
 
         // Assert
         Assert.Equal(expected, actual);

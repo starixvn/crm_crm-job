@@ -1,16 +1,16 @@
 ﻿namespace CRM.Services.AutoChatBotMessage;
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CRM.Criteria.ChatBotRebateRetention;
 using CRM.Extensions.Xml;
 using CRM.Models.ChatBotRebateRetention;
 using CRM.Services.Common;
 using Models.Common;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 public interface IChatBotRebateRetentionService
 {
-    Task<(IEnumerable<ChatBotRebateRetentionInfo>, string)> GetRebateRetentionInfoAsync(string lastLogSid);
+    Task<(IEnumerable<ChatBotRebateRetentionInfo>, string)> GetRebateRetentionInfoAsync(string lastLogSid, int batchSize);
 
     Task<(CommandResult, ImportRebateRetentionCommand)> ImportRebateRetentionCommand(IEnumerable<ChatBotRebateRetentionInfo> rrMessages,
         string newLogSIDs, string environment);
@@ -18,11 +18,12 @@ public interface IChatBotRebateRetentionService
 
 public class ChatBotRebateRetentionService(IBaseService baseService) : IChatBotRebateRetentionService
 {
-    public async Task<(IEnumerable<ChatBotRebateRetentionInfo>, string)> GetRebateRetentionInfoAsync(string lastLogSid)
+    public async Task<(IEnumerable<ChatBotRebateRetentionInfo>, string)> GetRebateRetentionInfoAsync(string lastLogSid, int batchSize)
     {
         var criteria = new GetRebateRetentionInfoCriteria
         {
-            LastLogSID = lastLogSid
+            LastLogSID = lastLogSid,
+            BatchSize = batchSize
         };
         var result = await baseService.GetDataAsync<ChatBotRebateRetentionInfo>(criteria);
         return (result, criteria.NewLogSID);

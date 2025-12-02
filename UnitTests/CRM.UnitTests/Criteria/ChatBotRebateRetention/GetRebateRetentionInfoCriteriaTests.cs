@@ -35,4 +35,19 @@ public class GetRebateRetentionInfoCriteriaTests
         // Assert
         Assert.True(actual);
     }
+
+    [Fact]
+    public void Constructor_Assign_CorrectProperties()
+    {
+        // Arrange & Act
+        var criteria = new GetRebateRetentionInfoCriteria
+        {
+            LastLogSID = "1",
+            BatchSize = 50,
+            NewLogSID = "2"
+        };
+
+        // Assert
+        Assert.True("1" == criteria.LastLogSID && criteria.BatchSize == 50 && "2" == criteria.NewLogSID);
+    }
 }

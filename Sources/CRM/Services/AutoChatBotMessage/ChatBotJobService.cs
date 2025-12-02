@@ -298,7 +298,7 @@ public class ChatBotJobService : IChatBotJobService
                 logService.LogInformation("Chat Bot Rebate Retention Service is shutdown.");
                 return;
             }
-            var (rrMessages, newLogSIDs) = await chatBotRebateRetentionService.GetRebateRetentionInfoAsync(rrSetting.LastLogSId);
+            var (rrMessages, newLogSIDs) = await chatBotRebateRetentionService.GetRebateRetentionInfoAsync(rrSetting.LastLogSId, rrSetting.BatchSize);
             var (commandResult, command) = await chatBotRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, Environment);
             if (commandResult.IsSuccessful)
             {

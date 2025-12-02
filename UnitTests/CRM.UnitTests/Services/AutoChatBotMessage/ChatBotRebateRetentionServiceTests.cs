@@ -1,13 +1,13 @@
 ﻿namespace CRM.UnitTests.Services.AutoChatBotMessage;
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
 using CRM.Criteria.ChatBotRebateRetention;
 using CRM.Models.ChatBotRebateRetention;
 using CRM.Services.AutoChatBotMessage;
 using CRM.Services.Common;
 using NSubstitute;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 public class ChatBotRebateRetentionServiceTests
@@ -22,6 +22,7 @@ public class ChatBotRebateRetentionServiceTests
         var criteria = new GetRebateRetentionInfoCriteria
         {
             LastLogSID = "1",
+            BatchSize = 50,
             NewLogSID = "1"
         };
         var expected = fixture.Create<IEnumerable<ChatBotRebateRetentionInfo>>();
@@ -30,7 +31,7 @@ public class ChatBotRebateRetentionServiceTests
         baseService.GetDataAsync<ChatBotRebateRetentionInfo>(Arg.Do<GetRebateRetentionInfoCriteria>(x => criteria = x)).Returns(expected);
 
         // Act
-        var actual = await service.GetRebateRetentionInfoAsync("1");
+        var actual = await service.GetRebateRetentionInfoAsync("1", 50);
 
         // Assert
         Assert.Equal(result.expected, actual.Item1);

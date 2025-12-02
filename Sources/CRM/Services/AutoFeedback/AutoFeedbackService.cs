@@ -679,7 +679,7 @@ public class AutoFeedbackService : IAutoFeedbackService
                 logService.LogInformation("Service AutoFeedback RebateRetention is shutdown.");
                 return;
             }
-            var (rrMessages, newLogSIDs) = await autoFbRebateRetentionService.GetRebateRetentionInfoAsync(systemSettingInfo.LastLogSId);
+            var (rrMessages, newLogSIDs) = await autoFbRebateRetentionService.GetRebateRetentionInfoAsync(systemSettingInfo.LastLogSId, systemSettingInfo.BatchSize);
             var (commandResult, command) = await autoFbRebateRetentionService.ImportRebateRetentionCommand(rrMessages, newLogSIDs, Environment);
 
             if (commandResult.IsSuccessful)
