@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Resources;
 using System.Text.Json.Serialization;
+using CRM.Constants;
 
 namespace CRM.Models.MessageNotificationCenter;
 
@@ -38,7 +39,7 @@ public class BasketballPlayer
         var playerName = getTeamNameHandler(PlayerId.ToString(), languageCode);
         var teamName = getTeamNameHandler(TeamId.ToString(), languageCode);
         var resourceKey = $"bet_performance_{string.Join("_and_", allItems.Select(i => i.Name))}";
-        var betTeam = rm.GetString(resourceKey, new CultureInfo(languageCode));
+        var betTeam = rm.GetString(resourceKey, GetCultureInfo(languageCode));
         betTeam = string.IsNullOrWhiteSpace(betTeam) ? resourceKey : BuildBetTeam(betTeam, teamName);
 
         return $"{playerName} {betTeam}";
@@ -55,6 +56,11 @@ public class BasketballPlayer
 
         return betTeamValue;
     }
+
+    private static CultureInfo GetCultureInfo(string languageCode)
+        => languageCode == Language.zh_CHS
+        ? new CultureInfo("zh-Hans")
+        : new CultureInfo(languageCode);
 }
 
 public class NameValueModel
